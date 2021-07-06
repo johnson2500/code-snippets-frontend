@@ -26,14 +26,18 @@ const useStyles = makeStyles({
 
 export default function Snippet(props) {
   const {
-    code, language, title, setAppState, appState,
+    setAppState, appState,
   } = props;
-  const [codeState, setCode] = React.useState(code);
+
+  const { editorSnippet } = appState;
+
+  const {
+    code, language, title,
+  } = editorSnippet;
 
   const classes = useStyles();
 
   const editSnippetHandler = () => {
-    console.log(appState);
     setAppState({
       ...appState,
       editorSnippet: {
@@ -48,13 +52,13 @@ export default function Snippet(props) {
     <Card className={classes.root}>
       <CardContent>
         <Typography className={classes.title} color="textSecondary" gutterBottom>
-          Snippet
+          {title}
         </Typography>
         <CodeEditor
-          value={codeState}
+          disabled
+          value={code}
           language={language}
           placeholder={`Please enter ${language} code.`}
-          onChange={(evn) => setCode(evn.target.value)}
           padding={15}
           style={{
             fontSize: 12,
@@ -72,10 +76,13 @@ export default function Snippet(props) {
 }
 
 Snippet.propTypes = {
-  code: PropTypes.string.isRequired,
-  language: PropTypes.string.isRequired,
   // eslint-disable-next-line react/require-default-props
-  title: PropTypes.string,
+  editorSnippet: {
+    code: PropTypes.string.isRequired,
+    language: PropTypes.string.isRequired,
+    // eslint-disable-next-line react/require-default-props
+    title: PropTypes.string,
+  },
   // eslint-disable-next-line react/require-default-props
   appState: {
     firebase: { auth: PropTypes.object },

@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CodeEditor from '@uiw/react-textarea-code-editor';
@@ -10,6 +11,7 @@ import axios from 'axios';
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
+    minHeight: 500,
     margin: 10,
   },
   bullet: {
@@ -29,23 +31,18 @@ const useStyles = makeStyles({
 });
 
 export default function SnippetEditor(props) {
-  const {
-    appState, editorSnippet,
-  } = props;
+  const { appState } = props;
 
+  const { editorSnippet } = appState;
   const {
-    language: propsLanguage, id: propsId, code: propsCode, title: propsTitle,
+    language, id, code, title,
   } = editorSnippet;
 
-  const { firebase } = appState;
-
-  const [languageState, setLanguage] = React.useState(propsLanguage);
-  const [codeState, setCode] = React.useState(propsCode);
-  const [titleState, setTitle] = React.useState(propsTitle);
+  const [languageState, setLanguage] = React.useState('');
+  const [codeState, setCode] = React.useState('');
+  const [titleState, setTitle] = React.useState('');
 
   const [message, setMessage] = React.useState('');
-
-  const classes = useStyles();
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
@@ -56,22 +53,21 @@ export default function SnippetEditor(props) {
   };
 
   const saveSnippet = async () => {
-    const token = await firebase.auth().currentUser;
-
-    const { uid } = token;
+    const { auth } = appState;
+    const { token, userId } = auth;
 
     axios({
       method: 'post',
-      url: 'http://localhost:4000/snippet',
+      url: `${process.env.REACT_APP_API_URL}/snippet`,
       headers: {
         'Content-Type': 'application/json',
       },
       data: {
-        userId: uid,
+        userId,
+        token,
         code: codeState,
         language: languageState,
         title: titleState,
-        token: appState.token,
       },
     })
       .then((response) => {
@@ -79,7 +75,6 @@ export default function SnippetEditor(props) {
         setMessage('Saved!');
       })
       .catch((error) => {
-        console.log(error);
         setMessage(error.message);
       });
   };
@@ -89,37 +84,34 @@ export default function SnippetEditor(props) {
 
     axios({
       method: 'delete',
-      url: `http://localhost:4000/snippet?id=${propsId}&userId=${userId}&token=${token}`,
+      url: `${process.env.REACT_APP_API_URL}/snippet?id=${id}&userId=${userId}&token=${token}`,
       headers: {
         'Content-Type': 'application/json',
       },
     })
       .then((response) => {
         console.log(response);
-        setMessage('Saved!');
+        setMessage('Success');
       })
       .catch((error) => {
-        console.log(error);
         setMessage(error.message);
       });
   };
 
-  const { language, code, title } = editorSnippet;
-
+  const classes = useStyles();
   return (
     <Card className={classes.root}>
       <CardContent>
         <Input
           onChange={handleTitleChange}
           className={classes.formControl}
-        >
-          {title || titleState}
-        </Input>
+          value={titleState || title}
+        />
         <FormControl className={classes.formControl}>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={language || languageState}
+            value={languageState || language}
             onChange={handleLanguageChange}
           >
             <MenuItem value="js">Javascript</MenuItem>
@@ -128,15 +120,16 @@ export default function SnippetEditor(props) {
           </Select>
         </FormControl>
         <CodeEditor
-          value={code || codeState}
-          language={language || languageState}
-          placeholder={`Please enter ${language || languageState} code.`}
+          value={codeState || code}
+          language={languageState || language}
+          placeholder={`Please enter ${languageState || language} code.`}
           onChange={(evn) => setCode(evn.target.value)}
           padding={15}
           style={{
             fontSize: 12,
             margin: 10,
             backgroundColor: '#f5f5f5',
+            height: '50vh',
             fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
           }}
         />

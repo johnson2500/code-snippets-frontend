@@ -1,14 +1,15 @@
 /* eslint-disable react/require-default-props */
 import React, { useEffect } from 'react';
-import { Divider } from '@material-ui/core';
 import PropTypes from 'prop-types';
-
-import SnippetList from '../../components/snippetList/snippetList';
 import RealtimeEditor from '../../components/reltimeEditor/realtimeEditor';
+import Snippet from '../../components/snippet/snippet';
 
 export default function Home(props) {
   const { appState, setAppState } = props;
-  const { editorSnippet, snippets } = appState;
+
+  const { home } = appState;
+  const { editing = false } = home;
+  console.log(home);
 
   useEffect(() => {
     console.log('Home Use Effect');
@@ -16,17 +17,21 @@ export default function Home(props) {
 
   return (
     <>
-      <RealtimeEditor
-        appState={appState}
-        setAppState={setAppState}
-        editorSnippet={editorSnippet}
-      />
-      <Divider />
-      <SnippetList
-        snippets={snippets}
-        appState={appState}
-        setAppState={setAppState}
-      />
+      {
+        !editing
+          ? (
+            <RealtimeEditor
+              appState={appState}
+              setAppState={setAppState}
+            />
+          )
+          : (
+            <Snippet
+              appState={appState}
+              setAppState={setAppState}
+            />
+          )
+}
     </>
   );
 }

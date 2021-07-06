@@ -16,6 +16,7 @@ export default function SnippetList(props) {
                 <Snippet
                   code={codeItem.code}
                   language={codeItem.language}
+                  title={codeItem.title}
                   setAppState={setAppState}
                   appState={appState}
                 />
