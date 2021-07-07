@@ -1,16 +1,12 @@
+/* eslint-disable no-constant-condition */
 import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import blue from '@material-ui/core/colors/blueGrey';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import CodeIcon from '@material-ui/icons/Code';
+import Button from '@material-ui/core/Button';
 
 import {
   BrowserRouter as Router,
@@ -20,9 +16,10 @@ import {
 import axios from 'axios';
 import DefaultState from './initialState';
 import Home from './pages/home';
-import SignIn from './pages/signin';
-import SignUp from './pages/signup';
 import firebase from './firebase/index';
+import SignInUpModal from './components/signInModal/signInModal';
+import ListView from './pages/listView/listView';
+import DrawerBar from './components/appbar/appBar';
 
 const drawerWidth = 200;
 
@@ -33,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
   appBar: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
   },
   drawer: {
     width: drawerWidth,
@@ -45,12 +45,28 @@ const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
     padding: theme.spacing(3),
   },
 }));
 
-export default function PermanentDrawerLeft() {
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    primary: blue,
+  },
+  typography: {
+    fontSize: 12,
+  },
+});
+
+export const checkIsAuthenticated = (appState) => {
+  const { auth } = appState;
+  const { token } = auth;
+
+  return !!token;
+};
+
+export default function App() {
   const classes = useStyles();
 
   const [appState, setAppState] = React.useState({
@@ -77,11 +93,11 @@ export default function PermanentDrawerLeft() {
             },
           })
             .then((response) => {
-              const { data: snippets } = response;
+              const { data } = response;
 
               setAppState({
                 ...appState,
-                snippets,
+                snippets: data,
                 firebase,
                 auth: {
                   token,
@@ -97,87 +113,67 @@ export default function PermanentDrawerLeft() {
     });
   }, []);
 
-  const { snippets } = appState;
-
-  const snippetClickHandler = (snippet) => {
-    setAppState({
-      ...appState,
-      editorSnippet: {
-        ...snippet,
-      },
-    });
-  };
+  const isAuthenticated = checkIsAuthenticated(appState);
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
-          <Typography variant="h6" noWrap>
-            Permanent drawer
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="left"
-      >
-        <Typography content="center" className={classes.toolbar}>
-          <CodeIcon />
-        </Typography>
-        <Divider />
-        <List>
-          <ListItem button>
-            <ListItemIcon><CodeIcon /></ListItemIcon>
-            <ListItemText primary="My Snippets" />
-          </ListItem>
-        </List>
-        <Divider />
-        <List>
-          {
-            snippets.map((snippet) => (
-              <ListItem
-                button
-                onClick={() => {
-                  snippetClickHandler(snippet);
-                  console.log(snippet);
-                }}
-              >
-                <ListItemIcon>
-                  <CodeIcon />
-                </ListItemIcon>
-                <ListItemText primary={snippet.title || 'Snippet'} />
-              </ListItem>
-            ))
-          }
-        </List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        <Router>
-          <Switch>
-            <Route path="/snippets">
-              about
-            </Route>
-            <Route path="/users">
-              users
-            </Route>
-            <Route path="/sign-in">
-              <SignIn appState={appState} setAppState={setAppState} />
-            </Route>
-            <Route path="/sign-up">
-              <SignUp appState={appState} setAppState={setAppState} />
-            </Route>
-            <Route path="/">
-              <Home appState={appState} setAppState={setAppState} />
-            </Route>
-          </Switch>
-        </Router>
-      </main>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <div className={classes.root}>
+          <CssBaseline />
+          <AppBar position="fixed" className={classes.appBar}>
+            <Toolbar>
+              <Typography variant="h6" className={classes.title}>
+                News
+              </Typography>
+              <Button color="inherit">Login</Button>
+            </Toolbar>
+          </AppBar>
+          <DrawerBar setAppState={setAppState} appState={appState} />
+          <main className={classes.content}>
+            <div className={classes.toolbar} />
+            <Switch>
+              <Route path="/discover">
+                Discover
+              </Route>
+              <Route path="/teams">
+                Teams
+              </Route>
+              <Route path="/list">
+                {
+                  !isAuthenticated
+                    ? (
+                      <SignInUpModal
+                        appState={appState}
+                        setAppState={setAppState}
+                      />
+                    ) : (
+                      <ListView
+                        appState={appState}
+                        setAppState={setAppState}
+                      />
+                    )
+                }
+              </Route>
+              <Route path="/">
+                {
+                  !isAuthenticated
+                    ? (
+                      <SignInUpModal
+                        appState={appState}
+                        setAppState={setAppState}
+                      />
+                    ) : (
+                      <Home
+                        appState={appState}
+                        setAppState={setAppState}
+                      />
+                    )
+                }
+              </Route>
+            </Switch>
+          </main>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }

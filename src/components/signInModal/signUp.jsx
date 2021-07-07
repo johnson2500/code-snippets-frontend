@@ -1,8 +1,9 @@
+/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/require-default-props */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Grid, Input, Typography, Button,
+  TextField, Typography, Button,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
@@ -62,21 +63,25 @@ export default function SignUp(props) {
   };
 
   return (
-    <Grid>
-      <Grid>
-        <Typography>Sign Up</Typography>
-        <Input type="email" placeholder="email" onChange={handleEmailChange} />
-        <br />
-        <Input type="email" placeholder="password" onChange={handlePasswordChange} />
-        <br />
-        <Button onClick={handleSubmit}>Submit</Button>
-      </Grid>
-    </Grid>
+    <>
+      <Typography>Sign Up</Typography>
+      <TextField
+        type="email"
+        placeholder="email"
+        onChange={handleEmailChange}
+      />
+      <br />
+      <TextField type="password" placeholder="password" onChange={handlePasswordChange} />
+      <br />
+      <Button variant="contained" onClick={handleSubmit}>Sign Up</Button>
+    </>
   );
 }
 
 SignUp.propTypes = {
-  appState: {
-    firebase: { auth: PropTypes.func },
-  },
+  appState: PropTypes.object,
+};
+
+SignUp.defaultProps = {
+  appState: {},
 };

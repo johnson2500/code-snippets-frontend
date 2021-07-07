@@ -1,7 +1,8 @@
+/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/require-default-props */
 import React from 'react';
 import {
-  Grid, Input, Typography, Button,
+  Typography, Button, TextField,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
@@ -64,22 +65,24 @@ export default function SignIn(props) {
   };
 
   return (
-    <Grid>
+    <>
       <Typography>Sign In</Typography>
-      <Input type="email" placeholder="email" onChange={handleEmailChange} />
+      <TextField
+        type="email"
+        placeholder="email"
+        onChange={handleEmailChange}
+      />
       <br />
-      <Input type="email" placeholder="password" onChange={handlePasswordChange} />
+      <TextField type="password" placeholder="password" onChange={handlePasswordChange} />
       <br />
       <Button onClick={handleSubmit}>Sign In</Button>
-    </Grid>
+    </>
   );
 }
 
 SignIn.propTypes = {
-  appState: {
-    firebase: { auth: PropTypes.object },
-  },
-  setAppState: {},
+  appState: PropTypes.object,
+  setAppState: PropTypes.func,
 };
 
 SignIn.defaultProps = {

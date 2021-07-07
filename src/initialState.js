@@ -10,6 +10,7 @@ export default {
     language: 'js',
     code: 'const hello="world"',
     title: 'Hello World',
+    description: 'Hello World',
   },
   snippets: [],
 };

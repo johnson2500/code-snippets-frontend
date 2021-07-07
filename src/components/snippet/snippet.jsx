@@ -1,39 +1,36 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import { useHistory } from 'react-router-dom';
 import {
-  Typography, Card, CardContent, CardActions, Button,
+  Chip, Card, CardContent, CardHeader, IconButton,
 } from '@material-ui/core';
+import CodeIcon from '@material-ui/icons/Code';
+import { Edit } from '@material-ui/icons';
 
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
     margin: 10,
   },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
-  },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
+  flexItem: {
+    padding: 10,
   },
 });
 
 export default function Snippet(props) {
   const {
-    setAppState, appState,
+    setAppState, appState, snippet,
   } = props;
 
-  const { editorSnippet } = appState;
+  const history = useHistory();
+  const { home = {} } = appState;
 
   const {
-    code, language, title,
-  } = editorSnippet;
+    code, language, title, description,
+  } = snippet;
 
   const classes = useStyles();
 
@@ -41,19 +38,35 @@ export default function Snippet(props) {
     setAppState({
       ...appState,
       editorSnippet: {
-        code,
-        language,
-        title,
+        ...snippet,
+      },
+      home: {
+        ...home,
+        editing: true,
       },
     });
+
+    history.push('/');
   };
 
   return (
     <Card className={classes.root}>
+      <CardHeader
+        title={title}
+        subheader={description}
+        action={(
+          <IconButton aria-label="settings" onClick={editSnippetHandler}>
+            <Edit />
+          </IconButton>
+        )}
+      />
       <CardContent>
-        <Typography className={classes.title} color="textSecondary" gutterBottom>
-          {title}
-        </Typography>
+        <Chip
+          icon={<CodeIcon />}
+          label={language}
+          variant="outlined"
+          className={classes.flexItem}
+        />
         <CodeEditor
           disabled
           value={code}
@@ -61,32 +74,25 @@ export default function Snippet(props) {
           placeholder={`Please enter ${language} code.`}
           padding={15}
           style={{
-            fontSize: 12,
-            margin: 10,
-            backgroundColor: '#f5f5f5',
+            fontSize: 13,
+            backgroundColor: 'black',
+            marginTop: 10,
             fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
           }}
         />
       </CardContent>
-      <CardActions>
-        <Button onClick={editSnippetHandler} size="small">Edit</Button>
-      </CardActions>
     </Card>
   );
 }
 
 Snippet.propTypes = {
-  // eslint-disable-next-line react/require-default-props
-  editorSnippet: {
-    code: PropTypes.string.isRequired,
-    language: PropTypes.string.isRequired,
-    // eslint-disable-next-line react/require-default-props
-    title: PropTypes.string,
-  },
-  // eslint-disable-next-line react/require-default-props
-  appState: {
-    firebase: { auth: PropTypes.object },
-  },
-  // eslint-disable-next-line react/require-default-props
-  setAppState: {},
+  appState: PropTypes.object,
+  setAppState: PropTypes.func,
+  snippet: PropTypes.object,
+};
+
+Snippet.defaultProps = {
+  appState: {},
+  setAppState: () => {},
+  snippet: {},
 };

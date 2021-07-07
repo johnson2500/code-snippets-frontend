@@ -14,9 +14,7 @@ export default function SnippetList(props) {
             snippets.map((codeItem) => (
               <Grid item>
                 <Snippet
-                  code={codeItem.code}
-                  language={codeItem.language}
-                  title={codeItem.title}
+                  snippet={{}}
                   setAppState={setAppState}
                   appState={appState}
                 />
