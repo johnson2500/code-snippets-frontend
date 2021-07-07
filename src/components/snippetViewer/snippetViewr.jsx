@@ -33,8 +33,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SnippetEditor(props) {
-  const { appState, setAppState, snippet } = props;
+export default function SnippetViewer(props) {
+  const {
+    appState, setAppState, snippet, editing,
+  } = props;
   const {
     language, id, code, title, description,
   } = snippet;
@@ -181,90 +183,24 @@ export default function SnippetEditor(props) {
   };
 
   const classes = useStyles();
+
   return (
-    <Card className={classes.root}>
-      <CardContent>
-        <div className={classes.gridRoot}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="standard-required"
-                label="Title"
-                onChange={handleTitleChange}
-                value={titleState}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                required
-                id="standard-required"
-                label="Description"
-                value={descriptionState}
-                onChange={handleDescriptionChange}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Select
-                id="demo-simple-select"
-                value={languageState}
-                onChange={handleLanguageChange}
-                label="Language"
-              >
-                <MenuItem value="js">Javascript</MenuItem>
-                <MenuItem value="sql">SQL</MenuItem>
-                <MenuItem value="html">HTML</MenuItem>
-                <MenuItem value="r">R</MenuItem>
-                <MenuItem value="python">Python</MenuItem>
-                <MenuItem value="php">php</MenuItem>
-              </Select>
-            </Grid>
-          </Grid>
-        </div>
-        <CodeEditor
-          value={codeState}
-          language={languageState}
-          placeholder={`Please enter ${languageState} code.`}
-          onChange={(evn) => setCode(evn.target.value)}
-          padding={15}
-          style={{
-            fontSize: 12,
-            marginTop: 10,
-            backgroundColor: 'black',
-            minHeight: '50vh',
-            fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-          }}
-        />
-      </CardContent>
-      <CardActions>
-        <Button
-          variant="contained"
-          onClick={saveSnippet}
-          size="small"
-        >
-          {id ? 'Update' : 'Save'}
-        </Button>
-        <Button
-          variant="contained"
-          onClick={deleteSnippet}
-          size="small"
-        >
-          Delete
-        </Button>
-        <Typography>{message}</Typography>
-      </CardActions>
-    </Card>
+    <>
+      { editing ? <SnippetEditor /> : 'Viewing'}
+    </>
   );
 }
 
-SnippetEditor.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
-  snippet: PropTypes.object,
-};
+SnippetViewer
+  .propTypes = {
+    appState: PropTypes.object,
+    setAppState: PropTypes.func,
+    snippet: PropTypes.object,
+  };
 
-SnippetEditor.defaultProps = {
-  appState: {},
-  setAppState: () => {},
-  snippet: {},
-};
+SnippetViewer
+  .defaultProps = {
+    appState: {},
+    setAppState: () => {},
+    snippet: {},
+  };

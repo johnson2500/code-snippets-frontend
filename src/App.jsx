@@ -3,11 +3,6 @@ import React, { useEffect } from 'react';
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blueGrey';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-
 import {
   BrowserRouter as Router,
   Switch,
@@ -18,8 +13,10 @@ import DefaultState from './initialState';
 import Home from './pages/home';
 import firebase from './firebase/index';
 import SignInUpModal from './components/signInModal/signInModal';
+import Header from './components/appbar/appBar';
 import ListView from './pages/listView/listView';
-import DrawerBar from './components/appbar/appBar';
+import DrawerNav from './components/drawerNav/drawerNav';
+import PromoPage from './pages/promoPage/propPage';
 
 const drawerWidth = 200;
 
@@ -56,6 +53,7 @@ const theme = createMuiTheme({
   },
   typography: {
     fontSize: 12,
+    fontFamily: 'sans-serif',
   },
 });
 
@@ -120,25 +118,23 @@ export default function App() {
       <Router>
         <div className={classes.root}>
           <CssBaseline />
-          <AppBar position="fixed" className={classes.appBar}>
-            <Toolbar>
-              <Typography variant="h6" className={classes.title}>
-                News
-              </Typography>
-              <Button color="inherit">Login</Button>
-            </Toolbar>
-          </AppBar>
-          <DrawerBar setAppState={setAppState} appState={appState} />
+          <Switch>
+            <Route path="/list">
+              <DrawerNav setAppState={setAppState} appState={appState} />
+            </Route>
+            <Route exact path="/">
+              <DrawerNav setAppState={setAppState} appState={appState} />
+            </Route>
+          </Switch>
           <main className={classes.content}>
             <div className={classes.toolbar} />
             <Switch>
-              <Route path="/discover">
-                Discover
-              </Route>
-              <Route path="/teams">
-                Teams
+              <Route path="/promo-page">
+                <Header leftOffset={0} />
+                <PromoPage />
               </Route>
               <Route path="/list">
+                <Header />
                 {
                   !isAuthenticated
                     ? (
@@ -155,6 +151,7 @@ export default function App() {
                 }
               </Route>
               <Route path="/">
+                <Header />
                 {
                   !isAuthenticated
                     ? (
