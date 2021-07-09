@@ -53,16 +53,13 @@ export default function DrawerBar(props) {
   const snippetClickHandler = (snippet) => {
     setAppState({
       ...appState,
-      editorSnippet: {
-        ...snippet,
-      },
-      home: {
-        ...home,
+      view: {
+        snippet,
         editing: false,
       },
     });
 
-    history.push('/');
+    history.push('/view');
   };
 
   const handleNewSnippet = () => {

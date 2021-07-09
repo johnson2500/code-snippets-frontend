@@ -1,6 +1,7 @@
 /* eslint-disable react/forbid-prop-types */
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Typography } from '@material-ui/core';
 import Editor from './editor';
 
 import { makeRequest } from '../../helpers';
@@ -14,6 +15,8 @@ export default function SnippetViewer(props) {
     language, id, code, title, description,
   } = snippet;
 
+  console.log('Snipet Viewer', snippet);
+
   const [languageState, setLanguage] = React.useState(language);
   const [codeState, setCode] = React.useState(code);
   const [titleState, setTitle] = React.useState(title);
@@ -22,31 +25,7 @@ export default function SnippetViewer(props) {
   const [editingState, setEditingState] = React.useState(editing);
 
   const [deletedState, setDeleted] = React.useState(false);
-
-  const handleLanguageChange = (event) => {
-    console.log('Handle Language Change');
-    setLanguage(event.target.value);
-  };
-
-  const handleDescriptionChange = (event) => {
-    console.log('Handle Description Change');
-    setDescription(event.target.value);
-  };
-
-  const handleCodeChange = (event) => {
-    console.log('Handle Language Change');
-    setCode(event.target.value);
-  };
-
-  const editSnippetHandler = () => {
-    console.log('Handle Edit Snippet Change');
-    setEditingState(!editingState);
-  };
-
-  const closeSnippetHandler = () => {
-    console.log('Handle Close Snippet Change');
-    setEditingState(!editingState);
-  };
+  const [savedState, setSavedState] = React.useState(false);
 
   const saveSnippetHandler = async () => {
     const { auth, snippets } = appState;
@@ -94,6 +73,9 @@ export default function SnippetViewer(props) {
       });
 
       setEditingState(!editing);
+      setSavedState(true);
+
+      setTimeout(() => setSavedState(false), 3000);
     } catch (error) {
       console.log(`Error: /snippet ${error.message}`);
     }
@@ -101,7 +83,7 @@ export default function SnippetViewer(props) {
 
   const deleteSnippetHandler = async () => {
     const { auth, snippets = [] } = appState;
-    const { token, userId } = auth;
+    const { token } = auth;
 
     try {
       await makeRequest({
@@ -124,17 +106,32 @@ export default function SnippetViewer(props) {
     }
   };
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-  };
+  useEffect(() => {
+    setLanguage(language);
+    setCode(code);
+    setTitle(title);
+    setDescription(description);
+    setEditingState(editing);
+    setDeleted(false);
+  }, [snippet]);
 
   const editorSnippet = {
-    language: languageState,
-    code: codeState,
-    description: descriptionState,
-    title: titleState,
-    deleted: deletedState,
+    language,
+    code,
+    description,
+    title,
+    deleted: false,
   };
+
+  if (deletedState) {
+    return (
+      <>
+        <Typography variant="h4">
+          Deleted snippet!
+        </Typography>
+      </>
+    );
+  }
 
   return (
     <>
@@ -142,16 +139,17 @@ export default function SnippetViewer(props) {
         // new
         onSaveHandler={saveSnippetHandler}
         onDeleteHandler={deleteSnippetHandler}
-        onCloseHandler={closeSnippetHandler}
-        onEditHandler={editSnippetHandler}
-        onTitleChange={handleTitleChange}
-        onDescriptionChange={handleDescriptionChange}
-        onLanguageChange={handleLanguageChange}
-        onCodeChange={handleCodeChange}
+        onCloseHandler={() => setEditingState(false)}
+        onEditHandler={() => setEditingState(true)}
+        onTitleChange={(event) => setTitle(event.target.value)}
+        onDescriptionChange={(event) => setDescription(event.target.value)}
+        onLanguageChange={(event) => setLanguage(event.target.value)}
+        onCodeChange={(event) => setCode(event.target.value)}
         setAppState={setAppState}
         appState={appState}
         snippet={editorSnippet}
         editing={editingState}
+        saved={savedState}
       />
     </>
   );

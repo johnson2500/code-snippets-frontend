@@ -14,4 +14,10 @@ export default {
     description: '',
   },
   snippets: [],
+  settings: {
+    userName: 'jtronixDev',
+    defaultLanguage: 'javascript',
+    theme: 'light',
+  },
+  view: {},
 };

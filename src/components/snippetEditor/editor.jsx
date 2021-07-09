@@ -15,6 +15,7 @@ import {
   CardHeader,
   IconButton,
   InputLabel,
+  Typography,
 } from '@material-ui/core';
 import {
   Edit, Save, Delete, Close,
@@ -44,6 +45,7 @@ export default function Editor(props) {
   const {
     snippet,
     editing,
+    saved,
     onSaveHandler,
     onDeleteHandler,
     onCloseHandler,
@@ -59,10 +61,11 @@ export default function Editor(props) {
 
   const classes = useStyles();
 
-  console.log(snippet);
-
   return (
     <Card className={classes.root}>
+      {
+        saved ? <Typography>Saved!</Typography> : ''
+      }
       {
         editing ? (
           <CardHeader
@@ -182,6 +185,7 @@ Editor.propTypes = {
   setAppState: PropTypes.func,
   snippet: PropTypes.object,
   editing: PropTypes.bool,
+  saved: PropTypes.bool,
   onCloseHandler: PropTypes.func,
   onDeleteHandler: PropTypes.func,
   onSaveHandler: PropTypes.func,
@@ -197,6 +201,7 @@ Editor.defaultProps = {
   setAppState: () => {},
   snippet: {},
   editing: true,
+  saved: false,
   onCloseHandler: () => {},
   onDeleteHandler: () => {},
   onSaveHandler: () => {},

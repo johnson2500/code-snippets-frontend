@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
-import SnippetEditor from '../../components/snippetViewer/snippetViewr';
+import SnippetEditor from '../../components/snippetEditor/snippetEditor';
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -2,25 +2,24 @@
 import React, { useEffect } from 'react';
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blueGrey';
-import { Button } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from 'react-router-dom';
-import axios from 'axios';
 import DefaultState from './initialState';
 import Home from './pages/home';
 import firebase from './firebase/index';
 import SignInUpModal from './components/signInModal/signInModal';
 import Header from './components/appbar/appBar';
 import ListView from './pages/listView/listView';
-import DrawerNav from './components/drawerNav/drawerNav';
+import DrawerNav from './components/sideNavigation/sideNavigation';
 import PromoPage from './pages/promoPage/propPage';
-import SnippetEditor from './components/snippetViewer/snippetViewr';
 import { makeRequest } from './helpers';
-import EditPage from './pages/editPage/editPage';
+import EditPage from './pages/newSnippet/newSnippet';
+import SettingsPage from './pages/settings/settings';
+import ViewPage from './pages/viewSnippet/viewSnippet';
 
 const drawerWidth = 200;
 
@@ -62,10 +61,7 @@ const theme = createMuiTheme({
 });
 
 export const checkIsAuthenticated = (appState) => {
-  const { auth } = appState;
-  const { token } = auth;
-
-  console.log(auth);
+  const { auth: { token } } = appState;
 
   return !!token;
 };
@@ -85,8 +81,16 @@ export default function App() {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
         // Your code here
-        const token = localStorage.getItem('codeSnippetsToken');
-        const userId = localStorage.getItem('userId');
+        const { uid: userId } = user;
+        const token = await firebase.auth().currentUser.getIdToken();
+
+        console.log('in');
+
+        console.log(userId);
+        console.log(token);
+
+        localStorage.setItem('codeSnippetsToken', token);
+        localStorage.setItem('userId', userId);
 
         if (token && userId) {
           try {
@@ -95,8 +99,6 @@ export default function App() {
               url: '/snippets',
               token,
             });
-
-            console.log(snippetResponse);
 
             const snippets = snippetResponse.data;
 
@@ -113,11 +115,33 @@ export default function App() {
             console.log(error.message);
           }
         }
+      } else {
+        localStorage.removeItem('codeSnippetsToken');
+        localStorage.removeItem('userId');
+
+        setAppState({
+          ...appState,
+          firebase,
+          auth: {
+            token: null,
+            userId: null,
+          },
+        });
+        console.log('NO USER');
       }
     });
   }, []);
 
   const isAuthenticated = checkIsAuthenticated(appState);
+
+  if (!isAuthenticated) {
+    return (
+      <SignInUpModal
+        appState={appState}
+        setAppState={setAppState}
+      />
+    );
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -125,73 +149,48 @@ export default function App() {
         <div className={classes.root}>
           <CssBaseline />
           <Switch>
-            <Route path="/list">
-              <DrawerNav setAppState={setAppState} appState={appState} />
-            </Route>
-            <Route path="/new">
-              <DrawerNav setAppState={setAppState} appState={appState} />
-            </Route>
-            <Route exact path="/">
+            <Route exact path={['/list', '/', '/new', '/settings', '/view']}>
+              <Header />
               <DrawerNav setAppState={setAppState} appState={appState} />
             </Route>
           </Switch>
           <main className={classes.content}>
             <div className={classes.toolbar} />
             <Switch>
-              <Route path="/promo-page">
+              <Route exact path="/promo-page">
                 <Header leftOffset={0} />
                 <PromoPage />
               </Route>
-              <Route path="/list">
-                <Header />
-                {
-                  !isAuthenticated
-                    ? (
-                      <SignInUpModal
-                        appState={appState}
-                        setAppState={setAppState}
-                      />
-                    ) : (
-                      <ListView
-                        appState={appState}
-                        setAppState={setAppState}
-                      />
-                    )
-                }
+              <Route exact path="/settings">
+                <SettingsPage
+                  appState={appState}
+                  setAppState={setAppState}
+                  settings={appState.settings}
+                />
               </Route>
-              <Route path="/new">
-                <Header />
-                {
-                  !isAuthenticated
-                    ? (
-                      <SignInUpModal
-                        appState={appState}
-                        setAppState={setAppState}
-                      />
-                    ) : (
-                      <EditPage
-                        appState={appState}
-                        setAppState={setAppState}
-                      />
-                    )
-                }
+              <Route exact path="/list">
+                <ListView
+                  appState={appState}
+                  setAppState={setAppState}
+                />
               </Route>
-              <Route path="/">
-                <Header />
-                {
-                  isAuthenticated
-                    ? (
-                      <Home
-                        appState={appState}
-                        setAppState={setAppState}
-                      />
-                    ) : (
-                      <SignInUpModal
-                        appState={appState}
-                        setAppState={setAppState}
-                      />
-                    )
-                }
+              <Route exact path="/new">
+                <EditPage
+                  appState={appState}
+                  setAppState={setAppState}
+                />
+              </Route>
+              <Route exact path="/view">
+                <ViewPage
+                  appState={appState}
+                  setAppState={setAppState}
+                />
+              </Route>
+              <Route exact path="/">
+                <Home
+                  appState={appState}
+                  setAppState={setAppState}
+                />
               </Route>
             </Switch>
           </main>
