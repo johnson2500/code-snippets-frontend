@@ -1,48 +1,15 @@
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import CodeIcon from '@material-ui/icons/Code';
-import {
-  Grid,
-  Card,
-  CardContent,
-  TextField,
-  Select,
-  MenuItem,
-  Chip,
-  CardHeader,
-  IconButton,
-  InputLabel,
-} from '@material-ui/core';
-import {
-  Edit, Save, Delete, Close,
-} from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import { makeRequest } from '../../helpers';
-import { CODE_LANGUAGES } from '../../helpers/constants';
+import Editor from './editor';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    minWidth: 275,
-    margin: 10,
-  },
-  gridRoot: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: 'center',
-  },
-  fillContainer: {
-    width: '100%',
-  },
-}));
+import { makeRequest } from '../../helpers';
 
 export default function SnippetViewer(props) {
   const {
     appState, setAppState, snippet, editing,
   } = props;
+
   const {
     language, id, code, title, description,
   } = snippet;
@@ -57,15 +24,28 @@ export default function SnippetViewer(props) {
   const [deletedState, setDeleted] = React.useState(false);
 
   const handleLanguageChange = (event) => {
+    console.log('Handle Language Change');
     setLanguage(event.target.value);
   };
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
+  const handleDescriptionChange = (event) => {
+    console.log('Handle Description Change');
+    setDescription(event.target.value);
   };
 
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
+  const handleCodeChange = (event) => {
+    console.log('Handle Language Change');
+    setCode(event.target.value);
+  };
+
+  const editSnippetHandler = () => {
+    console.log('Handle Edit Snippet Change');
+    setEditingState(!editingState);
+  };
+
+  const closeSnippetHandler = () => {
+    console.log('Handle Close Snippet Change');
+    setEditingState(!editingState);
   };
 
   const saveSnippetHandler = async () => {
@@ -113,7 +93,7 @@ export default function SnippetViewer(props) {
         snippets: newSnippets,
       });
 
-      setEditingState(!editingState);
+      setEditingState(!editing);
     } catch (error) {
       console.log(`Error: /snippet ${error.message}`);
     }
@@ -144,140 +124,47 @@ export default function SnippetViewer(props) {
     }
   };
 
-  const editSnippetHandler = () => {
-    setEditingState(!editingState);
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
   };
 
-  const closeSnippetHandler = () => {
-    setEditingState(!editingState);
+  const editorSnippet = {
+    language: languageState,
+    code: codeState,
+    description: descriptionState,
+    title: titleState,
+    deleted: deletedState,
   };
-
-  const classes = useStyles();
 
   return (
-    <Card className={classes.root}>
-      {
-        editingState ? (
-          <CardHeader
-            title="Editor"
-            action={(
-              <div>
-                <IconButton aria-label="save" onClick={saveSnippetHandler}>
-                  <Save />
-                </IconButton>
-                <IconButton aria-label="delete" onClick={deleteSnippetHandler}>
-                  <Delete />
-                </IconButton>
-                <IconButton aria-label="close" onClick={closeSnippetHandler}>
-                  <Close />
-                </IconButton>
-              </div>
-              )}
-          />
-        ) : (
-          <CardHeader
-            title={title}
-            subheader={description}
-            action={(
-              <IconButton aria-label="settings" onClick={editSnippetHandler}>
-                <Edit />
-              </IconButton>
-              )}
-          />
-        )
-        }
-      <CardContent>
-        {
-            editingState ? (
-              <div>
-                <div className={classes.gridRoot}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                      <TextField
-                        id="standard-required"
-                        label="Title"
-                        onChange={handleTitleChange}
-                        value={titleState}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        id="standard-required"
-                        label="Description"
-                        value={descriptionState}
-                        className={classes.fillContainer}
-                        onChange={handleDescriptionChange}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <InputLabel id="language-select-label">Language</InputLabel>
-                      <Select
-                        labelId="language-select-label"
-                        value={languageState}
-                        onChange={handleLanguageChange}
-                        label="Language"
-                        className={classes.fillContainer}
-                      >
-                        {
-                          CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
-                        }
-                      </Select>
-                    </Grid>
-                  </Grid>
-                </div>
-                <CodeEditor
-                  disabled={false}
-                  value={codeState}
-                  language={languageState}
-                  placeholder={`Please enter ${languageState} code.`}
-                  onChange={(evn) => setCode(evn.target.value)}
-                  padding={15}
-                  style={{
-                    fontSize: 12,
-                    marginTop: 10,
-                    backgroundColor: 'black',
-                    fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                  }}
-                />
-              </div>
-            )
-              : (
-                <CardContent>
-                  <Chip
-                    icon={<CodeIcon />}
-                    label={language}
-                    variant="outlined"
-                    className={classes.flexItem}
-                  />
-                  <CodeEditor
-                    disabled
-                    value={code}
-                    language={language}
-                    placeholder={`Please enter ${language} code.`}
-                    padding={15}
-                    style={{
-                      fontSize: 13,
-                      backgroundColor: 'black',
-                      marginTop: 10,
-                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                    }}
-                  />
-                </CardContent>
-              )
-        }
-      </CardContent>
-    </Card>
+    <>
+      <Editor
+        // new
+        onSaveHandler={saveSnippetHandler}
+        onDeleteHandler={deleteSnippetHandler}
+        onCloseHandler={closeSnippetHandler}
+        onEditHandler={editSnippetHandler}
+        onTitleChange={handleTitleChange}
+        onDescriptionChange={handleDescriptionChange}
+        onLanguageChange={handleLanguageChange}
+        onCodeChange={handleCodeChange}
+        setAppState={setAppState}
+        appState={appState}
+        snippet={editorSnippet}
+        editing={editingState}
+      />
+    </>
   );
 }
 
-SnippetEditor.propTypes = {
+SnippetViewer.propTypes = {
   appState: PropTypes.object,
   setAppState: PropTypes.func,
   snippet: PropTypes.object,
   editing: PropTypes.bool,
 };
 
-SnippetEditor.defaultProps = {
+SnippetViewer.defaultProps = {
   appState: {},
   setAppState: () => {},
   snippet: {},

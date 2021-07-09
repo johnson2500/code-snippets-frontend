@@ -7,15 +7,13 @@ import SnippetEditor from '../../components/snippetViewer/snippetViewr';
 export default function EditPage(props) {
   const { appState, setAppState } = props;
 
-  const { home, editorSnippet } = appState;
-  const { editing } = home;
-
   return (
     <SnippetEditor
       appState={appState}
       setAppState={setAppState}
-      snippet={editorSnippet}
-      editing={editing}
+      snippet={{
+      }}
+      editing
     />
   );
 }

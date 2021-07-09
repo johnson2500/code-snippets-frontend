@@ -22,7 +22,7 @@ export default function Home(props) {
   const classes = useStyles();
   const { appState, setAppState } = props;
 
-  const { home, editorSnippet } = appState;
+  const { home } = appState;
   const { scratchPad } = home;
 
   // Code Editor Variables
@@ -68,7 +68,34 @@ export default function Home(props) {
           </Paper>
         </Grid>
         <Grid item xs={6}>
-          <Paper className={classes.paper}>xs=6</Paper>
+          <Paper className={classes.paper}>
+            <Typography variant="h4">Note Pad</Typography>
+            <Select
+              labelId="language-select-label"
+              value={languageState}
+              onChange={handleLanguageChange}
+              label="Language"
+              className={classes.fillContainer}
+            >
+              {
+                CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
+              }
+            </Select>
+            <CodeEditor
+              disabled={false}
+              value={codeState}
+              language={languageState}
+              placeholder={`Enter ${languageState} here.`}
+              onChange={(evn) => setCodeState(evn.target.value)}
+              padding={15}
+              style={{
+                fontSize: 12,
+                marginTop: 10,
+                backgroundColor: 'black',
+                fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+              }}
+            />
+          </Paper>
         </Grid>
       </Grid>
     </>

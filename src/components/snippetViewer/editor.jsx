@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,7 +20,7 @@ import {
   Edit, Save, Delete, Close,
 } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import { makeRequest } from '../../helpers';
+
 import { CODE_LANGUAGES } from '../../helpers/constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -41,125 +42,40 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Editor(props) {
   const {
-    appState, setAppState, snippet, editing,
+    snippet,
+    editing,
+    onSaveHandler,
+    onDeleteHandler,
+    onCloseHandler,
+    onEditHandler,
+    onTitleChange,
+    onDescriptionChange,
+    onLanguageChange,
+    onCodeChange,
   } = props;
   const {
-    language, id, code, title, description,
+    language, code, title, description,
   } = snippet;
 
-  const handleLanguageChange = (event) => {
-    setLanguage(event.target.value);
-  };
-
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-  };
-
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
-  };
-
-  const saveSnippetHandler = async () => {
-    const { auth, snippets } = appState;
-    const { token } = auth;
-
-    const data = {
-      code: codeState,
-      language: languageState,
-      title: titleState,
-      description: descriptionState,
-      id,
-    };
-
-    const isUpdate = !!id;
-
-    try {
-      const requestSnippet = await makeRequest({
-        url: '/snippet',
-        token,
-        data,
-        method: isUpdate ? 'put' : 'post',
-      });
-
-      const { id: responseId } = requestSnippet;
-
-      let newSnippets = [];
-
-      if (!isUpdate) {
-        newSnippets = [
-          ...snippets,
-          { ...data, id: responseId }];
-      } else {
-        newSnippets = snippets.map((snip) => {
-          // if the id matches then update the list with
-          if (snip.id === id) {
-            return data;
-          }
-          return snip;
-        });
-      }
-
-      setAppState({
-        ...appState,
-        snippets: newSnippets,
-      });
-
-      setEditingState(!editingState);
-    } catch (error) {
-      console.log(`Error: /snippet ${error.message}`);
-    }
-  };
-
-  const deleteSnippetHandler = async () => {
-    const { auth, snippets = [] } = appState;
-    const { token, userId } = auth;
-
-    try {
-      await makeRequest({
-        method: 'delete',
-        url: `/snippet/${id}`,
-        token,
-      });
-
-      const newSnippets = snippets.filter((snip) => snip.id !== id) || [];
-
-      setAppState({
-        ...appState,
-        snippets: newSnippets,
-        editorSnippet: newSnippets[0],
-      });
-
-      setDeleted(true);
-    } catch (error) {
-      console.log(`Error: ${error}`);
-    }
-  };
-
-  const editSnippetHandler = () => {
-    setEditingState(!editingState);
-  };
-
-  const closeSnippetHandler = () => {
-    setEditingState(!editingState);
-  };
-
   const classes = useStyles();
+
+  console.log(snippet);
 
   return (
     <Card className={classes.root}>
       {
-        editingState ? (
+        editing ? (
           <CardHeader
             title="Editor"
             action={(
               <div>
-                <IconButton aria-label="save" onClick={saveSnippetHandler}>
+                <IconButton aria-label="save" onClick={onSaveHandler}>
                   <Save />
                 </IconButton>
-                <IconButton aria-label="delete" onClick={deleteSnippetHandler}>
+                <IconButton aria-label="delete" onClick={onDeleteHandler}>
                   <Delete />
                 </IconButton>
-                <IconButton aria-label="close" onClick={closeSnippetHandler}>
+                <IconButton aria-label="close" onClick={onCloseHandler}>
                   <Close />
                 </IconButton>
               </div>
@@ -170,7 +86,7 @@ export default function Editor(props) {
             title={title}
             subheader={description}
             action={(
-              <IconButton aria-label="settings" onClick={editSnippetHandler}>
+              <IconButton aria-label="settings" onClick={onEditHandler}>
                 <Edit />
               </IconButton>
               )}
@@ -179,7 +95,7 @@ export default function Editor(props) {
         }
       <CardContent>
         {
-            editingState ? (
+            editing ? (
               <div>
                 <div className={classes.gridRoot}>
                   <Grid container spacing={3}>
@@ -187,25 +103,25 @@ export default function Editor(props) {
                       <TextField
                         id="standard-required"
                         label="Title"
-                        onChange={handleTitleChange}
-                        value={titleState}
+                        onChange={onTitleChange}
+                        value={title}
                       />
                     </Grid>
                     <Grid item xs={6}>
                       <TextField
                         id="standard-required"
                         label="Description"
-                        value={descriptionState}
+                        value={description}
                         className={classes.fillContainer}
-                        onChange={handleDescriptionChange}
+                        onChange={onDescriptionChange}
                       />
                     </Grid>
                     <Grid item xs={6}>
                       <InputLabel id="language-select-label">Language</InputLabel>
                       <Select
                         labelId="language-select-label"
-                        value={languageState}
-                        onChange={handleLanguageChange}
+                        value={language}
+                        onChange={onLanguageChange}
                         label="Language"
                         className={classes.fillContainer}
                       >
@@ -218,10 +134,10 @@ export default function Editor(props) {
                 </div>
                 <CodeEditor
                   disabled={false}
-                  value={codeState}
-                  language={languageState}
-                  placeholder={`Please enter ${languageState} code.`}
-                  onChange={(evn) => setCode(evn.target.value)}
+                  value={code}
+                  language={language}
+                  placeholder={`Please enter ${language} code.`}
+                  onChange={onCodeChange}
                   padding={15}
                   style={{
                     fontSize: 12,
@@ -261,16 +177,32 @@ export default function Editor(props) {
   );
 }
 
-SnippetEditor.propTypes = {
+Editor.propTypes = {
   appState: PropTypes.object,
   setAppState: PropTypes.func,
   snippet: PropTypes.object,
   editing: PropTypes.bool,
+  onCloseHandler: PropTypes.func,
+  onDeleteHandler: PropTypes.func,
+  onSaveHandler: PropTypes.func,
+  onEditHandler: PropTypes.func,
+  onTitleChange: PropTypes.func,
+  onDescriptionChange: PropTypes.func,
+  onLanguageChange: PropTypes.func,
+  onCodeChange: PropTypes.func,
 };
 
-SnippetEditor.defaultProps = {
+Editor.defaultProps = {
   appState: {},
   setAppState: () => {},
   snippet: {},
   editing: true,
+  onCloseHandler: () => {},
+  onDeleteHandler: () => {},
+  onSaveHandler: () => {},
+  onEditHandler: () => {},
+  onTitleChange: () => {},
+  onDescriptionChange: () => {},
+  onLanguageChange: () => {},
+  onCodeChange: () => {},
 };

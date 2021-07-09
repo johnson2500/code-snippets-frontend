@@ -78,7 +78,7 @@ export default function DrawerBar(props) {
       editorSnippet: DefaultState.editorSnippet,
     });
 
-    history.push('/');
+    history.push('/new');
   };
 
   const handleHomeClick = () => {

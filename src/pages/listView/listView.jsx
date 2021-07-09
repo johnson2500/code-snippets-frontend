@@ -2,9 +2,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
-import Snippet from '../../components/snippet/snippet';
 import SnippetEditor from '../../components/snippetViewer/snippetViewr';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,15 +51,17 @@ export default function ListView(props) {
         </Grid>
         <Grid item xs={12}>
           {
-                snippetState.map((snippet) => (
-                  <SnippetEditor
-                    key={snippet.id}
-                    snippet={snippet}
-                    setAppState={setAppState}
-                    appState={appState}
-                    editing={false}
-                  />
-                ))
+                snippetState.length === 0
+                  ? <Typography>No Results</Typography>
+                  : snippetState.map((snippet) => (
+                    <SnippetEditor
+                      key={snippet.id}
+                      snippet={snippet}
+                      setAppState={setAppState}
+                      appState={appState}
+                      editing={false}
+                    />
+                  ))
             }
         </Grid>
       </Grid>

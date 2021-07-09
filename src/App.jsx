@@ -20,6 +20,7 @@ import DrawerNav from './components/drawerNav/drawerNav';
 import PromoPage from './pages/promoPage/propPage';
 import SnippetEditor from './components/snippetViewer/snippetViewr';
 import { makeRequest } from './helpers';
+import EditPage from './pages/editPage/editPage';
 
 const drawerWidth = 200;
 
@@ -127,6 +128,9 @@ export default function App() {
             <Route path="/list">
               <DrawerNav setAppState={setAppState} appState={appState} />
             </Route>
+            <Route path="/new">
+              <DrawerNav setAppState={setAppState} appState={appState} />
+            </Route>
             <Route exact path="/">
               <DrawerNav setAppState={setAppState} appState={appState} />
             </Route>
@@ -149,6 +153,23 @@ export default function App() {
                       />
                     ) : (
                       <ListView
+                        appState={appState}
+                        setAppState={setAppState}
+                      />
+                    )
+                }
+              </Route>
+              <Route path="/new">
+                <Header />
+                {
+                  !isAuthenticated
+                    ? (
+                      <SignInUpModal
+                        appState={appState}
+                        setAppState={setAppState}
+                      />
+                    ) : (
+                      <EditPage
                         appState={appState}
                         setAppState={setAppState}
                       />
@@ -178,65 +199,4 @@ export default function App() {
       </Router>
     </ThemeProvider>
   );
-
-  // return (
-  //   <ThemeProvider theme={theme}>
-  //     <Router>
-  //       <div className={classes.root}>
-  //         <CssBaseline />
-  //         <Switch>
-  //           <Route path="/list">
-  //             <DrawerNav setAppState={setAppState} appState={appState} />
-  //           </Route>
-  //           <Route exact path="/">
-  //             <DrawerNav setAppState={setAppState} appState={appState} />
-  //           </Route>
-  //         </Switch>
-  //         <main className={classes.content}>
-  //           <div className={classes.toolbar} />
-  //           <Switch>
-  //             <Route path="/promo-page">
-  //               <Header leftOffset={0} />
-  //               <PromoPage />
-  //             </Route>
-  //             <Route path="/list">
-  //               <Header />
-  //               {
-  //                 !isAuthenticated
-  //                   ? (
-  //                     <SignInUpModal
-  //                       appState={appState}
-  //                       setAppState={setAppState}
-  //                     />
-  //                   ) : (
-  //                     <ListView
-  //                       appState={appState}
-  //                       setAppState={setAppState}
-  //                     />
-  //                   )
-  //               }
-  //             </Route>
-  //             <Route path="/">
-  //               <Header />
-  //               {
-  //                 isAuthenticated
-  //                   ? (
-  //                     <Home
-  //                       appState={appState}
-  //                       setAppState={setAppState}
-  //                     />
-  //                   ) : (
-  //                     <SignInUpModal
-  //                       appState={appState}
-  //                       setAppState={setAppState}
-  //                     />
-  //                   )
-  //               }
-  //             </Route>
-  //           </Switch>
-  //         </main>
-  //       </div>
-  //     </Router>
-  //   </ThemeProvider>
-  // );
 }
