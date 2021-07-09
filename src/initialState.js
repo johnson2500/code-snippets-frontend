@@ -1,16 +1,17 @@
 export default {
   home: {
     editing: false,
+    scratchPad: {},
   },
   auth: {
     token: null,
     userId: null,
   },
   editorSnippet: {
-    language: 'js',
-    code: 'const hello="world"',
-    title: 'Hello World',
-    description: 'Hello World',
+    language: '',
+    code: '',
+    title: '',
+    description: '',
   },
   snippets: [],
 };

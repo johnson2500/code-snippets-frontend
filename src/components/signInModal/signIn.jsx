@@ -43,14 +43,16 @@ export default function SignIn(props) {
 
         const token = await user.getIdToken();
 
-        setAppState({
-          ...appState,
-          token,
-          userId: user.uid,
-        });
-
         localStorage.setItem('codeSnippetsToken', token);
         localStorage.setItem('userId', user.uid);
+
+        setAppState({
+          ...appState,
+          auth: {
+            token,
+            userId: user.uid,
+          },
+        });
 
         history.push('/');
         // ...

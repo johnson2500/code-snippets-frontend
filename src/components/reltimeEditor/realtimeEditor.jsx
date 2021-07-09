@@ -17,6 +17,7 @@ import {
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { makeRequest } from '../../helpers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,93 +63,98 @@ export default function SnippetEditor(props) {
     const { auth, snippets } = appState;
     const { token, userId } = auth;
 
-    if (id) {
-      axios({
-        method: 'put',
-        url: `${process.env.REACT_APP_API_URL}/snippet`,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        data: {
-          userId,
-          token,
-          code: codeState,
-          language: languageState,
-          title: titleState,
-          description: descriptionState,
-          id,
-        },
-      })
-        .then((response) => {
-          const { id: responseId } = response;
+    const data = {
+      code: codeState,
+      language: languageState,
+      title: titleState,
+      description: descriptionState,
+      id,
+    };
 
-          // filter out the snippet with the id then re add to list.
-          setAppState({
-            ...appState,
-            snippets: snippets.map((snip) => {
-              console.log(snip, id);
-              // if the id matches then update the list with the new snippets
-              if (snip.id === id) {
-                return {
-                  code: codeState,
-                  language: languageState,
-                  title: titleState,
-                  id: responseId,
-                  description: descriptionState,
-                };
-              }
-              return snip;
-            }),
-          });
+    const isNewSnippet = !!id;
 
-          setTimeout(() => setMessage(''), 2000);
+    const method = isNewSnippet ? 'put' : 'post';
 
-          setMessage('Saved!');
-        })
-        .catch((error) => {
-          setMessage(error.message);
-        });
-      return;
-    }
+    try {
+      console.log(`Request: ${method}: /snippet`);
 
-    console.log('Adding new Snippet');
-    axios({
-      method: 'post',
-      url: `${process.env.REACT_APP_API_URL}/snippet`,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: {
-        userId,
+      const newSnippet = await makeRequest({
+        url: '/snippet',
         token,
-        code: codeState,
-        language: languageState,
-        title: titleState,
-        description: descriptionState,
-      },
-    })
-      .then((response) => {
-        const { id: responseId } = response;
+        data,
+        method,
+      });
 
-        console.log(response);
-        setAppState({
-          ...appState,
-          snippets: [...snippets, {
-            code: codeState,
-            language: languageState,
-            title: titleState,
-            id: responseId,
-            description: descriptionState,
-          }],
-        });
-
+      if (isNewSnippet) {
         setTimeout(() => setMessage(''), 2000);
 
         setMessage('Saved!');
-      })
-      .catch((error) => {
-        setMessage(error.message);
-      });
+      }
+
+      //     // filter out the snippet with the id then re add to list.
+      //     setAppState({
+      //       ...appState,
+      //       snippets: snippets.map((snip) => {
+      //         console.log(snip, id);
+      //         // if the id matches then update the list with
+      //         if (snip.id === id) {
+      //           return {
+      //             code: codeState,
+      //             language: languageState,
+      //             title: titleState,
+      //             id: responseId,
+      //             description: descriptionState,
+      //           };
+      //         }
+      //         return snip;
+      //       }),
+      //     });
+
+      //     setTimeout(() => setMessage(''), 2000);
+
+      //     setMessage('Saved!');
+    } catch (error) {
+      console.log(`Error: ${method}: /snippet ${error.message}`);
+    }
+
+    // console.log('Adding new Snippet');
+    // axios({
+    //   method: 'post',
+    //   url: `${process.env.REACT_APP_API_URL}/snippet`,
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   data: {
+    //     userId,
+    //     token,
+    //     code: codeState,
+    //     language: languageState,
+    //     title: titleState,
+    //     description: descriptionState,
+    //   },
+    // })
+    //   .then((response) => {
+    //     const { id: responseId } = response;
+
+    //     console.log(response);
+    //     setAppState({
+    //       ...appState,
+    //       snippets: [...snippets, {
+    //         code: codeState,
+    //         language: languageState,
+    //         title: titleState,
+    //         id: responseId,
+    //         description: descriptionState,
+    //       }],
+    //     });
+
+    //     setTimeout(() => setMessage(''), 2000);
+
+    //     setMessage('Saved!');
+    //   })
+    //   .catch((error) => {
+    //     setMessage(error.message);
+    //   });
   };
 
   const deleteSnippet = async () => {

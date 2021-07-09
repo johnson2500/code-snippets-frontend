@@ -72,6 +72,9 @@ export default function DrawerBar(props) {
         ...home,
         editing: true,
       },
+      edit: {
+        editing: true,
+      },
       editorSnippet: DefaultState.editorSnippet,
     });
 
@@ -118,6 +121,33 @@ export default function DrawerBar(props) {
       <List>
         <ListItem>
           <Typography variant="h5">My Snippets</Typography>
+        </ListItem>
+        {
+            snippets.map((snippet) => (
+              <ListItem
+                key={snippet.id}
+                button
+                onClick={() => {
+                  snippetClickHandler(snippet);
+                }}
+              >
+                <ListItemText primary={snippet.title || 'Snippet'} />
+                <ListItemIcon>
+                  <Chip
+                    icon={<CodeIcon />}
+                    label={snippet.language}
+                    variant="outlined"
+                    className={classes.flexItem}
+                  />
+                </ListItemIcon>
+              </ListItem>
+            ))
+          }
+      </List>
+      <Divider />
+      <List>
+        <ListItem>
+          <Typography variant="h5">My Notes</Typography>
         </ListItem>
         {
             snippets.map((snippet) => (

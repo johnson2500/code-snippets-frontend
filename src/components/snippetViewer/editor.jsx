@@ -39,22 +39,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SnippetViewer(props) {
+export default function Editor(props) {
   const {
     appState, setAppState, snippet, editing,
   } = props;
   const {
     language, id, code, title, description,
   } = snippet;
-
-  const [languageState, setLanguage] = React.useState(language);
-  const [codeState, setCode] = React.useState(code);
-  const [titleState, setTitle] = React.useState(title);
-  const [descriptionState, setDescription] = React.useState(description);
-
-  const [editingState, setEditingState] = React.useState(editing);
-
-  const [deletedState, setDeleted] = React.useState(false);
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);

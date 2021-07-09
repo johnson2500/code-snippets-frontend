@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
 import Snippet from '../../components/snippet/snippet';
+import SnippetEditor from '../../components/snippetViewer/snippetViewr';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,11 +52,12 @@ export default function ListView(props) {
         <Grid item xs={12}>
           {
                 snippetState.map((snippet) => (
-                  <Snippet
+                  <SnippetEditor
                     key={snippet.id}
                     snippet={snippet}
                     setAppState={setAppState}
                     appState={appState}
+                    editing={false}
                   />
                 ))
             }

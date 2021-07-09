@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blueGrey';
+import { Button } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   BrowserRouter as Router,
@@ -17,6 +18,8 @@ import Header from './components/appbar/appBar';
 import ListView from './pages/listView/listView';
 import DrawerNav from './components/drawerNav/drawerNav';
 import PromoPage from './pages/promoPage/propPage';
+import SnippetEditor from './components/snippetViewer/snippetViewr';
+import { makeRequest } from './helpers';
 
 const drawerWidth = 200;
 
@@ -61,6 +64,8 @@ export const checkIsAuthenticated = (appState) => {
   const { auth } = appState;
   const { token } = auth;
 
+  console.log(auth);
+
   return !!token;
 };
 
@@ -74,7 +79,7 @@ export default function App() {
 
   // component will mount
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
@@ -83,29 +88,29 @@ export default function App() {
         const userId = localStorage.getItem('userId');
 
         if (token && userId) {
-          axios({
-            method: 'get',
-            url: `https://code-snippet-backend.herokuapp.com/snippets?userId=${userId}&token=${token}`,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          })
-            .then((response) => {
-              const { data } = response;
-
-              setAppState({
-                ...appState,
-                snippets: data,
-                firebase,
-                auth: {
-                  token,
-                  userId,
-                },
-              });
-            })
-            .catch((error) => {
-              console.log('error', error);
+          try {
+            const snippetResponse = await makeRequest({
+              method: 'get',
+              url: '/snippets',
+              token,
             });
+
+            console.log(snippetResponse);
+
+            const snippets = snippetResponse.data;
+
+            setAppState({
+              ...appState,
+              snippets,
+              firebase,
+              auth: {
+                token,
+                userId,
+              },
+            });
+          } catch (error) {
+            console.log(error.message);
+          }
         }
       }
     });
@@ -153,14 +158,14 @@ export default function App() {
               <Route path="/">
                 <Header />
                 {
-                  !isAuthenticated
+                  isAuthenticated
                     ? (
-                      <SignInUpModal
+                      <Home
                         appState={appState}
                         setAppState={setAppState}
                       />
                     ) : (
-                      <Home
+                      <SignInUpModal
                         appState={appState}
                         setAppState={setAppState}
                       />
@@ -173,4 +178,65 @@ export default function App() {
       </Router>
     </ThemeProvider>
   );
+
+  // return (
+  //   <ThemeProvider theme={theme}>
+  //     <Router>
+  //       <div className={classes.root}>
+  //         <CssBaseline />
+  //         <Switch>
+  //           <Route path="/list">
+  //             <DrawerNav setAppState={setAppState} appState={appState} />
+  //           </Route>
+  //           <Route exact path="/">
+  //             <DrawerNav setAppState={setAppState} appState={appState} />
+  //           </Route>
+  //         </Switch>
+  //         <main className={classes.content}>
+  //           <div className={classes.toolbar} />
+  //           <Switch>
+  //             <Route path="/promo-page">
+  //               <Header leftOffset={0} />
+  //               <PromoPage />
+  //             </Route>
+  //             <Route path="/list">
+  //               <Header />
+  //               {
+  //                 !isAuthenticated
+  //                   ? (
+  //                     <SignInUpModal
+  //                       appState={appState}
+  //                       setAppState={setAppState}
+  //                     />
+  //                   ) : (
+  //                     <ListView
+  //                       appState={appState}
+  //                       setAppState={setAppState}
+  //                     />
+  //                   )
+  //               }
+  //             </Route>
+  //             <Route path="/">
+  //               <Header />
+  //               {
+  //                 isAuthenticated
+  //                   ? (
+  //                     <Home
+  //                       appState={appState}
+  //                       setAppState={setAppState}
+  //                     />
+  //                   ) : (
+  //                     <SignInUpModal
+  //                       appState={appState}
+  //                       setAppState={setAppState}
+  //                     />
+  //                   )
+  //               }
+  //             </Route>
+  //           </Switch>
+  //         </main>
+  //       </div>
+  //     </Router>
+  //   </ThemeProvider>
+  // );
 }
