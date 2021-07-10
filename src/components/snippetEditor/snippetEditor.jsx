@@ -68,11 +68,6 @@ export default function SnippetViewer(props) {
         });
       }
 
-      setAppState({
-        ...appState,
-        snippets: newSnippets,
-      });
-
       setEditingState(false);
 
       setSavedState(true);
@@ -82,12 +77,18 @@ export default function SnippetViewer(props) {
       if (isNew) {
         setAppState({
           ...appState,
+          snippets: newSnippets,
           view: {
             snippet: { ...data, id: responseId },
             editing: false,
           },
         });
         history.push('/view-snippet');
+      } else {
+        setAppState({
+          ...appState,
+          snippets: newSnippets,
+        });
       }
     } catch (error) {
       console.log(`Error: /snippet ${error.message}`);
