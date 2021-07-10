@@ -10,7 +10,6 @@ import Grid from '@material-ui/core/Grid';
 import {
   Typography, InputLabel, Select, MenuItem, FormControl,
 } from '@material-ui/core';
-import { makeRequest } from '../../helpers';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -23,12 +22,6 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 180,
   },
 }));
-
-const settings = {
-  userName: '',
-  theme: '',
-  defaultLanguage: '',
-};
 
 export default function Settings(props) {
   const classes = useStyles();
