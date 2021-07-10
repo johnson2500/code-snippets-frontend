@@ -2,27 +2,20 @@
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import CodeIcon from '@material-ui/icons/Code';
+import MDEditor from '@uiw/react-md-editor';
 import {
   Grid,
   Card,
   CardContent,
   TextField,
-  Select,
-  MenuItem,
-  Chip,
   CardHeader,
   IconButton,
-  InputLabel,
   Typography,
 } from '@material-ui/core';
 import {
   Edit, Save, Delete, Close,
 } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-
-import { CODE_LANGUAGES } from '../../helpers/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
   },
   gridRoot: {
     flexGrow: 1,
+    marginTop: 10,
+    marginBottom: 10,
   },
   paper: {
     padding: theme.spacing(2),
@@ -39,11 +34,17 @@ const useStyles = makeStyles((theme) => ({
   fillContainer: {
     width: '100%',
   },
+  cardHeader: {
+    background: theme.palette.secondary.dark,
+  },
+  editor: {
+    height: '300px !important',
+  },
 }));
 
-export default function Editor(props) {
+export default function NoteEditor(props) {
   const {
-    snippet,
+    note,
     editing,
     saved,
     onSaveHandler,
@@ -52,12 +53,13 @@ export default function Editor(props) {
     onEditHandler,
     onTitleChange,
     onDescriptionChange,
-    onLanguageChange,
-    onCodeChange,
+    onTextChange,
   } = props;
   const {
-    language, code, title, description,
-  } = snippet;
+    text, title, description,
+  } = note;
+
+  console.log(note);
 
   const classes = useStyles();
 
@@ -69,6 +71,7 @@ export default function Editor(props) {
       {
         editing ? (
           <CardHeader
+            className={classes.cardHeader}
             title="Editor"
             action={(
               <div>
@@ -86,17 +89,13 @@ export default function Editor(props) {
           />
         ) : (
           <CardHeader
+            className={classes.cardHeader}
             title={title}
             subheader={description}
             action={(
-              <div>
-                <IconButton aria-label="settings" onClick={onEditHandler}>
-                  <Edit />
-                </IconButton>
-                <IconButton aria-label="delete" onClick={onDeleteHandler}>
-                  <Delete />
-                </IconButton>
-              </div>
+              <IconButton aria-label="settings" onClick={onEditHandler}>
+                <Edit />
+              </IconButton>
               )}
           />
         )
@@ -107,7 +106,7 @@ export default function Editor(props) {
               <div>
                 <div className={classes.gridRoot}>
                   <Grid container spacing={3}>
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
                       <TextField
                         id="standard-required"
                         label="Title"
@@ -124,58 +123,21 @@ export default function Editor(props) {
                         onChange={onDescriptionChange}
                       />
                     </Grid>
-                    <Grid item xs={6}>
-                      <InputLabel id="language-select-label">Language</InputLabel>
-                      <Select
-                        labelId="language-select-label"
-                        value={language}
-                        onChange={onLanguageChange}
-                        label="Language"
-                        className={classes.fillContainer}
-                      >
-                        {
-                          CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
-                        }
-                      </Select>
-                    </Grid>
                   </Grid>
                 </div>
-                <CodeEditor
-                  disabled={false}
-                  value={code}
-                  language={language}
-                  placeholder={`Please enter ${language} code.`}
-                  onChange={onCodeChange}
-                  padding={15}
-                  style={{
-                    fontSize: 12,
-                    marginTop: 10,
-                    backgroundColor: 'black',
-                    fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                  }}
+                <MDEditor
+                  value={text}
+                  onChange={(val) => onTextChange(val)}
+                  height={300}
                 />
               </div>
             )
               : (
                 <CardContent>
-                  <Chip
-                    icon={<CodeIcon />}
-                    label={language}
-                    variant="outlined"
-                    className={classes.flexItem}
-                  />
-                  <CodeEditor
-                    disabled
-                    value={code}
-                    language={language}
-                    placeholder={`Please enter ${language} code.`}
-                    padding={15}
-                    style={{
-                      fontSize: 13,
-                      backgroundColor: 'black',
-                      marginTop: 10,
-                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                    }}
+                  <MDEditor
+                    value={text}
+                    onChange={(val) => onTextChange(val)}
+                    height={300}
                   />
                 </CardContent>
               )
@@ -185,10 +147,10 @@ export default function Editor(props) {
   );
 }
 
-Editor.propTypes = {
+NoteEditor.propTypes = {
   appState: PropTypes.object,
   setAppState: PropTypes.func,
-  snippet: PropTypes.object,
+  note: PropTypes.object,
   editing: PropTypes.bool,
   saved: PropTypes.bool,
   onCloseHandler: PropTypes.func,
@@ -198,13 +160,13 @@ Editor.propTypes = {
   onTitleChange: PropTypes.func,
   onDescriptionChange: PropTypes.func,
   onLanguageChange: PropTypes.func,
-  onCodeChange: PropTypes.func,
+  onTextChange: PropTypes.func,
 };
 
-Editor.defaultProps = {
+NoteEditor.defaultProps = {
   appState: {},
   setAppState: () => {},
-  snippet: {},
+  note: {},
   editing: true,
   saved: false,
   onCloseHandler: () => {},
@@ -214,5 +176,5 @@ Editor.defaultProps = {
   onTitleChange: () => {},
   onDescriptionChange: () => {},
   onLanguageChange: () => {},
-  onCodeChange: () => {},
+  onTextChange: () => {},
 };

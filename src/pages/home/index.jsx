@@ -9,6 +9,7 @@ import {
   Select, MenuItem, Typography,
 } from '@material-ui/core';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import MDEditor from '@uiw/react-md-editor';
 import { CODE_LANGUAGES } from '../../helpers/constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -66,7 +67,7 @@ export default function Home() {
               style={{
                 fontSize: 12,
                 marginTop: 10,
-                minHeight: '30vh',
+                minHeight: 300,
                 backgroundColor: 'black',
                 fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
               }}
@@ -76,18 +77,12 @@ export default function Home() {
         <Grid item xs={6}>
           <Paper className={classes.paper}>
             <Typography variant="h4">Note Pad</Typography>
-            <CodeEditor
+            <MDEditor
               value={noteState}
-              language="markdown"
-              placeholder="Enter notes here."
-              onChange={(evn) => setNoteState(evn.target.value)}
-              padding={15}
+              onChange={setNoteState}
               style={{
-                fontSize: 12,
+                minHeight: 300,
                 marginTop: 10,
-                backgroundColor: 'black',
-                minHeight: '30vh',
-                fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
               }}
             />
           </Paper>

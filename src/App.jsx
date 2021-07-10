@@ -17,9 +17,12 @@ import ListView from './pages/listView/listView';
 import DrawerNav from './components/sideNavigation/sideNavigation';
 import PromoPage from './pages/promoPage/propPage';
 import { makeRequest } from './helpers';
-import EditPage from './pages/newSnippet/newSnippet';
+import EditSnippet from './pages/newSnippet/newSnippet';
 import SettingsPage from './pages/settings/settings';
-import ViewPage from './pages/viewSnippet/viewSnippet';
+import ViewSnippet from './pages/viewSnippet/viewSnippet';
+
+import ViewNote from './pages/viewNote/viewNote';
+import EditNote from './pages/newNote/newNote';
 
 const drawerWidth = 200;
 
@@ -149,7 +152,7 @@ export default function App() {
         <div className={classes.root}>
           <CssBaseline />
           <Switch>
-            <Route exact path={['/list', '/', '/new', '/settings', '/view']}>
+            <Route exact path={['/list', '/', '/new-snippet', '/settings', '/view-snippet', '/new-note', '/view-note']}>
               <Header />
               <DrawerNav setAppState={setAppState} appState={appState} />
             </Route>
@@ -174,14 +177,26 @@ export default function App() {
                   setAppState={setAppState}
                 />
               </Route>
-              <Route exact path="/new">
-                <EditPage
+              <Route exact path="/new-snippet">
+                <EditSnippet
                   appState={appState}
                   setAppState={setAppState}
                 />
               </Route>
-              <Route exact path="/view">
-                <ViewPage
+              <Route exact path="/view-snippet">
+                <ViewSnippet
+                  appState={appState}
+                  setAppState={setAppState}
+                />
+              </Route>
+              <Route exact path="/new-note">
+                <EditNote
+                  appState={appState}
+                  setAppState={setAppState}
+                />
+              </Route>
+              <Route exact path="/view-note">
+                <ViewNote
                   appState={appState}
                   setAppState={setAppState}
                 />

@@ -59,7 +59,7 @@ export default function DrawerBar(props) {
       },
     });
 
-    history.push('/view');
+    history.push('/view-snippet');
   };
 
   const handleNewSnippet = () => {
@@ -75,7 +75,7 @@ export default function DrawerBar(props) {
       editorSnippet: DefaultState.editorSnippet,
     });
 
-    history.push('/new');
+    history.push('/new-snippet');
   };
 
   const handleHomeClick = () => {

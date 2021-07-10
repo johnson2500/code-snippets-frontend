@@ -2,25 +2,28 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import Editor from './editor';
 
 import { makeRequest } from '../../helpers';
 
-export default function SnippetViewer(props) {
-  const history = useHistory();
+export default function NoteViewer(props) {
   const {
-    appState, setAppState, snippet, editing, isNew,
+    appState,
+    setAppState,
+    note,
+    editing,
   } = props;
 
   const {
-    language = 'javascript', id, code, title, description,
-  } = snippet;
+    id,
+    text,
+    title,
+    description,
+  } = note;
 
-  const [languageState, setLanguage] = React.useState(language);
-  const [codeState, setCode] = React.useState(code);
-  const [titleState, setTitle] = React.useState(title);
-  const [descriptionState, setDescription] = React.useState(description);
+  const [textState, setTextState] = React.useState(text);
+  const [titleState, setTitleState] = React.useState(title);
+  const [descriptionState, setDescriptionState] = React.useState(description);
 
   const [editingState, setEditingState] = React.useState(editing);
 
@@ -32,18 +35,19 @@ export default function SnippetViewer(props) {
     const { token } = auth;
 
     const data = {
-      code: codeState,
-      language: languageState,
+      text: textState,
       title: titleState,
       description: descriptionState,
       id,
     };
 
+    console.log(data);
+
     const isUpdate = !!id;
 
     try {
       const requestSnippet = await makeRequest({
-        url: '/snippet',
+        url: '/note',
         token,
         data,
         method: isUpdate ? 'put' : 'post',
@@ -54,7 +58,6 @@ export default function SnippetViewer(props) {
       let newSnippets = [];
 
       if (!isUpdate) {
-        // new snipet creation
         newSnippets = [
           ...snippets,
           { ...data, id: responseId }];
@@ -73,22 +76,10 @@ export default function SnippetViewer(props) {
         snippets: newSnippets,
       });
 
-      setEditingState(false);
-
+      setEditingState(!editing);
       setSavedState(true);
 
       setTimeout(() => setSavedState(false), 3000);
-
-      if (isNew) {
-        setAppState({
-          ...appState,
-          view: {
-            snippet: { ...data, id: responseId },
-            editing: false,
-          },
-        });
-        history.push('/view-snippet');
-      }
     } catch (error) {
       console.log(`Error: /snippet ${error.message}`);
     }
@@ -110,7 +101,7 @@ export default function SnippetViewer(props) {
       setAppState({
         ...appState,
         snippets: newSnippets,
-        editorSnippet: newSnippets[0],
+        editorNote: newSnippets[0],
       });
 
       setDeleted(true);
@@ -120,19 +111,18 @@ export default function SnippetViewer(props) {
   };
 
   useEffect(() => {
-    setLanguage(language);
-    setCode(code);
-    setTitle(title);
-    setDescription(description);
+    setTextState(text);
+    setTitleState(title);
+    setDescriptionState(description);
     setEditingState(editing);
     setDeleted(false);
-  }, [snippet]);
+  }, [note]);
 
-  const editorSnippet = {
-    language: languageState,
-    code: codeState,
-    description: descriptionState,
-    title: titleState,
+  const editorNote = {
+    text: textState,
+    description,
+    title,
+    editing,
     deleted: false,
   };
 
@@ -140,7 +130,7 @@ export default function SnippetViewer(props) {
     return (
       <>
         <Typography variant="h4">
-          Deleted snippet!
+          Note Deleted.
         </Typography>
       </>
     );
@@ -149,18 +139,16 @@ export default function SnippetViewer(props) {
   return (
     <>
       <Editor
-        // new
         onSaveHandler={saveSnippetHandler}
         onDeleteHandler={deleteSnippetHandler}
         onCloseHandler={() => setEditingState(false)}
         onEditHandler={() => setEditingState(true)}
-        onTitleChange={(event) => setTitle(event.target.value)}
-        onDescriptionChange={(event) => setDescription(event.target.value)}
-        onLanguageChange={(event) => setLanguage(event.target.value)}
-        onCodeChange={(event) => setCode(event.target.value)}
+        onTitleChange={(event) => setTitleState(event.target.value)}
+        onDescriptionChange={(event) => setDescriptionState(event.target.value)}
+        onTextChange={setTextState}
         setAppState={setAppState}
         appState={appState}
-        snippet={editorSnippet}
+        note={editorNote}
         editing={editingState}
         saved={savedState}
       />
@@ -168,18 +156,16 @@ export default function SnippetViewer(props) {
   );
 }
 
-SnippetViewer.propTypes = {
+NoteViewer.propTypes = {
   appState: PropTypes.object,
   setAppState: PropTypes.func,
-  snippet: PropTypes.object,
+  note: PropTypes.object,
   editing: PropTypes.bool,
-  isNew: PropTypes.bool,
 };
 
-SnippetViewer.defaultProps = {
+NoteViewer.defaultProps = {
   appState: {},
   setAppState: () => {},
-  snippet: {},
+  note: {},
   editing: true,
-  isNew: false,
 };

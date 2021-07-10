@@ -2,18 +2,17 @@
 /* eslint-disable react/require-default-props */
 import React from 'react';
 import PropTypes from 'prop-types';
-import SnippetEditor from '../../components/snippetEditor/snippetEditor';
+import MarkdownEditor from '../../components/markdownEditor/markdownEditor';
 
 export default function EditPage(props) {
   const { appState, setAppState } = props;
 
   return (
-    <SnippetEditor
+    <MarkdownEditor
       appState={appState}
       setAppState={setAppState}
-      snippet={{}}
+      note={{}}
       editing
-      isNew
     />
   );
 }
