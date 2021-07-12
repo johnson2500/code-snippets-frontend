@@ -1,13 +1,10 @@
 /* eslint-disable no-constant-condition */
 import React, { useEffect } from 'react';
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import blue from '@material-ui/core/colors/blueGrey';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { theme } from './AppStyles';
+
 import DefaultState from './initialState';
 import Home from './pages/home';
 import firebase from './firebase/index';
@@ -20,13 +17,12 @@ import { makeRequest } from './helpers';
 import EditSnippet from './pages/newSnippet/newSnippet';
 import SettingsPage from './pages/settings/settings';
 import ViewSnippet from './pages/viewSnippet/viewSnippet';
-
 import ViewNote from './pages/viewNote/viewNote';
 import EditNote from './pages/newNote/newNote';
 
 const drawerWidth = 200;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
   },
@@ -52,21 +48,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const theme = createMuiTheme({
-  palette: {
-    type: 'dark',
-    primary: blue,
-  },
-  typography: {
-    fontSize: 12,
-    fontFamily: 'sans-serif',
-  },
-});
-
 export const checkIsAuthenticated = (appState) => {
   const { auth: { token } } = appState;
 
   return !!token;
+};
+
+const getNotes = async function () {
+
 };
 
 export default function App() {
@@ -105,9 +94,18 @@ export default function App() {
 
             const snippets = snippetResponse.data;
 
+            const notesResponse = await makeRequest({
+              method: 'get',
+              url: '/notes',
+              token,
+            });
+
+            const notes = notesResponse.data;
+
             setAppState({
               ...appState,
               snippets,
+              notes,
               firebase,
               auth: {
                 token,

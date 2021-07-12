@@ -16,10 +16,12 @@ export default function NoteViewer(props) {
 
   const {
     id,
-    text,
+    note: text,
     title,
     description,
   } = note;
+
+  console.log(note);
 
   const [textState, setTextState] = React.useState(text);
   const [titleState, setTitleState] = React.useState(title);
@@ -30,17 +32,18 @@ export default function NoteViewer(props) {
   const [deletedState, setDeleted] = React.useState(false);
   const [savedState, setSavedState] = React.useState(false);
 
-  const saveSnippetHandler = async () => {
+  const saveNoteHandler = async () => {
     const { auth, snippets } = appState;
     const { token } = auth;
 
     const data = {
-      text: textState,
+      note: textState,
       title: titleState,
       description: descriptionState,
       id,
     };
 
+    console.log(titleState);
     console.log(data);
 
     const isUpdate = !!id;
@@ -85,7 +88,7 @@ export default function NoteViewer(props) {
     }
   };
 
-  const deleteSnippetHandler = async () => {
+  const deleteNoteHandler = async () => {
     const { auth, snippets = [] } = appState;
     const { token } = auth;
 
@@ -139,12 +142,12 @@ export default function NoteViewer(props) {
   return (
     <>
       <Editor
-        onSaveHandler={saveSnippetHandler}
-        onDeleteHandler={deleteSnippetHandler}
+        onSaveHandler={saveNoteHandler}
+        onDeleteHandler={deleteNoteHandler}
         onCloseHandler={() => setEditingState(false)}
         onEditHandler={() => setEditingState(true)}
         onTitleChange={(event) => setTitleState(event.target.value)}
-        onDescriptionChange={(event) => setDescriptionState(event.target.value)}
+        onDescriptionChange={(event) => { setDescriptionState(event.target.value); }}
         onTextChange={setTextState}
         setAppState={setAppState}
         appState={appState}

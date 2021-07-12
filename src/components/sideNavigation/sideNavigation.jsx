@@ -48,7 +48,7 @@ export default function DrawerBar(props) {
   const history = useHistory();
   const { appState, setAppState } = props;
 
-  const { snippets, home } = appState;
+  const { snippets, home, notes } = appState;
 
   const snippetClickHandler = (snippet) => {
     setAppState({
@@ -60,6 +60,18 @@ export default function DrawerBar(props) {
     });
 
     history.push('/view-snippet');
+  };
+
+  const noteClickHandler = (note) => {
+    setAppState({
+      ...appState,
+      view: {
+        editing: false,
+        note,
+      },
+    });
+
+    history.push('/view-note');
   };
 
   const handleNewSnippet = () => {
@@ -76,6 +88,14 @@ export default function DrawerBar(props) {
     });
 
     history.push('/new-snippet');
+  };
+
+  const handleNewNote = () => {
+    setAppState({
+      ...appState,
+    });
+
+    history.push('/new-note');
   };
 
   const handleHomeClick = () => {
@@ -104,6 +124,13 @@ export default function DrawerBar(props) {
       <List>
         <ListItem button onClick={handleNewSnippet}>
           <ListItemText primary="New Snippet" />
+          <NewIcon />
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem button onClick={handleNewNote}>
+          <ListItemText primary="New Note" />
           <NewIcon />
         </ListItem>
       </List>
@@ -147,19 +174,17 @@ export default function DrawerBar(props) {
           <Typography variant="h5">My Notes</Typography>
         </ListItem>
         {
-            snippets.map((snippet) => (
+            notes.map((note) => (
               <ListItem
-                key={snippet.id}
+                key={note.id}
                 button
-                onClick={() => {
-                  snippetClickHandler(snippet);
-                }}
+                onClick={() => { noteClickHandler(note); }}
               >
-                <ListItemText primary={snippet.title || 'Snippet'} />
+                <ListItemText primary={note.title || 'Snippet'} />
                 <ListItemIcon>
                   <Chip
                     icon={<CodeIcon />}
-                    label={snippet.language}
+                    label={note.language}
                     variant="outlined"
                     className={classes.flexItem}
                   />

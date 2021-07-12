@@ -6,10 +6,19 @@ import {
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(() => ({
+  fullWidth: {
+    width: '100%',
+  },
+}));
 
 export default function SignIn(props) {
   const { appState, setAppState } = props;
   const { firebase } = appState;
+
+  const classes = useStyles();
 
   const history = useHistory();
 
@@ -67,18 +76,36 @@ export default function SignIn(props) {
   };
 
   return (
-    <>
-      <Typography>Sign In</Typography>
+    <div>
+      <Typography align="center" variant="h6">Sign In</Typography>
+      <br />
       <TextField
         type="email"
-        placeholder="email"
+        label="Email"
         onChange={handleEmailChange}
+        className={classes.fullWidth}
+        variant="outlined"
       />
       <br />
-      <TextField type="password" placeholder="password" onChange={handlePasswordChange} />
       <br />
-      <Button onClick={handleSubmit}>Sign In</Button>
-    </>
+      <TextField
+        type="password"
+        label="Password"
+        variant="outlined"
+        className={classes.fullWidth}
+        onChange={handlePasswordChange}
+      />
+      <br />
+      <br />
+      <Button
+        onClick={handleSubmit}
+        variant="contained"
+        color="primary"
+        className={classes.fullWidth}
+      >
+        Sign In
+      </Button>
+    </div>
   );
 }
 

@@ -55,6 +55,9 @@ export default function NoteEditor(props) {
     onDescriptionChange,
     onTextChange,
   } = props;
+
+  console.log(onDescriptionChange);
+  console.log(onTitleChange);
   const {
     text, title, description,
   } = note;
@@ -138,6 +141,7 @@ export default function NoteEditor(props) {
                     value={text}
                     onChange={(val) => onTextChange(val)}
                     height={300}
+                    preview="preview"
                   />
                 </CardContent>
               )

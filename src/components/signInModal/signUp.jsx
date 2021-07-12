@@ -10,9 +10,12 @@ import PropTypes from 'prop-types';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
+    padding: 20,
+    maxWidth: '20%',
+    minWidth: '20%',
   },
-  centerContainer: {
-    margin: '0 auto',
+  fullWidth: {
+    width: '100%',
   },
 }));
 
@@ -64,16 +67,34 @@ export default function SignUp(props) {
 
   return (
     <>
-      <Typography>Sign Up</Typography>
+      <Typography variant="h6" align="center">Sign Up</Typography>
+      <br />
       <TextField
         type="email"
-        placeholder="email"
+        label="Email"
+        variant="outlined"
         onChange={handleEmailChange}
+        className={classes.fullWidth}
       />
       <br />
-      <TextField type="password" placeholder="password" onChange={handlePasswordChange} />
       <br />
-      <Button variant="contained" onClick={handleSubmit}>Sign Up</Button>
+      <TextField
+        type="password"
+        variant="outlined"
+        label="Password"
+        onChange={handlePasswordChange}
+        className={classes.fullWidth}
+      />
+      <br />
+      <br />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+        className={classes.fullWidth}
+      >
+        Sign Up
+      </Button>
     </>
   );
 }

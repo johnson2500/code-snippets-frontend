@@ -7,7 +7,7 @@ import NoteEditor from '../../components/markdownEditor/markdownEditor';
 export default function EditPage(props) {
   const { appState, setAppState } = props;
   const { view } = appState;
-  const { snippet, editing } = view;
+  const { note, editing } = view;
 
   console.log('View Page Snippet', view);
 
@@ -15,7 +15,7 @@ export default function EditPage(props) {
     <NoteEditor
       appState={appState}
       setAppState={setAppState}
-      snippet={snippet}
+      note={note}
       editing={editing}
     />
   );

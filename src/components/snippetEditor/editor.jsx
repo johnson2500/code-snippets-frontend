@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   fillContainer: {
     width: '100%',
   },
+  cardHeader: {
+    background: theme.palette.primary.dark,
+  },
 }));
 
 export default function Editor(props) {
@@ -70,6 +73,7 @@ export default function Editor(props) {
         editing ? (
           <CardHeader
             title="Editor"
+            className={classes.cardHeader}
             action={(
               <div>
                 <IconButton aria-label="save" onClick={onSaveHandler}>
@@ -88,6 +92,7 @@ export default function Editor(props) {
           <CardHeader
             title={title}
             subheader={description}
+            className={classes.cardHeader}
             action={(
               <div>
                 <IconButton aria-label="settings" onClick={onEditHandler}>

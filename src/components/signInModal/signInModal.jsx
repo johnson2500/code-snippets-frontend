@@ -22,9 +22,8 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     // width: '50%',
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+    borderRadius: 20,
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
   },
 }));
 
@@ -35,16 +34,14 @@ export default function SignInUpModal(props) {
   const [modalStyle] = React.useState(getModalStyle);
 
   return (
-    <div>
-      <Modal open>
-        <div style={modalStyle} className={classes.paper}>
-          <SignInSignUp
-            appState={appState}
-            setAppState={setAppState}
-          />
-        </div>
-      </Modal>
-    </div>
+    <Modal open>
+      <div style={modalStyle} className={classes.paper}>
+        <SignInSignUp
+          appState={appState}
+          setAppState={setAppState}
+        />
+      </div>
+    </Modal>
   );
 }
 

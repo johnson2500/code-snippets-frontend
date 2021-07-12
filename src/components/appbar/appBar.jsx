@@ -21,6 +21,7 @@ export default function Header(props) {
       width: `calc(100% - ${leftOffset}px)`,
       marginLeft: leftOffset,
       flexGrow: 1,
+      background: theme.palette.primary.dark,
     },
     menuButton: {
       marginRight: theme.spacing(2),
