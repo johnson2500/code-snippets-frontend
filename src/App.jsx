@@ -54,10 +54,6 @@ export const checkIsAuthenticated = (appState) => {
   return !!token;
 };
 
-const getNotes = async function () {
-
-};
-
 export default function App() {
   const classes = useStyles();
 
