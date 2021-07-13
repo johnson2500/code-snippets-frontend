@@ -12,6 +12,7 @@ import {
   IconButton,
   Typography,
 } from '@material-ui/core';
+import FiberPinIcon from '@material-ui/icons/FiberPin';
 import {
   Edit, Save, Delete, Close,
 } from '@material-ui/icons';
@@ -20,25 +21,23 @@ import PropTypes from 'prop-types';
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
-    margin: 10,
+    padding: '0 !important',
+    height: 'auto',
   },
   gridRoot: {
     flexGrow: 1,
-    marginTop: 10,
-    marginBottom: 10,
   },
   paper: {
-    padding: theme.spacing(2),
     textAlign: 'center',
   },
   fillContainer: {
     width: '100%',
   },
   cardHeader: {
-    background: theme.palette.secondary.dark,
+    background: theme.palette.primary.dark,
   },
-  editor: {
-    height: '300px !important',
+  cardContentInputArea: {
+    padding: 10,
   },
 }));
 
@@ -53,16 +52,13 @@ export default function NoteEditor(props) {
     onEditHandler,
     onTitleChange,
     onDescriptionChange,
+    onPinHandler,
     onTextChange,
   } = props;
 
-  console.log(onDescriptionChange);
-  console.log(onTitleChange);
   const {
-    text, title, description,
+    text, title, description, pinned,
   } = note;
-
-  console.log(note);
 
   const classes = useStyles();
 
@@ -75,7 +71,28 @@ export default function NoteEditor(props) {
         editing ? (
           <CardHeader
             className={classes.cardHeader}
-            title="Editor"
+            title="Editing"
+            subheader={(
+              <Grid container spacing={3}>
+                <Grid item xs={6}>
+                  <TextField
+                    id="standard-required"
+                    label="Title"
+                    onChange={onTitleChange}
+                    value={title}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    id="standard-required"
+                    label="Description"
+                    value={description}
+                    className={classes.fillContainer}
+                    onChange={onDescriptionChange}
+                  />
+                </Grid>
+              </Grid>
+            )}
             action={(
               <div>
                 <IconButton aria-label="save" onClick={onSaveHandler}>
@@ -96,56 +113,29 @@ export default function NoteEditor(props) {
             title={title}
             subheader={description}
             action={(
-              <IconButton aria-label="settings" onClick={onEditHandler}>
-                <Edit />
-              </IconButton>
+              <div>
+                <IconButton aria-label="settings" onClick={onPinHandler}>
+                  <FiberPinIcon
+                    color={pinned ? 'action' : 'disabled'}
+                  />
+                </IconButton>
+                <IconButton aria-label="settings" onClick={onEditHandler}>
+                  <Edit />
+                </IconButton>
+              </div>
               )}
           />
         )
         }
-      <CardContent>
-        {
-            editing ? (
-              <div>
-                <div className={classes.gridRoot}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={6}>
-                      <TextField
-                        id="standard-required"
-                        label="Title"
-                        onChange={onTitleChange}
-                        value={title}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        id="standard-required"
-                        label="Description"
-                        value={description}
-                        className={classes.fillContainer}
-                        onChange={onDescriptionChange}
-                      />
-                    </Grid>
-                  </Grid>
-                </div>
-                <MDEditor
-                  value={text}
-                  onChange={(val) => onTextChange(val)}
-                  height={300}
-                />
-              </div>
-            )
-              : (
-                <CardContent>
-                  <MDEditor
-                    value={text}
-                    onChange={(val) => onTextChange(val)}
-                    height={300}
-                    preview="preview"
-                  />
-                </CardContent>
-              )
-        }
+      <CardContent className={classes.root}>
+        <MDEditor
+          className={classes.root}
+          value={text}
+          height="80vh"
+          onChange={(val) => onTextChange(val)}
+          enableScroll
+        />
+
       </CardContent>
     </Card>
   );
@@ -163,8 +153,8 @@ NoteEditor.propTypes = {
   onEditHandler: PropTypes.func,
   onTitleChange: PropTypes.func,
   onDescriptionChange: PropTypes.func,
-  onLanguageChange: PropTypes.func,
   onTextChange: PropTypes.func,
+  onPinHandler: PropTypes.func,
 };
 
 NoteEditor.defaultProps = {
@@ -179,6 +169,6 @@ NoteEditor.defaultProps = {
   onEditHandler: () => {},
   onTitleChange: () => {},
   onDescriptionChange: () => {},
-  onLanguageChange: () => {},
   onTextChange: () => {},
+  onPinHandler: () => {},
 };

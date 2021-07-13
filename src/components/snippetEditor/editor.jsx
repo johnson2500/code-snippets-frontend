@@ -18,7 +18,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import {
-  Edit, Save, Delete, Close,
+  Edit, Save, Delete, Close, FiberPin,
 } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 
@@ -27,20 +27,26 @@ import { CODE_LANGUAGES } from '../../helpers/constants';
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
-    margin: 10,
+    margin: 0,
+    height: '80vh',
+    padding: '0 !important',
+  },
+  cardContent: {
+    padding: '0 !important',
+    margin: '0 !important',
   },
   gridRoot: {
     flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: 'center',
+    padding: '0 !important',
   },
   fillContainer: {
     width: '100%',
   },
   cardHeader: {
     background: theme.palette.primary.dark,
+  },
+  editArea: {
+    padding: 10,
   },
 }));
 
@@ -54,13 +60,16 @@ export default function Editor(props) {
     onCloseHandler,
     onEditHandler,
     onTitleChange,
+    onPinChange,
     onDescriptionChange,
     onLanguageChange,
     onCodeChange,
   } = props;
   const {
-    language, code, title, description,
+    language, code, title, description, pinned,
   } = snippet;
+
+  console.log(snippet);
 
   const classes = useStyles();
 
@@ -72,15 +81,50 @@ export default function Editor(props) {
       {
         editing ? (
           <CardHeader
-            title="Editor"
+            title="Efditing"
+            subheader={(
+              <Grid container spacing={3} className={classes.editArea}>
+                <Grid item xs={12}>
+                  <TextField
+                    id="standard-required"
+                    label="Title"
+                    onChange={onTitleChange}
+                    value={title}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    id="standard-required"
+                    label="Description"
+                    value={description}
+                    className={classes.fillContainer}
+                    onChange={onDescriptionChange}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <InputLabel id="language-select-label">Language</InputLabel>
+                  <Select
+                    labelId="language-select-label"
+                    value={language}
+                    onChange={onLanguageChange}
+                    label="Language"
+                    className={classes.fillContainer}
+                  >
+                    {
+                          CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
+                        }
+                  </Select>
+                </Grid>
+              </Grid>
+            )}
             className={classes.cardHeader}
             action={(
               <div>
-                <IconButton aria-label="save" onClick={onSaveHandler}>
-                  <Save />
-                </IconButton>
                 <IconButton aria-label="delete" onClick={onDeleteHandler}>
                   <Delete />
+                </IconButton>
+                <IconButton aria-label="save" onClick={onSaveHandler}>
+                  <Save />
                 </IconButton>
                 <IconButton aria-label="close" onClick={onCloseHandler}>
                   <Close />
@@ -91,100 +135,54 @@ export default function Editor(props) {
         ) : (
           <CardHeader
             title={title}
-            subheader={description}
+            subheader={(
+              <div>
+                <div>
+                  {description}
+                </div>
+                <Chip
+                  icon={<CodeIcon />}
+                  label={language}
+                  variant="outlined"
+                  className={classes.flexItem}
+                />
+              </div>
+)}
             className={classes.cardHeader}
             action={(
               <div>
-                <IconButton aria-label="settings" onClick={onEditHandler}>
-                  <Edit />
-                </IconButton>
                 <IconButton aria-label="delete" onClick={onDeleteHandler}>
                   <Delete />
+                </IconButton>
+                <IconButton aria-label="settings" onClick={onPinChange}>
+                  <FiberPin
+                    color={pinned ? 'action' : 'disabled'}
+                  />
+                </IconButton>
+                <IconButton aria-label="settings" onClick={onEditHandler}>
+                  <Edit />
                 </IconButton>
               </div>
               )}
           />
         )
         }
-      <CardContent>
-        {
-            editing ? (
-              <div>
-                <div className={classes.gridRoot}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                      <TextField
-                        id="standard-required"
-                        label="Title"
-                        onChange={onTitleChange}
-                        value={title}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        id="standard-required"
-                        label="Description"
-                        value={description}
-                        className={classes.fillContainer}
-                        onChange={onDescriptionChange}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <InputLabel id="language-select-label">Language</InputLabel>
-                      <Select
-                        labelId="language-select-label"
-                        value={language}
-                        onChange={onLanguageChange}
-                        label="Language"
-                        className={classes.fillContainer}
-                      >
-                        {
-                          CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
-                        }
-                      </Select>
-                    </Grid>
-                  </Grid>
-                </div>
-                <CodeEditor
-                  disabled={false}
-                  value={code}
-                  language={language}
-                  placeholder={`Please enter ${language} code.`}
-                  onChange={onCodeChange}
-                  padding={15}
-                  style={{
-                    fontSize: 12,
-                    marginTop: 10,
-                    backgroundColor: 'black',
-                    fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                  }}
-                />
-              </div>
-            )
-              : (
-                <CardContent>
-                  <Chip
-                    icon={<CodeIcon />}
-                    label={language}
-                    variant="outlined"
-                    className={classes.flexItem}
-                  />
-                  <CodeEditor
-                    disabled
-                    value={code}
-                    language={language}
-                    placeholder={`Please enter ${language} code.`}
-                    padding={15}
-                    style={{
-                      fontSize: 13,
-                      backgroundColor: 'black',
-                      marginTop: 10,
-                      fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                    }}
-                  />
-                </CardContent>
-              )
-        }
+      <CardContent className={classes.cardContent}>
+        <CodeEditor
+          disabled={!editing}
+          value={code}
+          language={language}
+          placeholder={`Please enter ${language} code.`}
+          onChange={onCodeChange}
+          padding={15}
+          style={{
+            fontSize: 12,
+            backgroundColor: 'black',
+            fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+            height: '80vh',
+          }}
+        />
+
       </CardContent>
     </Card>
   );
@@ -204,6 +202,7 @@ Editor.propTypes = {
   onDescriptionChange: PropTypes.func,
   onLanguageChange: PropTypes.func,
   onCodeChange: PropTypes.func,
+  onPinChange: PropTypes.func,
 };
 
 Editor.defaultProps = {
@@ -220,4 +219,5 @@ Editor.defaultProps = {
   onDescriptionChange: () => {},
   onLanguageChange: () => {},
   onCodeChange: () => {},
+  onPinChange: () => {},
 };

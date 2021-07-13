@@ -4,15 +4,18 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Chip from '@material-ui/core/Chip';
+import Collapse from '@material-ui/core/Collapse';
 import CodeIcon from '@material-ui/icons/Code';
 import NewIcon from '@material-ui/icons/Add';
 import ListIcon from '@material-ui/icons/List';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import Note from '@material-ui/icons/Notes';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import PropTypes from 'prop-types';
 import {
   useHistory,
@@ -40,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+  },
+  primaryBackground: {
+    background: theme.palette.primary.dark,
   },
 }));
 
@@ -106,6 +112,18 @@ export default function DrawerBar(props) {
     history.push('/list');
   };
 
+  const [snippetCollaspeOpenState, setSnippetCollaspeOpenState] = React.useState(true);
+
+  const handleSnipetListCollapse = () => {
+    setSnippetCollaspeOpenState(!snippetCollaspeOpenState);
+  };
+
+  const [noteCollaspeOpenState, setNoteCollaspeOpenState] = React.useState(true);
+
+  const handleNoteListCollapse = () => {
+    setNoteCollaspeOpenState(!noteCollaspeOpenState);
+  };
+
   return (
     <Drawer
       className={classes.drawer}
@@ -131,7 +149,7 @@ export default function DrawerBar(props) {
       <List>
         <ListItem button onClick={handleNewNote}>
           <ListItemText primary="New Note" />
-          <NewIcon />
+          <NoteAddIcon />
         </ListItem>
       </List>
       <Divider />
@@ -142,11 +160,15 @@ export default function DrawerBar(props) {
         </ListItem>
       </List>
       <Divider />
-      <List>
-        <ListItem>
-          <Typography variant="h5">My Snippets</Typography>
-        </ListItem>
-        {
+      {/* ====== Colapse snippets ====================================================== */}
+      <ListItem className={classes.primaryBackground} button onClick={handleSnipetListCollapse}>
+        <ListItemText primary="My Snippets" />
+        {snippetCollaspeOpenState ? <ExpandLess /> : <ExpandMore />}
+      </ListItem>
+      <Collapse in={snippetCollaspeOpenState} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+
+          {
             snippets.map((snippet) => (
               <ListItem
                 key={snippet.id}
@@ -154,45 +176,47 @@ export default function DrawerBar(props) {
                 onClick={() => {
                   snippetClickHandler(snippet);
                 }}
+                className={classes.nested}
               >
-                <ListItemText primary={snippet.title || 'Snippet'} />
                 <ListItemIcon>
-                  <Chip
-                    icon={<CodeIcon />}
-                    label={snippet.language}
-                    variant="outlined"
-                    className={classes.flexItem}
-                  />
+                  <CodeIcon />
                 </ListItemIcon>
+                <ListItemText primary={snippet.title || 'Snippet'} />
               </ListItem>
             ))
           }
-      </List>
+        </List>
+      </Collapse>
+      {/* ====== Colapse snippets ====================================================== */}
       <Divider />
-      <List>
-        <ListItem>
-          <Typography variant="h5">My Notes</Typography>
-        </ListItem>
-        {
+      {/* ====== Colapse snippets ====================================================== */}
+      <ListItem className={classes.primaryBackground} button onClick={handleNoteListCollapse}>
+        <ListItemText primary="My Notes" />
+        {noteCollaspeOpenState ? <ExpandLess /> : <ExpandMore />}
+      </ListItem>
+      <Collapse in={noteCollaspeOpenState} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+
+          {
             notes.map((note) => (
               <ListItem
                 key={note.id}
                 button
-                onClick={() => { noteClickHandler(note); }}
+                onClick={() => {
+                  noteClickHandler(note);
+                }}
+                className={classes.nested}
               >
-                <ListItemText primary={note.title || 'Snippet'} />
                 <ListItemIcon>
-                  <Chip
-                    icon={<CodeIcon />}
-                    label={note.language}
-                    variant="outlined"
-                    className={classes.flexItem}
-                  />
+                  <Note />
                 </ListItemIcon>
+                <ListItemText primary={note.title || 'Note'} />
               </ListItem>
             ))
           }
-      </List>
+        </List>
+      </Collapse>
+      {/* ====== Colapse snippets ====================================================== */}
     </Drawer>
   );
 }

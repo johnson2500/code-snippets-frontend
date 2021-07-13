@@ -14,13 +14,14 @@ export default function SnippetViewer(props) {
   } = props;
 
   const {
-    language = 'javascript', id, code, title, description,
+    language = 'javascript', id, code, title, description, pinned,
   } = snippet;
 
   const [languageState, setLanguage] = React.useState(language);
   const [codeState, setCode] = React.useState(code);
   const [titleState, setTitle] = React.useState(title);
   const [descriptionState, setDescription] = React.useState(description);
+  const [pinnedState, setPinnedState] = React.useState(pinned);
 
   const [editingState, setEditingState] = React.useState(editing);
 
@@ -36,6 +37,7 @@ export default function SnippetViewer(props) {
       language: languageState,
       title: titleState,
       description: descriptionState,
+      pinned: pinnedState,
       id,
     };
 
@@ -120,12 +122,56 @@ export default function SnippetViewer(props) {
     }
   };
 
+  const pinChangeHandler = async () => {
+    console.log('Pin Change');
+    setPinnedState(!pinnedState);
+
+    const { auth, snippets = [] } = appState;
+    const { token } = auth;
+
+    // if this is new snippet return
+    if (!id) {
+      return;
+    }
+
+    try {
+      await makeRequest({
+        method: 'post',
+        url: '/snippet/pin',
+        data: {
+          pinned: pinnedState,
+          id,
+        },
+        token,
+      });
+
+      const newSnippets = snippets.map((snip) => {
+        if (snip.id !== id) {
+          return {
+            ...snip,
+            pinned: pinnedState,
+          };
+        }
+        return snip;
+      });
+
+      setAppState({
+        ...appState,
+        snippets: newSnippets,
+        editorSnippet: newSnippets[0],
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+  };
+
   useEffect(() => {
     setLanguage(language);
     setCode(code);
     setTitle(title);
     setDescription(description);
     setEditingState(editing);
+    setPinnedState(pinned);
     setDeleted(false);
   }, [snippet]);
 
@@ -134,6 +180,7 @@ export default function SnippetViewer(props) {
     code: codeState,
     description: descriptionState,
     title: titleState,
+    pinned: pinnedState,
     deleted: false,
   };
 
@@ -159,6 +206,7 @@ export default function SnippetViewer(props) {
         onDescriptionChange={(event) => setDescription(event.target.value)}
         onLanguageChange={(event) => setLanguage(event.target.value)}
         onCodeChange={(event) => setCode(event.target.value)}
+        onPinChange={pinChangeHandler}
         setAppState={setAppState}
         appState={appState}
         snippet={editorSnippet}

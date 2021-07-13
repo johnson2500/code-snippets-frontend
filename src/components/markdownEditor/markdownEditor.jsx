@@ -16,16 +16,16 @@ export default function NoteViewer(props) {
 
   const {
     id,
-    note: text,
+    text,
     title,
     description,
+    pinned,
   } = note;
-
-  console.log(note);
 
   const [textState, setTextState] = React.useState(text);
   const [titleState, setTitleState] = React.useState(title);
   const [descriptionState, setDescriptionState] = React.useState(description);
+  const [pinnedState, setPinnedState] = React.useState(pinned);
 
   const [editingState, setEditingState] = React.useState(editing);
 
@@ -33,18 +33,16 @@ export default function NoteViewer(props) {
   const [savedState, setSavedState] = React.useState(false);
 
   const saveNoteHandler = async () => {
-    const { auth, snippets } = appState;
+    const { auth, notes } = appState;
     const { token } = auth;
 
     const data = {
-      note: textState,
+      text: textState,
       title: titleState,
       description: descriptionState,
+      pinned: pinnedState,
       id,
     };
-
-    console.log(titleState);
-    console.log(data);
 
     const isUpdate = !!id;
 
@@ -58,14 +56,14 @@ export default function NoteViewer(props) {
 
       const { id: responseId } = requestSnippet;
 
-      let newSnippets = [];
+      let newNotes = [];
 
       if (!isUpdate) {
-        newSnippets = [
-          ...snippets,
+        newNotes = [
+          ...notes,
           { ...data, id: responseId }];
       } else {
-        newSnippets = snippets.map((snip) => {
+        newNotes = notes.map((snip) => {
           // if the id matches then update the list with
           if (snip.id === id) {
             return data;
@@ -76,7 +74,7 @@ export default function NoteViewer(props) {
 
       setAppState({
         ...appState,
-        snippets: newSnippets,
+        notes: newNotes,
       });
 
       setEditingState(!editing);
@@ -113,6 +111,49 @@ export default function NoteViewer(props) {
     }
   };
 
+  const pinChangeHandler = async () => {
+    console.log('Pin Change');
+    setPinnedState(!pinnedState);
+
+    const { auth, notes = [] } = appState;
+    const { token } = auth;
+
+    // if this is new snippet return
+    if (!id) {
+      return;
+    }
+
+    try {
+      await makeRequest({
+        method: 'post',
+        url: '/note/pin',
+        data: {
+          pinned: pinnedState,
+          id,
+        },
+        token,
+      });
+
+      const newNotes = notes.map((snip) => {
+        if (snip.id !== id) {
+          return {
+            ...snip,
+            pinned: pinnedState,
+          };
+        }
+        return snip;
+      });
+
+      setAppState({
+        ...appState,
+        notes: newNotes,
+        editorSnippet: newNotes[0],
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+  };
+
   useEffect(() => {
     setTextState(text);
     setTitleState(title);
@@ -123,8 +164,9 @@ export default function NoteViewer(props) {
 
   const editorNote = {
     text: textState,
-    description,
-    title,
+    description: descriptionState,
+    title: titleState,
+    pinned: pinnedState,
     editing,
     deleted: false,
   };
@@ -149,6 +191,7 @@ export default function NoteViewer(props) {
         onTitleChange={(event) => setTitleState(event.target.value)}
         onDescriptionChange={(event) => { setDescriptionState(event.target.value); }}
         onTextChange={setTextState}
+        onPinHandler={pinChangeHandler}
         setAppState={setAppState}
         appState={appState}
         note={editorNote}
