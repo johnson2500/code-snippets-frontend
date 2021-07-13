@@ -69,8 +69,6 @@ export default function Editor(props) {
     language, code, title, description, pinned,
   } = snippet;
 
-  console.log(snippet);
-
   const classes = useStyles();
 
   return (

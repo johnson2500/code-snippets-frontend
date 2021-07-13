@@ -72,11 +72,6 @@ export default function App() {
         const { uid: userId } = user;
         const token = await firebase.auth().currentUser.getIdToken();
 
-        console.log('in');
-
-        console.log(userId);
-        console.log(token);
-
         localStorage.setItem('codeSnippetsToken', token);
         localStorage.setItem('userId', userId);
 

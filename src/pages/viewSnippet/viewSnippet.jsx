@@ -9,8 +9,6 @@ export default function EditPage(props) {
   const { view } = appState;
   const { snippet, editing } = view;
 
-  console.log('View Page Snippet', view);
-
   return (
     <SnippetEditor
       appState={appState}

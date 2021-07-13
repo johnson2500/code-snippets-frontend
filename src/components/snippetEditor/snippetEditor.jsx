@@ -123,7 +123,6 @@ export default function SnippetViewer(props) {
   };
 
   const pinChangeHandler = async () => {
-    console.log('Pin Change');
     setPinnedState(!pinnedState);
 
     const { auth, snippets = [] } = appState;

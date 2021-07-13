@@ -112,7 +112,6 @@ export default function NoteViewer(props) {
   };
 
   const pinChangeHandler = async () => {
-    console.log('Pin Change');
     setPinnedState(!pinnedState);
 
     const { auth, notes = [] } = appState;

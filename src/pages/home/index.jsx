@@ -9,82 +9,87 @@ import {
   Select, MenuItem, Typography,
 } from '@material-ui/core';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import MDEditor from '@uiw/react-md-editor';
+import Todo from '../../components/todo/todo';
 import { CODE_LANGUAGES } from '../../helpers/constants';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     color: theme.palette.text.secondary,
-    minHeight: '30vh',
+    height: 300,
   },
 }));
 
-export default function Home() {
+function CodeScratchPad() {
   const classes = useStyles();
-
-  // Code Editor Variables
-  const [codeState, setCodeState] = React.useState();
   const [languageState, setLanguageState] = React.useState('javascript');
-
-  const [noteState, setNoteState] = React.useState();
+  const [codeState, setCodeState] = React.useState();
 
   const handleLanguageChange = (e) => {
     setLanguageState(e.target.value);
   };
 
   return (
+    <Paper className={classes.paper}>
+      <Grid container spacing={3}>
+        <Grid item xs={6}>
+          <Typography variant="h4">Scratch Pad</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Select
+            labelId="language-select-label"
+            value={languageState}
+            onChange={handleLanguageChange}
+            label="Language"
+            className={classes.fillContainer}
+          >
+            {
+                    CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
+                  }
+          </Select>
+        </Grid>
+      </Grid>
+      <CodeEditor
+        disabled={false}
+        value={codeState}
+        language={languageState}
+        placeholder={`Enter ${languageState} here.`}
+        onChange={(evn) => setCodeState(evn.target.value)}
+        padding={15}
+        style={{
+          fontSize: 12,
+          marginTop: 10,
+          height: '80%',
+          backgroundColor: 'black',
+          fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+        }}
+      />
+    </Paper>
+  );
+}
+
+// function TodoList() {
+//   const classes = useStyles();
+
+//   return (
+//     <Paper className={classes.paper}>
+//       Test
+//     </Paper>
+//   );
+// }
+
+export default function Home() {
+  const classes = useStyles();
+
+  return (
     <>
       <Grid container spacing={3}>
         <Grid item xs={6}>
-          <Paper className={classes.paper}>
-            <Grid container spacing={3}>
-              <Grid item xs={6}>
-
-                <Typography variant="h4">Scratch Pad</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Select
-                  labelId="language-select-label"
-                  value={languageState}
-                  onChange={handleLanguageChange}
-                  label="Language"
-                  className={classes.fillContainer}
-                >
-                  {
-                CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
-              }
-                </Select>
-              </Grid>
-            </Grid>
-            <CodeEditor
-              disabled={false}
-              value={codeState}
-              language={languageState}
-              placeholder={`Enter ${languageState} here.`}
-              onChange={(evn) => setCodeState(evn.target.value)}
-              padding={15}
-              style={{
-                fontSize: 12,
-                marginTop: 10,
-                minHeight: 300,
-                backgroundColor: 'black',
-                fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-              }}
-            />
-          </Paper>
+          <CodeScratchPad />
         </Grid>
         <Grid item xs={6}>
           <Paper className={classes.paper}>
-            <Typography variant="h4">Note Pad</Typography>
-            <MDEditor
-              value={noteState}
-              onChange={setNoteState}
-              style={{
-                minHeight: 300,
-                marginTop: 10,
-              }}
-            />
+            <Todo />
           </Paper>
         </Grid>
       </Grid>

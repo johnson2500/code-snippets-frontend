@@ -9,8 +9,6 @@ export default function EditPage(props) {
   const { view } = appState;
   const { note, editing } = view;
 
-  console.log('View Page Snippet', view);
-
   return (
     <NoteEditor
       appState={appState}
