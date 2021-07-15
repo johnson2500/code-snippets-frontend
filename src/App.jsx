@@ -41,10 +41,9 @@ const useStyles = makeStyles(() => ({
     width: drawerWidth,
   },
   // necessary for content to be below app bar
-  toolbar: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    // padding: theme.spacing(3),
   },
 }));
 
@@ -142,12 +141,10 @@ export default function App() {
           <CssBaseline />
           <Switch>
             <Route exact path={['/list', '/', '/new-snippet', '/settings', '/view-snippet', '/new-note', '/view-note']}>
-              <Header />
               <DrawerNav setAppState={setAppState} appState={appState} />
             </Route>
           </Switch>
           <main className={classes.content}>
-            <div className={classes.toolbar} />
             <Switch>
               <Route exact path="/promo-page">
                 <Header leftOffset={0} />

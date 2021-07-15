@@ -28,8 +28,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
     margin: 0,
-    height: '80vh',
+    height: '100vh',
     padding: '0 !important',
+    borderRadius: 0,
   },
   cardContent: {
     padding: '0 !important',
@@ -177,7 +178,7 @@ export default function Editor(props) {
             fontSize: 12,
             backgroundColor: 'black',
             fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-            height: '80vh',
+            height: '100vh',
           }}
         />
 

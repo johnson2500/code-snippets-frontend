@@ -78,6 +78,7 @@ export default function NoteViewer(props) {
       });
 
       setEditingState(!editing);
+
       setSavedState(true);
 
       setTimeout(() => setSavedState(false), 3000);

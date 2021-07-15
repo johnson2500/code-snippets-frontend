@@ -22,22 +22,17 @@ const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
     padding: '0 !important',
-    height: 'auto',
-  },
-  gridRoot: {
-    flexGrow: 1,
-  },
-  paper: {
-    textAlign: 'center',
+    height: '100vh',
+    borderRadius: 0,
   },
   fillContainer: {
     width: '100%',
   },
   cardHeader: {
-    background: theme.palette.primary.dark,
+    background: theme.palette.secondary.dark,
   },
-  cardContentInputArea: {
-    padding: 10,
+  editor: {
+    background: 'grey',
   },
 }));
 
@@ -71,10 +66,9 @@ export default function NoteEditor(props) {
         editing ? (
           <CardHeader
             className={classes.cardHeader}
-            title="Editing"
-            subheader={(
+            title={(
               <Grid container spacing={3}>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                   <TextField
                     id="standard-required"
                     label="Title"
@@ -82,7 +76,7 @@ export default function NoteEditor(props) {
                     value={title}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                   <TextField
                     id="standard-required"
                     label="Description"
@@ -129,13 +123,12 @@ export default function NoteEditor(props) {
         }
       <CardContent className={classes.root}>
         <MDEditor
-          className={classes.root}
+          className={classes.editor}
           value={text}
-          height="80vh"
+          height="100vh"
           onChange={(val) => onTextChange(val)}
           enableScroll
         />
-
       </CardContent>
     </Card>
   );
