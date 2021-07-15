@@ -112,13 +112,13 @@ export default function DrawerBar(props) {
     history.push('/list');
   };
 
-  const [snippetCollaspeOpenState, setSnippetCollaspeOpenState] = React.useState(true);
+  const [snippetCollaspeOpenState, setSnippetCollaspeOpenState] = React.useState(false);
 
   const handleSnipetListCollapse = () => {
     setSnippetCollaspeOpenState(!snippetCollaspeOpenState);
   };
 
-  const [noteCollaspeOpenState, setNoteCollaspeOpenState] = React.useState(true);
+  const [noteCollaspeOpenState, setNoteCollaspeOpenState] = React.useState(false);
 
   const handleNoteListCollapse = () => {
     setNoteCollaspeOpenState(!noteCollaspeOpenState);
