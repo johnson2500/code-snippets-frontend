@@ -7,7 +7,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
-import PropTypes from 'prop-types';
 import { makeRequest } from '../../helpers';
 
 const useStyles = makeStyles((theme) => ({
@@ -58,6 +57,11 @@ export default function ListItemLink(props) {
       method: 'delete',
       url: `/todo/${id}`,
       token,
+    });
+
+    setAppState({
+      ...appState,
+      todos: filteredList,
     });
   };
 
