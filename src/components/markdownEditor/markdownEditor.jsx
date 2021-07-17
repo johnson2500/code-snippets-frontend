@@ -44,6 +44,8 @@ export default function NoteViewer(props) {
       id,
     };
 
+    console.log(data);
+
     const isUpdate = !!id;
 
     try {

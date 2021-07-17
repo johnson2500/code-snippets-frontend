@@ -74,6 +74,9 @@ export default function App() {
         localStorage.setItem('codeSnippetsToken', token);
         localStorage.setItem('userId', userId);
 
+        console.log(token);
+        console.log(userId);
+
         if (token && userId) {
           try {
             const snippetResponse = await makeRequest({
@@ -92,10 +95,19 @@ export default function App() {
 
             const notes = notesResponse.data;
 
+            const todosResponse = await makeRequest({
+              method: 'get',
+              url: '/todos',
+              token,
+            });
+
+            const todos = todosResponse.data;
+
             setAppState({
               ...appState,
               snippets,
               notes,
+              todos,
               firebase,
               auth: {
                 token,

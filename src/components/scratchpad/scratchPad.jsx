@@ -1,4 +1,4 @@
-import { React } from 'react';
+import React from 'react';
 import {
   Paper, Grid, Select, Typography, MenuItem,
 } from '@material-ui/core';
@@ -14,7 +14,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CodeScratchPad() {
+export default function CodeScratchPad(props) {
+  console.log(props);
   const classes = useStyles();
   const [languageState, setLanguageState] = React.useState('javascript');
   const [codeState, setCodeState] = React.useState();
@@ -27,7 +28,9 @@ export default function CodeScratchPad() {
     <Paper className={classes.paper}>
       <Grid container spacing={3}>
         <Grid item xs={6}>
-          <Typography variant="h4">Scratch Pad</Typography>
+          <Typography variant="h4">
+            Scratch Pad
+          </Typography>
         </Grid>
         <Grid item xs={6}>
           <Select
@@ -38,8 +41,8 @@ export default function CodeScratchPad() {
             className={classes.fillContainer}
           >
             {
-                      CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
-                    }
+                CODE_LANGUAGES.map((lang) => <MenuItem key={lang} value={lang}>{lang}</MenuItem>)
+            }
           </Select>
         </Grid>
       </Grid>

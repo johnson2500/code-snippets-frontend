@@ -54,7 +54,7 @@ export default function DrawerBar(props) {
   const history = useHistory();
   const { appState, setAppState } = props;
 
-  const { snippets, home, notes } = appState;
+  const { snippets = [], home, notes = [] } = appState;
 
   const snippetClickHandler = (snippet) => {
     setAppState({
