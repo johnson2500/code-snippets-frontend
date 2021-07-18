@@ -179,6 +179,7 @@ export default function Editor(props) {
             backgroundColor: 'black',
             fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
             height: '100vh',
+            overflow: 'scroll',
           }}
         />
 

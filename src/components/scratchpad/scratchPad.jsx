@@ -1,10 +1,14 @@
-import React from 'react';
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/no-unused-prop-types */
+import React, { useEffect } from 'react';
 import {
   Paper, Grid, Select, Typography, MenuItem,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import PropTypes from 'prop-types';
 import { CODE_LANGUAGES } from '../../helpers/constants';
+import { makeRequest } from '../../helpers';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -15,14 +19,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CodeScratchPad(props) {
-  console.log(props);
   const classes = useStyles();
+  const { setAppState, appState, scratchPad } = props;
+  const { auth: { token } } = appState;
+  const { language, content, id } = scratchPad;
   const [languageState, setLanguageState] = React.useState('javascript');
-  const [codeState, setCodeState] = React.useState();
+  const [codeState, setCodeState] = React.useState(content);
 
-  const handleLanguageChange = (e) => {
-    setLanguageState(e.target.value);
+  const saveScratchPad = async () => {
+    const method = id ? 'put' : 'post';
+
+    const responseId = await makeRequest({
+      method,
+      data: {
+        content,
+        language,
+      },
+      token,
+      url: '/scratch-pad',
+    });
+
+    setAppState({
+      ...appState,
+      scratchPad: {
+        id: id || responseId,
+        scratchPad,
+        language,
+      },
+    });
+    console.log('In');
   };
+
+  // componenet clean up
+  useEffect(() => {
+    console.log('in');
+    return async function cleanup() {
+      await saveScratchPad();
+    };
+  }, []);
+
+  console.log();
 
   return (
     <Paper className={classes.paper}>
@@ -36,7 +72,7 @@ export default function CodeScratchPad(props) {
           <Select
             labelId="language-select-label"
             value={languageState}
-            onChange={handleLanguageChange}
+            onChange={(e) => { setLanguageState(e.target.value); }}
             label="Language"
             className={classes.fillContainer}
           >
@@ -59,8 +95,23 @@ export default function CodeScratchPad(props) {
           height: '80%',
           backgroundColor: 'black',
           fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+          overflow: 'scroll',
         }}
       />
     </Paper>
   );
 }
+
+CodeScratchPad.propTypes = {
+  appState: PropTypes.object,
+  setAppState: PropTypes.func,
+  scratchPad: PropTypes.object,
+};
+
+CodeScratchPad.defaultProps = {
+  scratchPad: {},
+  appState: {
+    firebase: { auth: PropTypes.object },
+  },
+  setAppState: {},
+};

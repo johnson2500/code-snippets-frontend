@@ -38,7 +38,7 @@ export default function SimpleList(props) {
   const classes = useStyles();
   const { appState, setAppState } = props;
 
-  const { todos, auth: { token } } = appState;
+  const { todos = [], auth: { token } } = appState;
 
   const [listState, setListState] = useState(todos);
 

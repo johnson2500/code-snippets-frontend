@@ -4,6 +4,7 @@ import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { theme } from './AppStyles';
+import './App.css';
 
 import DefaultState from './initialState';
 import Home from './pages/home';
@@ -19,6 +20,7 @@ import SettingsPage from './pages/settings/settings';
 import ViewSnippet from './pages/viewSnippet/viewSnippet';
 import ViewNote from './pages/viewNote/viewNote';
 import EditNote from './pages/newNote/newNote';
+import Loading from './pages/loading/loading';
 
 const drawerWidth = 200;
 
@@ -40,10 +42,8 @@ const useStyles = makeStyles(() => ({
   drawerPaper: {
     width: drawerWidth,
   },
-  // necessary for content to be below app bar
   content: {
     flexGrow: 1,
-    // padding: theme.spacing(3),
   },
 }));
 
@@ -60,6 +60,8 @@ export default function App() {
     ...DefaultState,
     firebase,
   });
+
+  const [stateFound, setStateFound] = React.useState(false);
 
   // component will mount
   useEffect(() => {
@@ -103,11 +105,22 @@ export default function App() {
 
             const todos = todosResponse.data;
 
+            const scratchPadResponse = await makeRequest({
+              method: 'get',
+              url: '/scratch-pad',
+              token,
+            });
+
+            const scratchPad = scratchPadResponse.data;
+
+            console.log('data', scratchPad);
+
             setAppState({
               ...appState,
               snippets,
               notes,
               todos,
+              scratchPad,
               firebase,
               auth: {
                 token,
@@ -132,10 +145,20 @@ export default function App() {
         });
         console.log('NO USER');
       }
+
+      setStateFound(true);
     });
   }, []);
 
+  console.log(appState);
+
   const isAuthenticated = checkIsAuthenticated(appState);
+
+  if (!stateFound) {
+    return (
+      <Loading />
+    );
+  }
 
   if (!isAuthenticated) {
     return (
