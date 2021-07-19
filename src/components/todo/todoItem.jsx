@@ -12,7 +12,7 @@ import { makeRequest } from '../../helpers';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    height: '100%',
+    height: '90vh',
     backgroundColor: theme.palette.background.paper,
     overflow: 'scroll',
   },

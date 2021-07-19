@@ -14,26 +14,33 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     color: theme.palette.text.secondary,
-    height: 300,
+    height: '100vh',
   },
 }));
 
 export default function CodeScratchPad(props) {
   const classes = useStyles();
-  const { setAppState, appState, scratchPad } = props;
-  const { auth: { token } } = appState;
+  const { setAppState, appState } = props;
+  const { auth: { token }, scratchPad } = appState;
   const { language, content, id } = scratchPad;
-  const [languageState, setLanguageState] = React.useState('javascript');
-  const [codeState, setCodeState] = React.useState(content);
+  const [languageState, setLanguageState] = React.useState(language || 'javascript');
+  const [codeState, setCodeState] = React.useState(content || 'Hello World');
 
   const saveScratchPad = async () => {
     const method = id ? 'put' : 'post';
 
+    console.log({
+      content: codeState,
+      language: languageState,
+      id,
+    });
+
     const responseId = await makeRequest({
       method,
       data: {
-        content,
-        language,
+        content: codeState,
+        language: languageState,
+        id,
       },
       token,
       url: '/scratch-pad',
@@ -42,23 +49,23 @@ export default function CodeScratchPad(props) {
     setAppState({
       ...appState,
       scratchPad: {
-        id: id || responseId,
-        scratchPad,
-        language,
+        id: id || responseId.data,
+        content: codeState,
+        language: languageState,
       },
     });
-    console.log('In');
   };
 
   // componenet clean up
   useEffect(() => {
-    console.log('in');
+    console.log('Firing use effect');
+
     return async function cleanup() {
       await saveScratchPad();
     };
   }, []);
 
-  console.log();
+  console.log(codeState);
 
   return (
     <Paper className={classes.paper}>
@@ -92,7 +99,7 @@ export default function CodeScratchPad(props) {
         style={{
           fontSize: 12,
           marginTop: 10,
-          height: '80%',
+          height: '90%',
           backgroundColor: 'black',
           fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
           overflow: 'scroll',

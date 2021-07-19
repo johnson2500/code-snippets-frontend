@@ -76,9 +76,6 @@ export default function App() {
         localStorage.setItem('codeSnippetsToken', token);
         localStorage.setItem('userId', userId);
 
-        console.log(token);
-        console.log(userId);
-
         if (token && userId) {
           try {
             const snippetResponse = await makeRequest({
@@ -111,7 +108,7 @@ export default function App() {
               token,
             });
 
-            const scratchPad = scratchPadResponse.data;
+            const scratchPad = scratchPadResponse.data[0] || {};
 
             console.log('data', scratchPad);
 
@@ -149,8 +146,6 @@ export default function App() {
       setStateFound(true);
     });
   }, []);
-
-  console.log(appState);
 
   const isAuthenticated = checkIsAuthenticated(appState);
 

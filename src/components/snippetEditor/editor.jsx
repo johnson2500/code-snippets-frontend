@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
   cardContent: {
     padding: '0 !important',
     margin: '0 !important',
+    height: '100vh',
   },
   gridRoot: {
     flexGrow: 1,
@@ -178,7 +179,7 @@ export default function Editor(props) {
             fontSize: 12,
             backgroundColor: 'black',
             fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-            height: '100vh',
+            height: 'inherit',
             overflow: 'scroll',
           }}
         />
