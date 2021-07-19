@@ -90,21 +90,21 @@ export default function NoteViewer(props) {
   };
 
   const deleteNoteHandler = async () => {
-    const { auth, snippets = [] } = appState;
+    const { auth, notes = [] } = appState;
     const { token } = auth;
 
     try {
       await makeRequest({
         method: 'delete',
-        url: `/snippet/${id}`,
+        url: `/note/${id}`,
         token,
       });
 
-      const newSnippets = snippets.filter((snip) => snip.id !== id) || [];
+      const newSnippets = notes.filter((snip) => snip.id !== id) || [];
 
       setAppState({
         ...appState,
-        snippets: newSnippets,
+        notes: newSnippets,
         editorNote: newSnippets[0],
       });
 
