@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-unused-prop-types */
 import React, { useEffect } from 'react';
@@ -5,23 +6,48 @@ import {
   Paper, Grid, Select, Typography, MenuItem,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import CodeEditor from '@uiw/react-textarea-code-editor';
 import PropTypes from 'prop-types';
-import { CODE_LANGUAGES } from '../../helpers/constants';
+import Editor from 'react-simple-code-editor';
+import Highlight, { defaultProps } from 'prism-react-renderer';
+import codeTheme from 'prism-react-renderer/themes/github';
 import { makeRequest } from '../../helpers';
+import { CODE_LANGUAGES } from '../../helpers/constants';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    padding: theme.spacing(2),
     color: theme.palette.text.secondary,
     height: '50vh',
   },
+  codePadHeader: {
+    paddingTop: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
+  },
+  codeContainer: {
+    height: '40vh',
+    overflow: 'scroll',
+  },
 }));
+
+const highlight = (code) => (
+  <Highlight {...defaultProps} theme={codeTheme} code={code} language="jsx">
+    {({ tokens, getLineProps, getTokenProps }) => (
+      <>
+        {
+          tokens.map((line, i) => (
+            <div {...getLineProps({ line, key: i })}>
+              {line.map((token, key) => <span {...getTokenProps({ token, key })} />)}
+            </div>
+          ))
+          }
+      </>
+    )}
+  </Highlight>
+);
 
 export default function CodeScratchPad(props) {
   const classes = useStyles();
   const { setAppState, appState } = props;
-  const { auth: { token }, scratchPad } = appState;
+  const { auth: { token }, scratchPad = {} } = appState;
   const { language, content, id } = scratchPad;
   const [languageState, setLanguageState] = React.useState(language || 'javascript');
   const [codeState, setCodeState] = React.useState(content || 'Hello World');
@@ -65,11 +91,9 @@ export default function CodeScratchPad(props) {
     };
   }, []);
 
-  console.log(codeState);
-
   return (
     <Paper className={classes.paper}>
-      <Grid container spacing={3}>
+      <Grid container className={classes.codePadHeader}>
         <Grid item xs={6}>
           <Typography variant="h4">
             Scratch Pad
@@ -89,22 +113,22 @@ export default function CodeScratchPad(props) {
           </Select>
         </Grid>
       </Grid>
-      <CodeEditor
-        disabled={false}
-        value={codeState}
-        language={languageState}
-        placeholder={`Enter ${languageState} here.`}
-        onChange={(evn) => setCodeState(evn.target.value)}
-        padding={15}
-        style={{
-          fontSize: 12,
-          marginTop: 10,
-          height: '90%',
-          backgroundColor: 'black',
-          fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-          overflow: 'scroll',
-        }}
-      />
+      <div className={classes.codeContainer}>
+        <Editor
+          value={codeState}
+          onValueChange={(value) => setCodeState(value)}
+          highlight={highlight}
+          padding={10}
+          style={{
+            fontSize: 12,
+            marginTop: 10,
+            backgroundColor: 'black',
+            fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+            minHeight: '100%',
+            ...codeTheme.plain,
+          }}
+        />
+      </div>
     </Paper>
   );
 }

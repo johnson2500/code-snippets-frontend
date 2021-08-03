@@ -20,10 +20,10 @@ import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    minWidth: 275,
     padding: '0 !important',
     height: '100vh',
     borderRadius: 0,
+    overflow: 'hidden',
   },
   fillContainer: {
     width: '100%',
@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
   cardHeader: {
     background: theme.palette.secondary.dark,
   },
-  editor: {
-    background: 'grey',
+  cardContent: {
+    padding: '0 !important',
   },
 }));
 
@@ -52,13 +52,18 @@ export default function NoteEditor(props) {
   } = props;
 
   const {
-    text, title, description, pinned,
+    text,
+    title,
+    description,
+    pinned,
   } = note;
+
+  console.log(note);
 
   const classes = useStyles();
 
   return (
-    <Card className={classes.root}>
+    <Card>
       {
         saved ? <Typography>Saved!</Typography> : ''
       }
@@ -121,11 +126,11 @@ export default function NoteEditor(props) {
           />
         )
         }
-      <CardContent className={classes.root}>
+      <CardContent className={classes.cardContent}>
         <MDEditor
           className={classes.editor}
           value={text}
-          height="100vh"
+          height="calc(100vh - 90px)"
           onChange={(val) => onTextChange(val)}
           enableScroll
         />

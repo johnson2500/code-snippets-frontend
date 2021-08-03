@@ -1,8 +1,8 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import CodeEditor from '@uiw/react-textarea-code-editor';
 import CodeIcon from '@material-ui/icons/Code';
 import {
   Grid,
@@ -22,24 +22,23 @@ import {
 } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 
+import CodeEditor from 'react-simple-code-editor';
+import Highlight, { defaultProps } from 'prism-react-renderer';
+import codeTheme from 'prism-react-renderer/themes/github';
+
 import { CODE_LANGUAGES } from '../../helpers/constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    minWidth: 275,
     margin: 0,
     height: '100vh',
     padding: '0 !important',
     borderRadius: 0,
+    overflow: 'hidden',
   },
   cardContent: {
     padding: '0 !important',
-    margin: '0 !important',
-    height: '100vh',
-  },
-  gridRoot: {
-    flexGrow: 1,
-    padding: '0 !important',
+    overflow: 'scroll',
   },
   fillContainer: {
     width: '100%',
@@ -72,6 +71,22 @@ export default function Editor(props) {
   } = snippet;
 
   const classes = useStyles();
+
+  const highlight = (codeToHighlight) => (
+    <Highlight {...defaultProps} theme={codeTheme} code={codeToHighlight} language="jsx">
+      {({ tokens, getLineProps, getTokenProps }) => (
+        <>
+          {
+            tokens.map((line, i) => (
+              <div {...getLineProps({ line, key: i })}>
+                {line.map((token, key) => <span {...getTokenProps({ token, key })} />)}
+              </div>
+            ))
+            }
+        </>
+      )}
+    </Highlight>
+  );
 
   return (
     <Card className={classes.root}>
@@ -147,7 +162,7 @@ export default function Editor(props) {
                   className={classes.flexItem}
                 />
               </div>
-)}
+            )}
             className={classes.cardHeader}
             action={(
               <div>
@@ -166,24 +181,21 @@ export default function Editor(props) {
               )}
           />
         )
-        }
+      }
       <CardContent className={classes.cardContent}>
         <CodeEditor
-          disabled={!editing}
-          value={code}
-          language={language}
-          placeholder={`Please enter ${language} code.`}
-          onChange={onCodeChange}
-          padding={15}
+          value={code || ''}
+          onValueChange={onCodeChange}
+          highlight={highlight}
+          padding={10}
           style={{
-            fontSize: 12,
-            backgroundColor: 'black',
-            fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-            height: 'inherit',
-            overflow: 'scroll',
+            // boxSizing: 'border-box',
+            fontFamily: '"Dank Mono", "Fira Code", monospace',
+            minHeight: '100%',
+            height: 'calc(100vh - 90px)',
+            ...codeTheme.plain,
           }}
         />
-
       </CardContent>
     </Card>
   );

@@ -194,25 +194,23 @@ export default function SnippetViewer(props) {
   }
 
   return (
-    <>
-      <Editor
+    <Editor
         // new
-        onSaveHandler={saveSnippetHandler}
-        onDeleteHandler={deleteSnippetHandler}
-        onCloseHandler={() => setEditingState(false)}
-        onEditHandler={() => setEditingState(true)}
-        onTitleChange={(event) => setTitle(event.target.value)}
-        onDescriptionChange={(event) => setDescription(event.target.value)}
-        onLanguageChange={(event) => setLanguage(event.target.value)}
-        onCodeChange={(event) => setCode(event.target.value)}
-        onPinChange={pinChangeHandler}
-        setAppState={setAppState}
-        appState={appState}
-        snippet={editorSnippet}
-        editing={editingState}
-        saved={savedState}
-      />
-    </>
+      onSaveHandler={saveSnippetHandler}
+      onDeleteHandler={deleteSnippetHandler}
+      onCloseHandler={() => setEditingState(false)}
+      onEditHandler={() => setEditingState(true)}
+      onTitleChange={(event) => setTitle(event.target.value)}
+      onDescriptionChange={(event) => setDescription(event.target.value)}
+      onLanguageChange={(event) => setLanguage(event.target.value)}
+      onCodeChange={(codeText) => setCode(codeText)}
+      onPinChange={pinChangeHandler}
+      setAppState={setAppState}
+      appState={appState}
+      snippet={editorSnippet}
+      editing={editingState}
+      saved={savedState}
+    />
   );
 }
 

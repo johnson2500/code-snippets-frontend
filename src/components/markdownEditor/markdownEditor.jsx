@@ -25,7 +25,7 @@ export default function NoteViewer(props) {
   const [textState, setTextState] = React.useState(text);
   const [titleState, setTitleState] = React.useState(title);
   const [descriptionState, setDescriptionState] = React.useState(description);
-  const [pinnedState, setPinnedState] = React.useState(pinned);
+  const [pinnedState, setPinnedState] = React.useState(pinned || false);
 
   const [editingState, setEditingState] = React.useState(editing);
 
@@ -115,8 +115,6 @@ export default function NoteViewer(props) {
   };
 
   const pinChangeHandler = async () => {
-    setPinnedState(!pinnedState);
-
     const { auth, notes = [] } = appState;
     const { token } = auth;
 
@@ -130,11 +128,13 @@ export default function NoteViewer(props) {
         method: 'post',
         url: '/note/pin',
         data: {
-          pinned: pinnedState,
+          pinned: !pinnedState,
           id,
         },
         token,
       });
+
+      setPinnedState(!pinnedState);
 
       const newNotes = notes.map((snip) => {
         if (snip.id !== id) {
@@ -162,6 +162,7 @@ export default function NoteViewer(props) {
     setDescriptionState(description);
     setEditingState(editing);
     setDeleted(false);
+    setPinnedState(pinned);
   }, [note]);
 
   const editorNote = {

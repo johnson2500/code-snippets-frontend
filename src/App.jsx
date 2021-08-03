@@ -78,46 +78,48 @@ export default function App() {
 
         if (token && userId) {
           try {
-            const snippetResponse = await makeRequest({
+            const snippetPromise = makeRequest({
               method: 'get',
               url: '/snippets',
               token,
             });
 
-            const snippets = snippetResponse.data;
-
-            const notesResponse = await makeRequest({
+            const notesPromise = makeRequest({
               method: 'get',
               url: '/notes',
               token,
             });
 
-            const notes = notesResponse.data;
-
-            const todosResponse = await makeRequest({
+            const todosPromise = makeRequest({
               method: 'get',
               url: '/todos',
               token,
             });
 
-            const todos = todosResponse.data;
-
-            const scratchPadResponse = await makeRequest({
+            const scratchPadPromise = makeRequest({
               method: 'get',
               url: '/scratch-pad',
               token,
             });
 
-            const scratchPad = scratchPadResponse.data[0] || {};
-
-            console.log('data', scratchPad);
+            const [
+              snippetResponse,
+              notesResponse,
+              todosResponse,
+              scratchPadResponse,
+            ] = await Promise.all([
+              snippetPromise,
+              notesPromise,
+              todosPromise,
+              scratchPadPromise,
+            ]);
 
             setAppState({
               ...appState,
-              snippets,
-              notes,
-              todos,
-              scratchPad,
+              snippets: snippetResponse.data,
+              notes: notesResponse.data,
+              todos: todosResponse.data,
+              scratchPad: scratchPadResponse.data[0] || {},
               firebase,
               auth: {
                 token,
