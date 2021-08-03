@@ -22,7 +22,7 @@ import ViewNote from './pages/viewNote/viewNote';
 import EditNote from './pages/newNote/newNote';
 import Loading from './pages/loading/loading';
 
-const drawerWidth = 200;
+export const drawerWidth = 200;
 
 const useStyles = makeStyles(() => ({
   root: {

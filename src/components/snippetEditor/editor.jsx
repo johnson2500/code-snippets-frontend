@@ -21,7 +21,6 @@ import {
   Edit, Save, Delete, Close, FiberPin,
 } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-
 import CodeEditor from 'react-simple-code-editor';
 import Highlight, { defaultProps } from 'prism-react-renderer';
 import codeTheme from 'prism-react-renderer/themes/github';
@@ -29,18 +28,20 @@ import codeTheme from 'prism-react-renderer/themes/github';
 import { CODE_LANGUAGES } from '../../helpers/constants';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  card: {
     margin: 0,
     height: '100vh',
     padding: '0 !important',
     borderRadius: 0,
     overflow: 'hidden',
+    maxWidth: 'calc(100vw -200px)',
   },
   cardContent: {
     padding: '0 !important',
+    height: '100%',
     overflow: 'scroll',
   },
-  fillContainer: {
+  fullWidth: {
     width: '100%',
   },
   cardHeader: {
@@ -89,14 +90,14 @@ export default function Editor(props) {
   );
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.card}>
       {
         saved ? <Typography>Saved!</Typography> : ''
       }
       {
         editing ? (
           <CardHeader
-            title="Efditing"
+            title="Editing"
             subheader={(
               <Grid container spacing={3} className={classes.editArea}>
                 <Grid item xs={12}>
@@ -112,7 +113,7 @@ export default function Editor(props) {
                     id="standard-required"
                     label="Description"
                     value={description}
-                    className={classes.fillContainer}
+                    className={classes.fullWidth}
                     onChange={onDescriptionChange}
                   />
                 </Grid>
@@ -123,7 +124,7 @@ export default function Editor(props) {
                     value={language}
                     onChange={onLanguageChange}
                     label="Language"
-                    className={classes.fillContainer}
+                    className={classes.fullWidth}
                   >
                     {
                           CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
@@ -189,10 +190,7 @@ export default function Editor(props) {
           highlight={highlight}
           padding={10}
           style={{
-            // boxSizing: 'border-box',
             fontFamily: '"Dank Mono", "Fira Code", monospace',
-            minHeight: '100%',
-            height: 'calc(100vh - 90px)',
             ...codeTheme.plain,
           }}
         />
