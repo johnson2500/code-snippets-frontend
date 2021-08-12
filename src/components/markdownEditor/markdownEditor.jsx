@@ -16,15 +16,13 @@ export default function NoteViewer(props) {
 
   const {
     id,
-    text,
+    content,
     title,
-    description,
     pinned,
   } = note;
 
-  const [textState, setTextState] = React.useState(text);
+  const [contentState, setContentState] = React.useState(content);
   const [titleState, setTitleState] = React.useState(title);
-  const [descriptionState, setDescriptionState] = React.useState(description);
   const [pinnedState, setPinnedState] = React.useState(pinned || false);
 
   const [editingState, setEditingState] = React.useState(editing);
@@ -37,14 +35,11 @@ export default function NoteViewer(props) {
     const { token } = auth;
 
     const data = {
-      text: textState,
+      content: contentState,
       title: titleState,
-      description: descriptionState,
       pinned: pinnedState,
       id,
     };
-
-    console.log(data);
 
     const isUpdate = !!id;
 
@@ -157,17 +152,15 @@ export default function NoteViewer(props) {
   };
 
   useEffect(() => {
-    setTextState(text);
+    setContentState(content);
     setTitleState(title);
-    setDescriptionState(description);
     setEditingState(editing);
     setDeleted(false);
     setPinnedState(pinned);
   }, [note]);
 
   const editorNote = {
-    text: textState,
-    description: descriptionState,
+    content: contentState,
     title: titleState,
     pinned: pinnedState,
     editing,
@@ -192,8 +185,7 @@ export default function NoteViewer(props) {
         onCloseHandler={() => setEditingState(false)}
         onEditHandler={() => setEditingState(true)}
         onTitleChange={(event) => setTitleState(event.target.value)}
-        onDescriptionChange={(event) => { setDescriptionState(event.target.value); }}
-        onTextChange={setTextState}
+        onTextChange={setContentState}
         onPinHandler={pinChangeHandler}
         setAppState={setAppState}
         appState={appState}

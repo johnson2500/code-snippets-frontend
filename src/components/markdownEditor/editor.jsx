@@ -46,13 +46,12 @@ export default function NoteEditor(props) {
     onCloseHandler,
     onEditHandler,
     onTitleChange,
-    onDescriptionChange,
     onPinHandler,
     onTextChange,
   } = props;
 
   const {
-    text,
+    content,
     title,
     description,
     pinned,
@@ -79,15 +78,6 @@ export default function NoteEditor(props) {
                     label="Title"
                     onChange={onTitleChange}
                     value={title}
-                  />
-                </Grid>
-                <Grid item xs={4}>
-                  <TextField
-                    id="standard-required"
-                    label="Description"
-                    value={description}
-                    className={classes.fillContainer}
-                    onChange={onDescriptionChange}
                   />
                 </Grid>
               </Grid>
@@ -129,7 +119,7 @@ export default function NoteEditor(props) {
       <CardContent className={classes.cardContent}>
         <MDEditor
           className={classes.editor}
-          value={text}
+          value={content}
           height="calc(100vh - 90px)"
           onChange={(val) => onTextChange(val)}
           enableScroll
@@ -150,7 +140,6 @@ NoteEditor.propTypes = {
   onSaveHandler: PropTypes.func,
   onEditHandler: PropTypes.func,
   onTitleChange: PropTypes.func,
-  onDescriptionChange: PropTypes.func,
   onTextChange: PropTypes.func,
   onPinHandler: PropTypes.func,
 };
@@ -166,7 +155,6 @@ NoteEditor.defaultProps = {
   onSaveHandler: () => {},
   onEditHandler: () => {},
   onTitleChange: () => {},
-  onDescriptionChange: () => {},
   onTextChange: () => {},
   onPinHandler: () => {},
 };

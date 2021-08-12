@@ -3,31 +3,17 @@
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import CodeIcon from '@material-ui/icons/Code';
 import {
-  Grid,
   Card,
   CardContent,
-  TextField,
-  Select,
-  MenuItem,
-  Chip,
-  CardHeader,
-  IconButton,
-  InputLabel,
   Typography,
 } from '@material-ui/core';
-import {
-  Edit, Save, Delete, Close, FiberPin,
-} from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import CodeEditor from 'react-simple-code-editor';
-import Highlight, { defaultProps } from 'prism-react-renderer';
 import codeTheme from 'prism-react-renderer/themes/github';
+import { highlight, ViewSnippet, EditSnippet } from './editorComps';
 
-import { CODE_LANGUAGES } from '../../helpers/constants';
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   card: {
     margin: 0,
     height: '100vh',
@@ -41,53 +27,26 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     overflow: 'scroll',
   },
-  fullWidth: {
-    width: '100%',
-  },
-  cardHeader: {
-    background: theme.palette.primary.dark,
-  },
-  editArea: {
-    padding: 10,
-  },
 }));
 
-export default function Editor(props) {
+export default function Editor({
+  snippet,
+  editing,
+  saved,
+  onSaveHandler,
+  onDeleteHandler,
+  onCloseHandler,
+  onEditHandler,
+  onTitleChange,
+  onPinChange,
+  onLanguageChange,
+  onCodeChange,
+}) {
   const {
-    snippet,
-    editing,
-    saved,
-    onSaveHandler,
-    onDeleteHandler,
-    onCloseHandler,
-    onEditHandler,
-    onTitleChange,
-    onPinChange,
-    onDescriptionChange,
-    onLanguageChange,
-    onCodeChange,
-  } = props;
-  const {
-    language, code, title, description, pinned,
+    language, code, title, pinned,
   } = snippet;
 
   const classes = useStyles();
-
-  const highlight = (codeToHighlight) => (
-    <Highlight {...defaultProps} theme={codeTheme} code={codeToHighlight} language="jsx">
-      {({ tokens, getLineProps, getTokenProps }) => (
-        <>
-          {
-            tokens.map((line, i) => (
-              <div {...getLineProps({ line, key: i })}>
-                {line.map((token, key) => <span {...getTokenProps({ token, key })} />)}
-              </div>
-            ))
-            }
-        </>
-      )}
-    </Highlight>
-  );
 
   return (
     <Card className={classes.card}>
@@ -96,90 +55,23 @@ export default function Editor(props) {
       }
       {
         editing ? (
-          <CardHeader
-            title="Editing"
-            subheader={(
-              <Grid container spacing={3} className={classes.editArea}>
-                <Grid item xs={12}>
-                  <TextField
-                    id="standard-required"
-                    label="Title"
-                    onChange={onTitleChange}
-                    value={title}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    id="standard-required"
-                    label="Description"
-                    value={description}
-                    className={classes.fullWidth}
-                    onChange={onDescriptionChange}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <InputLabel id="language-select-label">Language</InputLabel>
-                  <Select
-                    labelId="language-select-label"
-                    value={language}
-                    onChange={onLanguageChange}
-                    label="Language"
-                    className={classes.fullWidth}
-                  >
-                    {
-                          CODE_LANGUAGES.map((lang) => <MenuItem value={lang}>{lang}</MenuItem>)
-                        }
-                  </Select>
-                </Grid>
-              </Grid>
-            )}
-            className={classes.cardHeader}
-            action={(
-              <div>
-                <IconButton aria-label="delete" onClick={onDeleteHandler}>
-                  <Delete />
-                </IconButton>
-                <IconButton aria-label="save" onClick={onSaveHandler}>
-                  <Save />
-                </IconButton>
-                <IconButton aria-label="close" onClick={onCloseHandler}>
-                  <Close />
-                </IconButton>
-              </div>
-              )}
+          <EditSnippet
+            title={title}
+            language={language}
+            onTitleChange={onTitleChange}
+            onLanguageChange={onLanguageChange}
+            onDeleteHandler={onDeleteHandler}
+            onCloseHandler={onCloseHandler}
+            onSaveHandler={onSaveHandler}
           />
         ) : (
-          <CardHeader
+          <ViewSnippet
             title={title}
-            subheader={(
-              <div>
-                <div>
-                  {description}
-                </div>
-                <Chip
-                  icon={<CodeIcon />}
-                  label={language}
-                  variant="outlined"
-                  className={classes.flexItem}
-                />
-              </div>
-            )}
-            className={classes.cardHeader}
-            action={(
-              <div>
-                <IconButton aria-label="delete" onClick={onDeleteHandler}>
-                  <Delete />
-                </IconButton>
-                <IconButton aria-label="settings" onClick={onPinChange}>
-                  <FiberPin
-                    color={pinned ? 'action' : 'disabled'}
-                  />
-                </IconButton>
-                <IconButton aria-label="settings" onClick={onEditHandler}>
-                  <Edit />
-                </IconButton>
-              </div>
-              )}
+            pinned={pinned}
+            language={language}
+            onDeleteHandler={onDeleteHandler}
+            onPinChange={onPinChange}
+            onEditHandler={onEditHandler}
           />
         )
       }
@@ -201,16 +93,15 @@ export default function Editor(props) {
 
 Editor.propTypes = {
   appState: PropTypes.object,
-  setAppState: PropTypes.func,
   snippet: PropTypes.object,
   editing: PropTypes.bool,
   saved: PropTypes.bool,
+  setAppState: PropTypes.func,
   onCloseHandler: PropTypes.func,
   onDeleteHandler: PropTypes.func,
   onSaveHandler: PropTypes.func,
   onEditHandler: PropTypes.func,
   onTitleChange: PropTypes.func,
-  onDescriptionChange: PropTypes.func,
   onLanguageChange: PropTypes.func,
   onCodeChange: PropTypes.func,
   onPinChange: PropTypes.func,
@@ -218,16 +109,15 @@ Editor.propTypes = {
 
 Editor.defaultProps = {
   appState: {},
-  setAppState: () => {},
   snippet: {},
   editing: true,
   saved: false,
+  setAppState: () => {},
   onCloseHandler: () => {},
   onDeleteHandler: () => {},
   onSaveHandler: () => {},
   onEditHandler: () => {},
   onTitleChange: () => {},
-  onDescriptionChange: () => {},
   onLanguageChange: () => {},
   onCodeChange: () => {},
   onPinChange: () => {},

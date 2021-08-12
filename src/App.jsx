@@ -21,6 +21,7 @@ import ViewSnippet from './pages/viewSnippet/viewSnippet';
 import ViewNote from './pages/viewNote/viewNote';
 import EditNote from './pages/newNote/newNote';
 import Loading from './pages/loading/loading';
+import FolderView from './pages/folderView/folderView';
 
 export const drawerWidth = 200;
 
@@ -181,6 +182,9 @@ export default function App() {
               <Route exact path="/promo-page">
                 <Header leftOffset={0} />
                 <PromoPage />
+              </Route>
+              <Route exact path="/folder-view">
+                <FolderView />
               </Route>
               <Route exact path="/settings">
                 <SettingsPage
