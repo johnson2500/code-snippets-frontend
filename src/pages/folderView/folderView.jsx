@@ -7,19 +7,19 @@ import {
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
 
 }));
 
-const getFolders = (snippets) => {
-  const folderNames = snippets.f;
-};
+// const getFolders = (snippets) => {
+//   const folderNames = snippets.f;
+// };
 
 export default function FolderView(props) {
   const classes = useStyles();
-  const { setAppState, appState } = props;
+  const { appState } = props;
 
-  const [snippetCollaspeOpenState, setSnippetCollaspeOpenState] = React.useState(false);
+  const [snippetCollaspeOpenState] = React.useState(false);
 
   const { snippets = [] } = appState;
 
