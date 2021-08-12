@@ -7,20 +7,18 @@ import Editor from './editor';
 
 import { makeRequest } from '../../helpers';
 
-export default function SnippetViewer(props) {
+export default function SnippetViewer({
+  appState, setAppState, snippet, editing, isNew,
+}) {
   const history = useHistory();
-  const {
-    appState, setAppState, snippet, editing, isNew,
-  } = props;
 
   const {
-    language = 'javascript', id, code, title, description, pinned,
+    language = 'javascript', id, content, title, pinned,
   } = snippet;
 
   const [languageState, setLanguage] = React.useState(language);
-  const [codeState, setCode] = React.useState(code);
+  const [contentState, setCode] = React.useState(content);
   const [titleState, setTitle] = React.useState(title);
-  const [descriptionState, setDescription] = React.useState(description);
   const [pinnedState, setPinnedState] = React.useState(pinned);
 
   const [editingState, setEditingState] = React.useState(editing);
@@ -33,10 +31,9 @@ export default function SnippetViewer(props) {
     const { token } = auth;
 
     const data = {
-      code: codeState,
+      content: contentState,
       language: languageState,
       title: titleState,
-      description: descriptionState,
       pinned: pinnedState,
       id,
     };
@@ -166,9 +163,8 @@ export default function SnippetViewer(props) {
 
   useEffect(() => {
     setLanguage(language);
-    setCode(code);
+    setCode(content);
     setTitle(title);
-    setDescription(description);
     setEditingState(editing);
     setPinnedState(pinned);
     setDeleted(false);
@@ -176,8 +172,7 @@ export default function SnippetViewer(props) {
 
   const editorSnippet = {
     language: languageState,
-    code: codeState,
-    description: descriptionState,
+    code: contentState,
     title: titleState,
     pinned: pinnedState,
     deleted: false,
@@ -195,13 +190,11 @@ export default function SnippetViewer(props) {
 
   return (
     <Editor
-        // new
       onSaveHandler={saveSnippetHandler}
       onDeleteHandler={deleteSnippetHandler}
       onCloseHandler={() => setEditingState(false)}
       onEditHandler={() => setEditingState(true)}
       onTitleChange={(event) => setTitle(event.target.value)}
-      onDescriptionChange={(event) => setDescription(event.target.value)}
       onLanguageChange={(event) => setLanguage(event.target.value)}
       onCodeChange={(codeText) => setCode(codeText)}
       onPinChange={pinChangeHandler}
