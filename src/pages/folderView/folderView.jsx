@@ -54,10 +54,8 @@ export default function FolderView(props) {
 
 FolderView.propTypes = {
   appState: PropTypes.object,
-  setAppState: PropTypes.func,
 };
 
 FolderView.defaultProps = {
   appState: {},
-  setAppState: () => {},
 };
