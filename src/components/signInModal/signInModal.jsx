@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignInUpModal(props) {
   const classes = useStyles();
-  const { setAppState, appState } = props;
+  const { firebase } = props;
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = React.useState(getModalStyle);
 
@@ -37,8 +37,7 @@ export default function SignInUpModal(props) {
     <Modal open>
       <div style={modalStyle} className={classes.paper}>
         <SignInSignUp
-          appState={appState}
-          setAppState={setAppState}
+          firebase={firebase}
         />
       </div>
     </Modal>
@@ -46,11 +45,9 @@ export default function SignInUpModal(props) {
 }
 
 SignInUpModal.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+  firebase: PropTypes.object,
 };
 
 SignInUpModal.defaultProps = {
-  appState: {},
-  setAppState: () => {},
+  firebase: {},
 };

@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -56,8 +55,6 @@ export default function NoteEditor(props) {
     description,
     pinned,
   } = note;
-
-  console.log(note);
 
   const classes = useStyles();
 
@@ -130,8 +127,6 @@ export default function NoteEditor(props) {
 }
 
 NoteEditor.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
   note: PropTypes.object,
   editing: PropTypes.bool,
   saved: PropTypes.bool,
@@ -145,8 +140,6 @@ NoteEditor.propTypes = {
 };
 
 NoteEditor.defaultProps = {
-  appState: {},
-  setAppState: () => {},
   note: {},
   editing: true,
   saved: false,

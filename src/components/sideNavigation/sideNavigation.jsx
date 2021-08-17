@@ -20,7 +20,11 @@ import PropTypes from 'prop-types';
 import {
   useHistory,
 } from 'react-router-dom';
-import DefaultState from '../../initialState';
+import { connect } from 'react-redux';
+import store from '../../redux/store';
+import { SET_VIEW_SNIPPET } from '../../redux/reducers/viewSnippetReducers';
+import { SET_VIEW_NOTE } from '../../redux/reducers/viewNoteReducers';
+// import store from '../../redux/store';
 
 const drawerWidth = 200;
 
@@ -49,58 +53,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DrawerBar(props) {
+function DrawerBar(props) {
   const classes = useStyles();
   const history = useHistory();
-  const { appState, setAppState } = props;
-
-  const { snippets = [], home, notes = [] } = appState;
+  const { snippets, notes } = props;
 
   const snippetClickHandler = (snippet) => {
-    setAppState({
-      ...appState,
-      view: {
-        snippet,
-        editing: false,
-      },
+    store.dispatch({
+      type: SET_VIEW_SNIPPET,
+      payload: snippet,
     });
 
-    history.push('/view-snippet');
+    history.push(`/view-snippet?snippet=${snippet.id}`);
   };
 
   const noteClickHandler = (note) => {
-    setAppState({
-      ...appState,
-      view: {
-        editing: false,
-        note,
-      },
+    store.dispatch({
+      type: SET_VIEW_NOTE,
+      payload: note,
     });
 
-    history.push('/view-note');
+    history.push(`/view-note?note=${note.id}`);
   };
 
   const handleNewSnippet = () => {
-    setAppState({
-      ...appState,
-      home: {
-        ...home,
-        editing: true,
-      },
-      edit: {
-        editing: true,
-      },
-      editorSnippet: DefaultState.editorSnippet,
-    });
-
     history.push('/new-snippet');
   };
 
   const handleNewNote = () => {
-    setAppState({
-      ...appState,
-    });
-
     history.push('/new-note');
   };
 
@@ -171,7 +151,7 @@ export default function DrawerBar(props) {
           {
             snippets.map((snippet) => (
               <ListItem
-                key={snippet.id}
+                key={`${snippet.id}${snippet.owner_id}`}
                 button
                 onClick={() => {
                   snippetClickHandler(snippet);
@@ -222,11 +202,15 @@ export default function DrawerBar(props) {
 }
 
 DrawerBar.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+  snippets: PropTypes.array,
+  notes: PropTypes.array,
 };
 
 DrawerBar.defaultProps = {
-  appState: {},
-  setAppState: () => {},
+  snippets: [],
+  notes: [],
 };
+
+const mapStateToProps = (state) => (state);
+
+export default connect(mapStateToProps)(DrawerBar);

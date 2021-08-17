@@ -3,24 +3,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
+import { connect } from 'react-redux';
 import Todo from '../../components/todo/todo';
 import ScratchPad from '../../components/scratchpad/scratchPad';
 
-export default function Home(props) {
-  const { appState, setAppState } = props;
+function Home(props) {
+  const {
+    scratchPad, auth, todos,
+  } = props;
+
   return (
     <>
       <Grid container spacing={3}>
         <Grid item xs={6}>
           <ScratchPad
-            setAppState={setAppState}
-            appState={appState}
+            scratchPad={scratchPad}
+            auth={auth}
           />
         </Grid>
         <Grid item xs={6}>
           <Todo
-            setAppState={setAppState}
-            appState={appState}
+            todos={todos}
+            auth={auth}
           />
         </Grid>
       </Grid>
@@ -29,11 +33,17 @@ export default function Home(props) {
 }
 
 Home.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+  scratchPad: PropTypes.object,
+  auth: PropTypes.object,
+  todos: PropTypes.array,
 };
 
 Home.defaultProps = {
-  appState: {},
-  setAppState: () => {},
+  scratchPad: {},
+  auth: {},
+  todos: {},
 };
+
+const mapStateToProps = (state) => (state);
+
+export default connect(mapStateToProps)(Home);

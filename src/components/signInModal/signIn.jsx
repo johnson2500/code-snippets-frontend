@@ -7,6 +7,8 @@ import {
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import store from '../../redux/store';
+import { SET_AUTH } from '../../redux/reducers/authReducers';
 
 const useStyles = makeStyles(() => ({
   fullWidth: {
@@ -15,8 +17,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function SignIn(props) {
-  const { appState, setAppState } = props;
-  const { firebase } = appState;
+  const { firebase } = props;
 
   const classes = useStyles();
 
@@ -49,29 +50,28 @@ export default function SignIn(props) {
       .then(async (userCredential) => {
         // Signed in
         const { user } = userCredential;
+        const { uid: userId } = user;
 
         const token = await user.getIdToken();
 
         localStorage.setItem('codeSnippetsToken', token);
-        localStorage.setItem('userId', user.uid);
+        localStorage.setItem('userId', userId);
 
-        setAppState({
-          ...appState,
-          auth: {
+        store.dispatch({
+          type: SET_AUTH,
+          payload: {
             token,
-            userId: user.uid,
+            userId,
           },
         });
 
         history.push('/');
-        // ...
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode);
         console.log(errorMessage);
-        // ..
       });
   };
 
@@ -110,13 +110,9 @@ export default function SignIn(props) {
 }
 
 SignIn.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+  firebase: PropTypes.object,
 };
 
 SignIn.defaultProps = {
-  setAppState: {},
-  appState: {
-    firebase: { auth: {} },
-  },
+  firebase: { },
 };

@@ -2,10 +2,9 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
-import Snippet from '../snippet/snippet';
 
 export default function SnippetList(props) {
-  const { snippets = [], setAppState, appState } = props;
+  const { snippets = [] } = props;
 
   return (
     <Grid>
@@ -13,11 +12,7 @@ export default function SnippetList(props) {
         {
             snippets.map((codeItem) => (
               <Grid item>
-                <Snippet
-                  snippet={{}}
-                  setAppState={setAppState}
-                  appState={appState}
-                />
+                {codeItem}
               </Grid>
             ))
         }
@@ -29,8 +24,4 @@ export default function SnippetList(props) {
 SnippetList.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   snippets: PropTypes.array,
-  appState: {
-    firebase: { auth: PropTypes.object },
-  },
-  setAppState: {},
 };

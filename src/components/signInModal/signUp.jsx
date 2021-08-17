@@ -6,6 +6,9 @@ import {
   TextField, Typography, Button,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
+import { makeRequest } from '../../helpers';
+import store from '../../redux/store';
+import { SET_AUTH_USER } from '../../redux/reducers/authReducers';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -17,24 +20,38 @@ const useStyles = makeStyles(() => ({
   fullWidth: {
     width: '100%',
   },
+  errorMessage: {
+    color: 'red',
+  },
 }));
 
 export default function SignUp(props) {
-  const { appState } = props;
-  const { firebase } = appState;
+  const { firebase } = props;
 
   // eslint-disable-next-line no-unused-vars
   const classes = useStyles();
   const [state, setState] = React.useState({
     email: null,
     password: null,
+    confirmPassword: null,
+    userName: null,
   });
+
+  const [errorMessageState, setErrorMessageState] = React.useState();
 
   const handlePasswordChange = (e) => {
     const { value } = e.target;
     setState({
       ...state,
       password: value,
+    });
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const { value } = e.target;
+    setState({
+      ...state,
+      confirmPassword: value,
     });
   };
 
@@ -46,28 +63,64 @@ export default function SignUp(props) {
     });
   };
 
-  const handleSubmit = () => {
-    const { email, password } = state;
-    // eslint-disable-next-line react/prop-types
+  const handleUserNameChange = (e) => {
+    const { value } = e.target;
+    setState({
+      ...state,
+      userName: value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    const { email, password, confirmPassword } = state;
+
+    if (password !== confirmPassword) {
+      console.log('Password not equal');
+
+      setErrorMessageState('Passwords do not match.');
+      return;
+    }
+
+    try {
+      const existsRes = await makeRequest({
+        url: '/users/is-available',
+        method: 'post',
+        data: {
+          userName: state.userName,
+        },
+      });
+
+      if (!existsRes || !existsRes.data || existsRes.data.exists) {
+        setErrorMessageState(`Username ${state.userName} already exists.`);
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+      setErrorMessageState(err.message);
+      return;
+    }
+
+    store.dispatch({
+      type: SET_AUTH_USER,
+      payload: {
+        email: state.email,
+        userName: state.userName,
+        isNewUser: true,
+      },
+    });
+
     firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // Signed in
-        const { user } = userCredential;
-        console.log(user);
-        // ...
-      })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-        // ..
+        console.log(error.message);
+        setErrorMessageState(error.message);
       });
   };
 
   return (
     <>
       <Typography variant="h6" align="center">Sign Up</Typography>
+      <br />
+      <Typography variant="body1" className={classes.errorMessage}>{errorMessageState}</Typography>
       <br />
       <TextField
         type="email"
@@ -87,6 +140,25 @@ export default function SignUp(props) {
       />
       <br />
       <br />
+      <TextField
+        type="password"
+        variant="outlined"
+        label="Confirm Password"
+        onChange={handleConfirmPasswordChange}
+        className={classes.fullWidth}
+      />
+      <br />
+      <br />
+      {' '}
+      <TextField
+        type="text"
+        variant="outlined"
+        label="Username"
+        onChange={handleUserNameChange}
+        className={classes.fullWidth}
+      />
+      <br />
+      <br />
       <Button
         variant="contained"
         color="primary"
@@ -100,9 +172,9 @@ export default function SignUp(props) {
 }
 
 SignUp.propTypes = {
-  appState: PropTypes.object,
+  firebase: PropTypes.object,
 };
 
 SignUp.defaultProps = {
-  appState: {},
+  firebase: {},
 };

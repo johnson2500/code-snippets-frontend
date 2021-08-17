@@ -1,8 +1,11 @@
+/* eslint-disable react/forbid-prop-types */
 /* eslint-disable no-constant-condition */
 import React, { useEffect } from 'react';
 import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { theme } from './AppStyles';
 import './App.css';
 
@@ -22,6 +25,12 @@ import ViewNote from './pages/viewNote/viewNote';
 import EditNote from './pages/newNote/newNote';
 import Loading from './pages/loading/loading';
 import FolderView from './pages/folderView/folderView';
+
+import { SET_SNIPPETS } from './redux/reducers/snippetsReducers';
+import { SET_NOTES } from './redux/reducers/notesReducers';
+import { SET_SCRATCHPAD } from './redux/reducers/scratchPadReducers';
+import { SET_TODOS } from './redux/reducers/todoReducers';
+import { SET_AUTH_USER } from './redux/reducers/authReducers';
 
 export const drawerWidth = 200;
 
@@ -48,13 +57,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const checkIsAuthenticated = (appState) => {
-  const { auth: { token } } = appState;
+export const checkIsAuthenticated = (auth) => {
+  const { token } = auth;
 
   return !!token;
 };
 
-export default function App() {
+function App(props) {
+  const { dispatch, auth } = props;
+  console.log(auth);
   const classes = useStyles();
 
   const [appState, setAppState] = React.useState({
@@ -65,17 +76,17 @@ export default function App() {
   const [stateFound, setStateFound] = React.useState(false);
 
   // component will mount
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged(async (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        // Your code here
-        const { uid: userId } = user;
+  useEffect(async () => {
+    firebase.auth().onAuthStateChanged(async (fbUser) => {
+      if (fbUser) {
+        const { uid: userId } = fbUser;
         const token = await firebase.auth().currentUser.getIdToken();
 
         localStorage.setItem('codeSnippetsToken', token);
         localStorage.setItem('userId', userId);
+
+        console.log('auth', auth);
+        // is a new user
 
         if (token && userId) {
           try {
@@ -115,18 +126,11 @@ export default function App() {
               scratchPadPromise,
             ]);
 
-            setAppState({
-              ...appState,
-              snippets: snippetResponse.data,
-              notes: notesResponse.data,
-              todos: todosResponse.data,
-              scratchPad: scratchPadResponse.data[0] || {},
-              firebase,
-              auth: {
-                token,
-                userId,
-              },
-            });
+            dispatch({ type: SET_SNIPPETS, payload: snippetResponse.data });
+            dispatch({ type: SET_NOTES, payload: notesResponse.data });
+            dispatch({ type: SET_SCRATCHPAD, payload: scratchPadResponse.data });
+            dispatch({ type: SET_TODOS, payload: todosResponse.data });
+            dispatch({ type: SET_AUTH_USER, payload: { token, userId } });
           } catch (error) {
             console.log(error.message);
           }
@@ -135,22 +139,42 @@ export default function App() {
         localStorage.removeItem('codeSnippetsToken');
         localStorage.removeItem('userId');
 
-        setAppState({
-          ...appState,
-          firebase,
-          auth: {
-            token: null,
-            userId: null,
-          },
+        dispatch({
+          type: SET_AUTH_USER,
+          payload: { token: null, userId: null },
         });
-        console.log('NO USER');
       }
 
       setStateFound(true);
     });
   }, []);
 
-  const isAuthenticated = checkIsAuthenticated(appState);
+  useEffect(async () => {
+    if (auth.isNewUser && auth.userId) {
+      try {
+        const appUser = await makeRequest({
+          url: '/user',
+          method: 'post',
+          data: {
+            userName: auth.userName,
+            email: auth.email,
+            ownerId: auth.userId,
+          },
+        });
+
+        console.log('authUser', appUser);
+
+        dispatch({
+          type: SET_AUTH_USER,
+          payload: appUser.data,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }, [auth.isNewUser, auth.userId]);
+
+  const isAuthenticated = checkIsAuthenticated(auth);
 
   if (!stateFound) {
     return (
@@ -161,8 +185,7 @@ export default function App() {
   if (!isAuthenticated) {
     return (
       <SignInUpModal
-        appState={appState}
-        setAppState={setAppState}
+        firebase={firebase}
       />
     );
   }
@@ -173,7 +196,7 @@ export default function App() {
         <div className={classes.root}>
           <CssBaseline />
           <Switch>
-            <Route exact path={['/list', '/', '/new-snippet', '/settings', '/view-snippet', '/new-note', '/view-note']}>
+            <Route path={['/list', '/', '/new-snippet', '/settings', '/view-snippet', '/new-note', '/view-note']}>
               <DrawerNav setAppState={setAppState} appState={appState} />
             </Route>
           </Switch>
@@ -187,47 +210,25 @@ export default function App() {
                 <FolderView />
               </Route>
               <Route exact path="/settings">
-                <SettingsPage
-                  appState={appState}
-                  setAppState={setAppState}
-                  settings={appState.settings}
-                />
+                <SettingsPage />
               </Route>
               <Route exact path="/list">
-                <ListView
-                  appState={appState}
-                  setAppState={setAppState}
-                />
+                <ListView />
               </Route>
               <Route exact path="/new-snippet">
-                <EditSnippet
-                  appState={appState}
-                  setAppState={setAppState}
-                />
+                <EditSnippet />
               </Route>
               <Route exact path="/view-snippet">
-                <ViewSnippet
-                  appState={appState}
-                  setAppState={setAppState}
-                />
+                <ViewSnippet />
               </Route>
               <Route exact path="/new-note">
-                <EditNote
-                  appState={appState}
-                  setAppState={setAppState}
-                />
+                <EditNote />
               </Route>
               <Route exact path="/view-note">
-                <ViewNote
-                  appState={appState}
-                  setAppState={setAppState}
-                />
+                <ViewNote />
               </Route>
               <Route exact path="/">
-                <Home
-                  appState={appState}
-                  setAppState={setAppState}
-                />
+                <Home />
               </Route>
             </Switch>
           </main>
@@ -236,3 +237,17 @@ export default function App() {
     </ThemeProvider>
   );
 }
+App.propTypes = {
+  auth: PropTypes.object,
+  dispatch: PropTypes.func,
+};
+
+App.defaultProps = {
+  dispatch: () => { },
+  auth: {
+  },
+};
+
+const mapStateToProps = (state) => ({ auth: state.auth });
+
+export default connect(mapStateToProps)(App);

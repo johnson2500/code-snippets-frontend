@@ -2,24 +2,27 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import Editor from './editor';
 
 import { makeRequest } from '../../helpers';
+import store from '../../redux/store';
+import { ADD_NOTE, DELETE_NOTE, UPDATE_NOTE } from '../../redux/reducers/notesReducers';
+import { SET_VIEW_NOTE } from '../../redux/reducers/viewNoteReducers';
 
-export default function NoteViewer(props) {
-  const {
-    appState,
-    setAppState,
-    note,
-    editing,
-  } = props;
-
+export default function NoteViewer({
+  note,
+  editing,
+  auth,
+}) {
   const {
     id,
     content,
     title,
     pinned,
   } = note;
+
+  const history = useHistory();
 
   const [contentState, setContentState] = React.useState(content);
   const [titleState, setTitleState] = React.useState(title);
@@ -31,7 +34,6 @@ export default function NoteViewer(props) {
   const [savedState, setSavedState] = React.useState(false);
 
   const saveNoteHandler = async () => {
-    const { auth, notes } = appState;
     const { token } = auth;
 
     const data = {
@@ -44,112 +46,104 @@ export default function NoteViewer(props) {
     const isUpdate = !!id;
 
     try {
-      const requestSnippet = await makeRequest({
+      const requestNote = await makeRequest({
         url: '/note',
         token,
         data,
         method: isUpdate ? 'put' : 'post',
       });
 
-      const { id: responseId } = requestSnippet;
-
-      let newNotes = [];
-
-      if (!isUpdate) {
-        newNotes = [
-          ...notes,
-          { ...data, id: responseId }];
-      } else {
-        newNotes = notes.map((snip) => {
-          // if the id matches then update the list with
-          if (snip.id === id) {
-            return data;
-          }
-          return snip;
-        });
-      }
-
-      setAppState({
-        ...appState,
-        notes: newNotes,
-      });
-
       setEditingState(!editing);
 
       setSavedState(true);
 
-      setTimeout(() => setSavedState(false), 3000);
+      if (isUpdate) {
+        store.dispatch({
+          type: UPDATE_NOTE,
+          payload: requestNote.data,
+        });
+      } else {
+        store.dispatch({
+          type: ADD_NOTE,
+          payload: requestNote.data,
+        });
+
+        store.dispatch({
+          type: SET_VIEW_NOTE,
+          payload: requestNote.data,
+        });
+
+        history.push(`/view-note?note=${requestNote.data.id}`);
+      }
     } catch (error) {
       console.log(`Error: /snippet ${error.message}`);
     }
   };
 
   const deleteNoteHandler = async () => {
-    const { auth, notes = [] } = appState;
     const { token } = auth;
 
     try {
-      await makeRequest({
+      const noteResponse = await makeRequest({
         method: 'delete',
         url: `/note/${id}`,
         token,
       });
 
-      const newSnippets = notes.filter((snip) => snip.id !== id) || [];
-
-      setAppState({
-        ...appState,
-        notes: newSnippets,
-        editorNote: newSnippets[0],
-      });
+      const { id: deletedNoteId } = noteResponse.data;
 
       setDeleted(true);
-    } catch (error) {
-      console.log(`Error: ${error}`);
-    }
-  };
 
-  const pinChangeHandler = async () => {
-    const { auth, notes = [] } = appState;
-    const { token } = auth;
-
-    // if this is new snippet return
-    if (!id) {
-      return;
-    }
-
-    try {
-      await makeRequest({
-        method: 'post',
-        url: '/note/pin',
-        data: {
-          pinned: !pinnedState,
-          id,
-        },
-        token,
-      });
-
-      setPinnedState(!pinnedState);
-
-      const newNotes = notes.map((snip) => {
-        if (snip.id !== id) {
-          return {
-            ...snip,
-            pinned: pinnedState,
-          };
-        }
-        return snip;
-      });
-
-      setAppState({
-        ...appState,
-        notes: newNotes,
-        editorSnippet: newNotes[0],
+      store.dispatch({
+        type: DELETE_NOTE,
+        payload: deletedNoteId,
       });
     } catch (error) {
       console.log(`Error: ${error}`);
     }
   };
+
+  // const pinChangeHandler = async () => {
+  //   const { auth, notes = [] } = appState;
+  //   const { token } = auth;
+
+  //   // if this is new snippet return
+  //   if (!id) {
+  //     return;
+  //   }
+
+  //   try {
+  //     await makeRequest({
+  //       method: 'post',
+  //       url: '/note/pin',
+  //       data: {
+  //         pinned: !pinnedState,
+  //         id,
+  //       },
+  //       token,
+  //     });
+
+  //     setPinnedState(!pinnedState);
+
+  //     const newNotes = notes.map((snip) => {
+  //       if (snip.id !== id) {
+  //         return {
+  //           ...snip,
+  //           pinned: pinnedState,
+  //         };
+  //       }
+  //       return snip;
+  //     });
+
+  //     setAppState({
+  //       ...appState,
+  //       notes: newNotes,
+  //       editorSnippet: newNotes[0],
+  //     });
+  //   } catch (error) {
+  //     console.log(`Error: ${error}`);
+  //   }
+  // };
 
   useEffect(() => {
     setContentState(content);
@@ -169,11 +163,9 @@ export default function NoteViewer(props) {
 
   if (deletedState) {
     return (
-      <>
-        <Typography variant="h4">
-          Note Deleted.
-        </Typography>
-      </>
+      <Typography variant="h4">
+        Note Deleted.
+      </Typography>
     );
   }
 
@@ -186,9 +178,7 @@ export default function NoteViewer(props) {
         onEditHandler={() => setEditingState(true)}
         onTitleChange={(event) => setTitleState(event.target.value)}
         onTextChange={setContentState}
-        onPinHandler={pinChangeHandler}
-        setAppState={setAppState}
-        appState={appState}
+        onPinHandler={() => {}}
         note={editorNote}
         editing={editingState}
         saved={savedState}
@@ -198,15 +188,13 @@ export default function NoteViewer(props) {
 }
 
 NoteViewer.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+  auth: PropTypes.object,
   note: PropTypes.object,
   editing: PropTypes.bool,
 };
 
 NoteViewer.defaultProps = {
-  appState: {},
-  setAppState: () => {},
+  auth: {},
   note: {},
   editing: true,
 };

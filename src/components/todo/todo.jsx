@@ -10,6 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { Typography, TextField, Divider } from '@material-ui/core';
 import { makeRequest } from '../../helpers';
 import ListItemLink from './todoItem';
+import { ADD_TODO } from '../../redux/reducers/todoReducers';
+import store from '../../redux/store';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,13 +36,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SimpleList(props) {
+export default function Todo(props) {
   const classes = useStyles();
-  const { appState, setAppState } = props;
 
-  const { todos = [], auth: { token } } = appState;
-
-  const [listState, setListState] = useState(todos);
+  const { todos = [], auth } = props;
+  const { token } = auth;
 
   const [todoItemState, setTodoItemState] = useState('');
 
@@ -49,22 +49,19 @@ export default function SimpleList(props) {
       url: '/todo',
       method: 'post',
       data: {
-        todo: todoItemState,
+        content: todoItemState,
       },
       token,
     });
 
-    setListState([
-      ...listState,
-      { todo: todoItemState, checked: false, id: todoResponse },
-    ]);
+    const todoItem = todoResponse.data;
+
+    store.dispatch({
+      type: ADD_TODO,
+      payload: todoItem,
+    });
 
     setTodoItemState('');
-
-    setAppState({
-      ...appState,
-      todos: listState,
-    });
   };
 
   return (
@@ -86,19 +83,17 @@ export default function SimpleList(props) {
           placeholder="Add Todo"
           style={{ width: '80%' }}
           onChange={(e) => setTodoItemState(e.target.value)}
+          value={todoItemState}
         />
       </List>
       <Divider />
       <List component="nav" aria-label="secondary mailbox folders">
         {
-              listState.map((todoItem) => (
+              todos.map((todoItem) => (
                 <ListItemLink
                   key={todoItem.id}
                   todoItem={todoItem}
-                  setListState={setListState}
-                  listState={listState}
-                  setAppState={setAppState}
-                  appState={appState}
+                  auth={auth}
                 />
               ))
           }
@@ -107,14 +102,12 @@ export default function SimpleList(props) {
   );
 }
 
-SimpleList.propTypes = {
-  setAppState: PropTypes.func,
-  appState: PropTypes.object,
+Todo.propTypes = {
   todos: PropTypes.array,
+  auth: PropTypes.object,
 };
 
-SimpleList.defaultProps = {
-  setAppState: () => {},
-  appState: {},
+Todo.defaultProps = {
   todos: [],
+  auth: {},
 };

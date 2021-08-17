@@ -23,7 +23,7 @@ const useStyles = makeStyles({
 
 export default function SignInSignUp(props) {
   const classes = useStyles();
-  const { setAppState, appState } = props;
+  const { firebase } = props;
 
   const [state, setState] = React.useState({
     signIn: true,
@@ -48,13 +48,11 @@ export default function SignInSignUp(props) {
             signIn
               ? (
                 <SignIn
-                  appState={appState}
-                  setAppState={setAppState}
+                  firebase={firebase}
                 />
               ) : (
                 <SignUp
-                  appState={appState}
-                  setAppState={setAppState}
+                  firebase={firebase}
                 />
               )
         }
@@ -84,11 +82,9 @@ export default function SignInSignUp(props) {
 }
 
 SignInSignUp.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+  firebase: PropTypes.object,
 };
 
 SignInSignUp.defaultProps = {
-  appState: {},
-  setAppState: () => {},
+  firebase: {},
 };

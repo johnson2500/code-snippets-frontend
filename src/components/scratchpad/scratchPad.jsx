@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/no-unused-prop-types */
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Paper, Grid, Select, Typography, MenuItem,
 } from '@material-ui/core';
@@ -12,6 +13,8 @@ import Highlight, { defaultProps } from 'prism-react-renderer';
 import codeTheme from 'prism-react-renderer/themes/github';
 import { makeRequest } from '../../helpers';
 import { CODE_LANGUAGES } from '../../helpers/constants';
+import { SET_SCRATCHPAD } from '../../redux/reducers/scratchPadReducers';
+import store from '../../redux/store';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -46,22 +49,16 @@ const highlight = (code) => (
 
 export default function CodeScratchPad(props) {
   const classes = useStyles();
-  const { setAppState, appState } = props;
-  const { auth: { token }, scratchPad = {} } = appState;
+  const { scratchPad, auth: { token } } = props;
   const { language, content, id } = scratchPad;
+
   const [languageState, setLanguageState] = React.useState(language || 'javascript');
   const [codeState, setCodeState] = React.useState(content || 'Hello World');
 
   const saveScratchPad = async () => {
     const method = id ? 'put' : 'post';
 
-    console.log({
-      content: codeState,
-      language: languageState,
-      id,
-    });
-
-    const responseId = await makeRequest({
+    const scratchPadRes = await makeRequest({
       method,
       data: {
         content: codeState,
@@ -72,24 +69,16 @@ export default function CodeScratchPad(props) {
       url: '/scratch-pad',
     });
 
-    setAppState({
-      ...appState,
-      scratchPad: {
-        id: id || responseId.data,
-        content: codeState,
-        language: languageState,
-      },
+    store.dispatch({
+      type: SET_SCRATCHPAD,
+      payload: { ...scratchPadRes },
     });
   };
 
   // componenet clean up
-  useEffect(() => {
-    console.log('Firing use effect');
-
-    return async function cleanup() {
-      await saveScratchPad();
-    };
-  }, []);
+  // useEffect(() => async function cleanup() {
+  //   await saveScratchPad();
+  // }, []);
 
   return (
     <Paper className={classes.paper}>
@@ -134,15 +123,14 @@ export default function CodeScratchPad(props) {
 }
 
 CodeScratchPad.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
   scratchPad: PropTypes.object,
+
+  auth: PropTypes.object,
+  dispatch: PropTypes.func,
 };
 
 CodeScratchPad.defaultProps = {
   scratchPad: {},
-  appState: {
-    firebase: { auth: PropTypes.object },
-  },
-  setAppState: {},
+  auth: {},
+  dispatch: () => {},
 };

@@ -2,29 +2,67 @@
 /* eslint-disable react/require-default-props */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import NoteEditor from '../../components/markdownEditor/markdownEditor';
 
-export default function EditPage(props) {
-  const { appState, setAppState } = props;
-  const { view } = appState;
-  const { note, editing } = view;
+const getNoteId = (history) => {
+  const { location = {} } = history;
+  const { search } = location;
+
+  const parsedSearch = search.replace('?', '');
+
+  const splitSearch = parsedSearch.split('=');
+
+  return parseInt(splitSearch[1], 10);
+};
+
+function ViewNote({
+  notes = [],
+  viewNote = {},
+  auth,
+}) {
+  console.log(viewNote);
+  const { note, editing } = viewNote;
+  const history = useHistory();
+  const noteId = getNoteId(history);
+
+  // if refresh happens
+  if (Object.keys(note).length === 0) {
+    const noteData = notes.filter((item) => item.id === noteId);
+
+    return (
+      <NoteEditor
+        note={noteData[0]}
+        auth={auth}
+        editing
+      />
+    );
+  }
 
   return (
     <NoteEditor
-      appState={appState}
-      setAppState={setAppState}
       note={note}
       editing={editing}
     />
   );
 }
 
-EditPage.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+ViewNote.propTypes = {
+  notes: PropTypes.array,
+  viewNote: PropTypes.object,
+  auth: PropTypes.object,
 };
 
-EditPage.defaultProps = {
-  appState: {},
-  setAppState: () => {},
+ViewNote.defaultProps = {
+  notes: [],
+  viewNote: {},
+  auth: {},
 };
+
+const mapStateToProps = (state) => ({
+  viewNote: state.viewNote,
+  notes: state.notes,
+});
+
+export default connect(mapStateToProps)(ViewNote);

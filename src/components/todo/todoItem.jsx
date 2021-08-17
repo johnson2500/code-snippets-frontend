@@ -8,6 +8,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { makeRequest } from '../../helpers';
+import { DELETE_TODO } from '../../redux/reducers/todoReducers';
+import store from '../../redux/store';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,14 +36,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ListItemLink(props) {
   const classes = useStyles();
-  const {
-    todoItem, setListState, listState = [], appState, setAppState,
-  } = props;
+  const { todoItem, auth: { token } } = props;
 
-  const { auth } = appState;
-  const { token } = auth;
-
-  const { todo, checked, id } = todoItem;
+  const { content, checked, id } = todoItem;
 
   const [checkedState, setChecked] = useState(checked);
 
@@ -49,20 +46,16 @@ export default function ListItemLink(props) {
     setChecked(!checkedState);
   };
 
-  const handleDelete = () => {
-    const filteredList = listState.filter((listItem) => listItem.id !== id) || [];
-    setListState(filteredList);
-
-    makeRequest({
+  const handleDelete = async () => {
+    const deleteTodoResponse = await makeRequest({
       method: 'delete',
       url: `/todo/${id}`,
       token,
     });
 
-    setAppState({
-      ...appState,
-      todos: filteredList,
-    });
+    const { id: deletedTodoId } = deleteTodoResponse.data;
+
+    store.dispatch({ payload: deletedTodoId, type: DELETE_TODO });
   };
 
   const style = checkedState ? {
@@ -72,14 +65,14 @@ export default function ListItemLink(props) {
   return (
     <ListItem
       button
-      onClick={handleChange}
       className={classes.fullWidth}
     >
       <Checkbox
         checked={checkedState}
         color="primary"
+        onClick={handleChange}
       />
-      <ListItemText style={style}>{todo}</ListItemText>
+      <ListItemText style={style}>{content}</ListItemText>
       <DeleteIcon color="error" onClick={handleDelete} />
     </ListItem>
   );

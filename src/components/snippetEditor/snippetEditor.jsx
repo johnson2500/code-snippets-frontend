@@ -4,11 +4,14 @@ import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import Editor from './editor';
+import store from '../../redux/store';
 
 import { makeRequest } from '../../helpers';
+import { ADD_SNIPPET, DELETE_SNIPPET, UPDATE_SNIPPET } from '../../redux/reducers/snippetsReducers';
+import { SET_VIEW_SNIPPET } from '../../redux/reducers/viewSnippetReducers';
 
 export default function SnippetViewer({
-  appState, setAppState, snippet, editing, isNew,
+  snippet, auth, editing = false,
 }) {
   const history = useHistory();
 
@@ -21,13 +24,12 @@ export default function SnippetViewer({
   const [titleState, setTitle] = React.useState(title);
   const [pinnedState, setPinnedState] = React.useState(pinned);
 
-  const [editingState, setEditingState] = React.useState(editing);
+  const [editingState, setEditingState] = React.useState(false);
 
   const [deletedState, setDeleted] = React.useState(false);
   const [savedState, setSavedState] = React.useState(false);
 
   const saveSnippetHandler = async () => {
-    const { auth, snippets } = appState;
     const { token } = auth;
 
     const data = {
@@ -40,54 +42,37 @@ export default function SnippetViewer({
 
     const isUpdate = !!id;
 
+    const method = isUpdate ? 'put' : 'post';
+
     try {
       const requestSnippet = await makeRequest({
         url: '/snippet',
         token,
         data,
-        method: isUpdate ? 'put' : 'post',
+        method,
       });
-
-      const { id: responseId } = requestSnippet;
-
-      let newSnippets = [];
-
-      if (!isUpdate) {
-        // new snipet creation
-        newSnippets = [
-          ...snippets,
-          { ...data, id: responseId }];
-      } else {
-        newSnippets = snippets.map((snip) => {
-          // if the id matches then update the list with
-          if (snip.id === id) {
-            return data;
-          }
-          return snip;
-        });
-      }
 
       setEditingState(false);
 
       setSavedState(true);
 
-      setTimeout(() => setSavedState(false), 3000);
-
-      if (isNew) {
-        setAppState({
-          ...appState,
-          snippets: newSnippets,
-          view: {
-            snippet: { ...data, id: responseId },
-            editing: false,
-          },
+      if (isUpdate) {
+        store.dispatch({
+          type: UPDATE_SNIPPET,
+          payload: requestSnippet.data,
         });
-        history.push('/view-snippet');
       } else {
-        setAppState({
-          ...appState,
-          snippets: newSnippets,
+        store.dispatch({
+          type: ADD_SNIPPET,
+          payload: requestSnippet.data,
         });
+
+        store.dispatch({
+          type: SET_VIEW_SNIPPET,
+          payload: snippet,
+        });
+
+        history.push(`/view-snippet?snippet=${requestSnippet.data.id}`);
       }
     } catch (error) {
       console.log(`Error: /snippet ${error.message}`);
@@ -95,22 +80,20 @@ export default function SnippetViewer({
   };
 
   const deleteSnippetHandler = async () => {
-    const { auth, snippets = [] } = appState;
     const { token } = auth;
 
     try {
-      await makeRequest({
+      const idResponse = await makeRequest({
         method: 'delete',
         url: `/snippet/${id}`,
         token,
       });
 
-      const newSnippets = snippets.filter((snip) => snip.id !== id) || [];
+      const { id: deletedSnippetId } = idResponse.data;
 
-      setAppState({
-        ...appState,
-        snippets: newSnippets,
-        editorSnippet: newSnippets[0],
+      store.dispatch({
+        type: DELETE_SNIPPET,
+        payload: deletedSnippetId,
       });
 
       setDeleted(true);
@@ -119,47 +102,47 @@ export default function SnippetViewer({
     }
   };
 
-  const pinChangeHandler = async () => {
-    setPinnedState(!pinnedState);
+  // const pinChangeHandler = async () => {
+  //   setPinnedState(!pinnedState);
 
-    const { auth, snippets = [] } = appState;
-    const { token } = auth;
+  //   const { auth, snippets = [] } = appState;
+  //   const { token } = auth;
 
-    // if this is new snippet return
-    if (!id) {
-      return;
-    }
+  //   // if this is new snippet return
+  //   if (!id) {
+  //     return;
+  //   }
 
-    try {
-      await makeRequest({
-        method: 'post',
-        url: '/snippet/pin',
-        data: {
-          pinned: pinnedState,
-          id,
-        },
-        token,
-      });
+  //   try {
+  //     await makeRequest({
+  //       method: 'post',
+  //       url: '/snippet/pin',
+  //       data: {
+  //         pinned: pinnedState,
+  //         id,
+  //       },
+  //       token,
+  //     });
 
-      const newSnippets = snippets.map((snip) => {
-        if (snip.id !== id) {
-          return {
-            ...snip,
-            pinned: pinnedState,
-          };
-        }
-        return snip;
-      });
+  //     const newSnippets = snippets.map((snip) => {
+  //       if (snip.id !== id) {
+  //         return {
+  //           ...snip,
+  //           pinned: pinnedState,
+  //         };
+  //       }
+  //       return snip;
+  //     });
 
-      setAppState({
-        ...appState,
-        snippets: newSnippets,
-        editorSnippet: newSnippets[0],
-      });
-    } catch (error) {
-      console.log(`Error: ${error}`);
-    }
-  };
+  //     setAppState({
+  //       ...appState,
+  //       snippets: newSnippets,
+  //       editorSnippet: newSnippets[0],
+  //     });
+  //   } catch (error) {
+  //     console.log(`Error: ${error}`);
+  //   }
+  // };
 
   useEffect(() => {
     setLanguage(language);
@@ -197,9 +180,7 @@ export default function SnippetViewer({
       onTitleChange={(event) => setTitle(event.target.value)}
       onLanguageChange={(event) => setLanguage(event.target.value)}
       onCodeChange={(codeText) => setCode(codeText)}
-      onPinChange={pinChangeHandler}
-      setAppState={setAppState}
-      appState={appState}
+      onPinChange={() => {}}
       snippet={editorSnippet}
       editing={editingState}
       saved={savedState}
@@ -208,17 +189,15 @@ export default function SnippetViewer({
 }
 
 SnippetViewer.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
   snippet: PropTypes.object,
   editing: PropTypes.bool,
-  isNew: PropTypes.bool,
+  // isNew: PropTypes.bool,
+  auth: PropTypes.object,
 };
 
 SnippetViewer.defaultProps = {
-  appState: {},
-  setAppState: () => {},
   snippet: {},
-  editing: true,
-  isNew: false,
+  editing: false,
+  // isNew: false,
+  auth: {},
 };

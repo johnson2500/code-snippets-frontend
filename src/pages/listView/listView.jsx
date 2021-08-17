@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import SnippetEditor from '../../components/snippetEditor/snippetEditor';
 
 const useStyles = makeStyles((theme) => ({
@@ -16,11 +17,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ListView(props) {
+function ListView({
+  snippets = [],
+}) {
   const classes = useStyles();
-  const { setAppState, appState } = props;
 
-  const { snippets = [] } = appState;
   const [snippetState, setSnippetState] = React.useState(snippets);
   const [searchState, setSearchState] = React.useState('Search');
 
@@ -57,8 +58,6 @@ export default function ListView(props) {
                     <SnippetEditor
                       key={snippet.id}
                       snippet={snippet}
-                      setAppState={setAppState}
-                      appState={appState}
                       editing={false}
                     />
                   ))
@@ -70,11 +69,18 @@ export default function ListView(props) {
 }
 
 ListView.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+  // notes: PropTypes.array,
+  snippets: PropTypes.array,
 };
 
 ListView.defaultProps = {
-  appState: {},
-  setAppState: () => {},
+  // notes: [],
+  snippets: () => [],
 };
+
+const mapStateToProps = (state) => ({
+  notes: state.notes,
+  snippets: state.snippets,
+});
+
+export default connect(mapStateToProps)(ListView);

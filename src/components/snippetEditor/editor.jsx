@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -92,11 +91,9 @@ export default function Editor({
 }
 
 Editor.propTypes = {
-  appState: PropTypes.object,
   snippet: PropTypes.object,
   editing: PropTypes.bool,
   saved: PropTypes.bool,
-  setAppState: PropTypes.func,
   onCloseHandler: PropTypes.func,
   onDeleteHandler: PropTypes.func,
   onSaveHandler: PropTypes.func,
@@ -108,11 +105,9 @@ Editor.propTypes = {
 };
 
 Editor.defaultProps = {
-  appState: {},
   snippet: {},
   editing: true,
   saved: false,
-  setAppState: () => {},
   onCloseHandler: () => {},
   onDeleteHandler: () => {},
   onSaveHandler: () => {},

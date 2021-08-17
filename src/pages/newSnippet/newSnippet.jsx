@@ -1,29 +1,32 @@
 /* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/require-default-props */
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import SnippetEditor from '../../components/snippetEditor/snippetEditor';
 
-export default function EditPage(props) {
-  const { appState, setAppState } = props;
-
+function EditPage(props) {
+  const { auth } = props;
   return (
     <SnippetEditor
-      appState={appState}
-      setAppState={setAppState}
       snippet={{}}
       editing
-      isNew
+      auth={auth}
     />
   );
 }
 
 EditPage.propTypes = {
-  appState: PropTypes.object,
-  setAppState: PropTypes.func,
+  auth: PropTypes.object,
 };
 
 EditPage.defaultProps = {
-  appState: {},
-  setAppState: () => {},
+  auth: {},
 };
+
+const mapStateToProps = (state) => ({
+  viewSnippet: state.viewSnippet,
+  auth: state.auth,
+  snippets: state.snippets,
+});
+
+export default connect(mapStateToProps)(EditPage);
