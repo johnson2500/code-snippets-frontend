@@ -12,22 +12,18 @@ export const authReducer = (state = authInitialState, action) => {
 
   switch (type) {
     case SET_AUTH:
-      console.log(action);
       return {
         ...state,
         ...payload,
       };
     case DELETE_AUTH:
-      console.log(action);
       return payload;
     case SET_AUTH_USER:
-      console.log(action);
       return {
         ...state,
         ...payload,
       };
     case SET_NEW_USER:
-      console.log(action);
       return {
         ...state,
         newUser: true,

@@ -8,7 +8,6 @@ const todoInitialState = {
 
 export const todoReducer = (state = todoInitialState, action) => {
   const { payload, type } = action;
-
   switch (type) {
     case SET_TODOS:
       console.log(action);

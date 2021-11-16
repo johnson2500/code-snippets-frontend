@@ -83,37 +83,50 @@ export default function SignUp(props) {
 
     try {
       const existsRes = await makeRequest({
-        url: '/users/is-available',
-        method: 'post',
-        data: {
-          userName: state.userName,
-        },
+        url: `/user-name/exists?userName=${state.userName}`,
+        method: 'get',
       });
 
-      if (!existsRes || !existsRes.data || existsRes.data.exists) {
+      console.log(existsRes);
+
+      if (!existsRes && !existsRes.data && existsRes.data.exists) {
         setErrorMessageState(`Username ${state.userName} already exists.`);
-        return;
       }
     } catch (err) {
       console.log(err);
       setErrorMessageState(err.message);
-      return;
     }
 
-    store.dispatch({
-      type: SET_AUTH_USER,
-      payload: {
-        email: state.email,
-        userName: state.userName,
-        isNewUser: true,
-      },
-    });
+    try {
+      const response = await firebase.auth().createUserWithEmailAndPassword(email, password);
+      const token = await response.user.getIdToken();
 
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-      .catch((error) => {
-        console.log(error.message);
-        setErrorMessageState(error.message);
+      store.dispatch({
+        type: SET_AUTH_USER,
+        payload: {
+          email: state.email,
+          userName: state.userName,
+          isNewUser: true,
+          token,
+        },
       });
+
+      localStorage.setItem('codeSnippetsToken', token);
+      localStorage.setItem('userId', state.userName);
+
+      await makeRequest({
+        url: '/user/initialize',
+        method: 'post',
+        data: {
+          userName: state.userName,
+          email: state.email,
+        },
+        token,
+      });
+    } catch (err) {
+      console.log(err);
+      setErrorMessageState(err.message);
+    }
   };
 
   return (

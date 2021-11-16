@@ -1,61 +1,29 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable no-constant-condition */
 import React, { useEffect } from 'react';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import CssBaseline from '@mui/material/CssBaseline';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { theme } from './AppStyles';
-import './App.css';
-
-import DefaultState from './initialState';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { SET_AUTH_USER } from './redux/reducers/authReducers';
 import Home from './pages/home';
 import firebase from './firebase/index';
 import SignInUpModal from './components/signInModal/signInModal';
-import Header from './components/appbar/appBar';
-import ListView from './pages/listView/listView';
-import DrawerNav from './components/sideNavigation/sideNavigation';
-import PromoPage from './pages/promoPage/propPage';
 import { makeRequest } from './helpers';
-import EditSnippet from './pages/newSnippet/newSnippet';
 import SettingsPage from './pages/settings/settings';
-import ViewSnippet from './pages/viewSnippet/viewSnippet';
-import ViewNote from './pages/viewNote/viewNote';
-import EditNote from './pages/newNote/newNote';
 import Loading from './pages/loading/loading';
-import FolderView from './pages/folderView/folderView';
+import Todos from './pages/tasks/tasks';
+import SideNavigation from './components/sideNavigation/sideNavigation';
 
-import { SET_SNIPPETS } from './redux/reducers/snippetsReducers';
-import { SET_NOTES } from './redux/reducers/notesReducers';
-import { SET_SCRATCHPAD } from './redux/reducers/scratchPadReducers';
-import { SET_TODOS } from './redux/reducers/todoReducers';
-import { SET_AUTH_USER } from './redux/reducers/authReducers';
+const drawerWidth = 240;
 
-export const drawerWidth = 200;
-
-const useStyles = makeStyles(() => ({
-  root: {
-    display: 'flex',
-  },
-  appBar: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  content: {
-    flexGrow: 1,
-  },
-}));
+const theme = createTheme({
+});
 
 export const checkIsAuthenticated = (auth) => {
   const { token } = auth;
@@ -65,14 +33,6 @@ export const checkIsAuthenticated = (auth) => {
 
 function App(props) {
   const { dispatch, auth } = props;
-  console.log(auth);
-  const classes = useStyles();
-
-  const [appState, setAppState] = React.useState({
-    ...DefaultState,
-    firebase,
-  });
-
   const [stateFound, setStateFound] = React.useState(false);
 
   // component will mount
@@ -85,51 +45,21 @@ function App(props) {
         localStorage.setItem('codeSnippetsToken', token);
         localStorage.setItem('userId', userId);
 
-        console.log('auth', auth);
-        // is a new user
-
         if (token && userId) {
           try {
-            const snippetPromise = makeRequest({
-              method: 'get',
-              url: '/snippets',
-              token,
-            });
+            // const todosPromise = makeRequest({
+            //   method: 'get',
+            //   url: '/todos',
+            //   token,
+            // });
 
-            const notesPromise = makeRequest({
-              method: 'get',
-              url: '/notes',
-              token,
-            });
+            // const [
+            //   todosResponse,
+            // ] = await Promise.all([
+            //   todosPromise,
+            // ]);
 
-            const todosPromise = makeRequest({
-              method: 'get',
-              url: '/todos',
-              token,
-            });
-
-            const scratchPadPromise = makeRequest({
-              method: 'get',
-              url: '/scratch-pad',
-              token,
-            });
-
-            const [
-              snippetResponse,
-              notesResponse,
-              todosResponse,
-              scratchPadResponse,
-            ] = await Promise.all([
-              snippetPromise,
-              notesPromise,
-              todosPromise,
-              scratchPadPromise,
-            ]);
-
-            dispatch({ type: SET_SNIPPETS, payload: snippetResponse.data });
-            dispatch({ type: SET_NOTES, payload: notesResponse.data });
-            dispatch({ type: SET_SCRATCHPAD, payload: scratchPadResponse.data });
-            dispatch({ type: SET_TODOS, payload: todosResponse.data });
+            // dispatch({ type: SET_TODOS, payload: todosResponse.data });
             dispatch({ type: SET_AUTH_USER, payload: { token, userId } });
           } catch (error) {
             console.log(error.message);
@@ -162,8 +92,6 @@ function App(props) {
           },
         });
 
-        console.log('authUser', appUser);
-
         dispatch({
           type: SET_AUTH_USER,
           payload: appUser.data,
@@ -193,59 +121,66 @@ function App(props) {
   return (
     <ThemeProvider theme={theme}>
       <Router>
-        <div className={classes.root}>
+        <Box sx={{ display: 'flex' }}>
           <CssBaseline />
-          <Switch>
-            <Route path={['/list', '/', '/new-snippet', '/settings', '/view-snippet', '/new-note', '/view-note']}>
-              <DrawerNav setAppState={setAppState} appState={appState} />
-            </Route>
-          </Switch>
-          <main className={classes.content}>
+          <AppBar
+            position="fixed"
+            sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
+          >
+            <Toolbar>
+              <Typography variant="h6" noWrap component="div">
+                Permanent drawer
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Drawer
+            sx={{
+              width: drawerWidth,
+              flexShrink: 0,
+              '& .MuiDrawer-paper': {
+                width: drawerWidth,
+                boxSizing: 'border-box',
+              },
+            }}
+            variant="permanent"
+            anchor="left"
+          >
+            <Toolbar>Nav</Toolbar>
+            <Divider />
+            <SideNavigation />
+          </Drawer>
+          <Box
+            component="main"
+            sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
+          >
+            <Toolbar />
             <Switch>
-              <Route exact path="/promo-page">
-                <Header leftOffset={0} />
-                <PromoPage />
-              </Route>
-              <Route exact path="/folder-view">
-                <FolderView />
-              </Route>
               <Route exact path="/settings">
                 <SettingsPage />
               </Route>
-              <Route exact path="/list">
-                <ListView />
-              </Route>
-              <Route exact path="/new-snippet">
-                <EditSnippet />
-              </Route>
-              <Route exact path="/view-snippet">
-                <ViewSnippet />
-              </Route>
-              <Route exact path="/new-note">
-                <EditNote />
-              </Route>
-              <Route exact path="/view-note">
-                <ViewNote />
+              <Route exact path="/tasks">
+                <Todos />
               </Route>
               <Route exact path="/">
                 <Home />
               </Route>
             </Switch>
-          </main>
-        </div>
+          </Box>
+        </Box>
       </Router>
     </ThemeProvider>
   );
 }
+
 App.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   auth: PropTypes.object,
   dispatch: PropTypes.func,
 };
 
 App.defaultProps = {
   dispatch: () => { },
-  auth: {
-  },
+  auth: {},
 };
 
 const mapStateToProps = (state) => ({ auth: state.auth });

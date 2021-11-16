@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Todo(props) {
   const classes = useStyles();
-
   const { todos = [], auth } = props;
   const { token } = auth;
 

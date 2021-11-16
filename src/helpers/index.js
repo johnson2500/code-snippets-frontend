@@ -11,7 +11,7 @@ export const makeRequest = async ({
     url: `${process.env.REACT_APP_API_URL}${url}${queryString}`,
     method,
     headers: {
-      Authorization: `${token}`,
+      Authorization: `Bearer ${token}`,
     },
     data,
   });

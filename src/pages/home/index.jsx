@@ -9,7 +9,7 @@ import ScratchPad from '../../components/scratchpad/scratchPad';
 
 function Home(props) {
   const {
-    scratchPad, auth, todos,
+    scratchPad, auth, todos = {},
   } = props;
 
   return (
@@ -23,7 +23,7 @@ function Home(props) {
         </Grid>
         <Grid item xs={6}>
           <Todo
-            todos={todos}
+            todos={todos.todos}
             auth={auth}
           />
         </Grid>
@@ -35,7 +35,7 @@ function Home(props) {
 Home.propTypes = {
   scratchPad: PropTypes.object,
   auth: PropTypes.object,
-  todos: PropTypes.array,
+  todos: PropTypes.object,
 };
 
 Home.defaultProps = {
