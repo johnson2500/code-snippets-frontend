@@ -44,9 +44,9 @@ function CommentItem() {
           <Avatar />
         </Grid>
         <Grid item xs={11} md={11}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores voluptas aliquid nisi,
-          deleniti quas accusantium veritatis enim ex delectus iusto corporis et praesentium totam
-          perferendis magni quaerat commodi nemo omnis.
+          Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit
+          Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit
+          Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit Lorem ipsum dolor sit
         </Grid>
       </Grid>
       <Divider />
@@ -129,7 +129,7 @@ export default function FullWidthGrid() {
     <Grid container spacing={2}>
       <Grid item xs={6} md={8}>
         <BasicNotePad />
-        <CommentsList />
+        <CommentsList comments={[0, 1, 2, 3]} />
       </Grid>
       <Grid item xs={6} md={4}>
         <SideList />

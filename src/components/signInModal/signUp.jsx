@@ -30,6 +30,7 @@ export default function SignUp(props) {
 
   // eslint-disable-next-line no-unused-vars
   const classes = useStyles();
+
   const [state, setState] = React.useState({
     email: null,
     password: null,
@@ -95,6 +96,7 @@ export default function SignUp(props) {
     } catch (err) {
       console.log(err);
       setErrorMessageState(err.message);
+      return;
     }
 
     try {

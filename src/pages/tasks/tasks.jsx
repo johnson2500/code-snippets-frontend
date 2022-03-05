@@ -58,7 +58,7 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {row.title}
         </TableCell>
         <TableCell align="right">{row.calories}</TableCell>
         <TableCell align="right">{row.fat}</TableCell>
@@ -88,7 +88,7 @@ Row.propTypes = {
         date: PropTypes.string.isRequired,
       }),
     ).isRequired,
-    name: PropTypes.string.isRequired,
+    tasks: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     protein: PropTypes.number.isRequired,
   }).isRequired,
@@ -96,14 +96,25 @@ Row.propTypes = {
 
 const rows = [
   createData('Frozen yoghurt', 159, 6.0, 24, 4.0, 3.99),
+  createData('Frozen yoghurts', 159, 6.0, 24, 4.0, 3.99),
 ];
 
-function CollapsibleTable(props) {
-  const { auth } = props;
+function Tasks(props) {
+  const { auth, tasks } = props;
+
+  const [tasksState, setTasksState] = React.useState(tasks);
+
+  const addTaskHandler = (task) => {
+    setTasksState([
+      ...tasksState,
+      task,
+    ]);
+  };
+
   return (
     <Box>
       <Grid>
-        <AddTask auth={auth} />
+        <AddTask auth={auth} addTaskHandler={addTaskHandler} />
       </Grid>
       <TableContainer component={Paper}>
         <Table aria-label="collapsible table">
@@ -116,7 +127,7 @@ function CollapsibleTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {tasks.map((row) => (
               <Row key={row.name} row={row} />
             ))}
           </TableBody>
@@ -126,14 +137,16 @@ function CollapsibleTable(props) {
   );
 }
 
-CollapsibleTable.propTypes = {
-  auth: PropTypes.object,
+Tasks.defaultProps = {
+  auth: {},
+  tasks: [],
 };
 
-CollapsibleTable.defaultProps = {
-  auth: {},
+Tasks.propTypes = {
+  auth: PropTypes.object,
+  tasks: PropTypes.array,
 };
 
 const mapStateToProps = (state) => (state);
 
-export default connect(mapStateToProps)(CollapsibleTable);
+export default connect(mapStateToProps)(Tasks);

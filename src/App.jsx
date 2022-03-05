@@ -28,12 +28,16 @@ const theme = createTheme({
 export const checkIsAuthenticated = (auth) => {
   const { token } = auth;
 
+  console.log(auth);
+
   return !!token;
 };
 
 function App(props) {
   const { dispatch, auth } = props;
   const [stateFound, setStateFound] = React.useState(false);
+
+  const [tasksState, setTaskState] = React.useState([]);
 
   // component will mount
   useEffect(async () => {
@@ -47,19 +51,18 @@ function App(props) {
 
         if (token && userId) {
           try {
-            // const todosPromise = makeRequest({
-            //   method: 'get',
-            //   url: '/todos',
-            //   token,
-            // });
+            const tasksPromise = makeRequest({
+              method: 'get',
+              url: '/tasks',
+              token,
+            });
 
-            // const [
-            //   todosResponse,
-            // ] = await Promise.all([
-            //   todosPromise,
-            // ]);
-
-            // dispatch({ type: SET_TODOS, payload: todosResponse.data });
+            const [
+              tasks,
+            ] = await Promise.all([
+              tasksPromise,
+            ]);
+            setTaskState(tasks.data);
             dispatch({ type: SET_AUTH_USER, payload: { token, userId } });
           } catch (error) {
             console.log(error.message);
@@ -84,7 +87,7 @@ function App(props) {
       try {
         const appUser = await makeRequest({
           url: '/user',
-          method: 'post',
+          method: 'get',
           data: {
             userName: auth.userName,
             email: auth.email,
@@ -103,6 +106,7 @@ function App(props) {
   }, [auth.isNewUser, auth.userId]);
 
   const isAuthenticated = checkIsAuthenticated(auth);
+  console.log('isAuthenticated', isAuthenticated);
 
   if (!stateFound) {
     return (
@@ -159,7 +163,7 @@ function App(props) {
                 <SettingsPage />
               </Route>
               <Route exact path="/tasks">
-                <Todos />
+                <Todos tasks={tasksState} />
               </Route>
               <Route exact path="/">
                 <Home />
