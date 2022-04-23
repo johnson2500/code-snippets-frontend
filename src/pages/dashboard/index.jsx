@@ -6,9 +6,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import todoListImage from '../../assets/todo-list.jpeg';
-import SignInSignUp from '../../components/signInModal/signInSignUp';
 
-function Home() {
+function Dashboard() {
   return (
     <>
       <Container>
@@ -17,7 +16,7 @@ function Home() {
             <img src={todoListImage} alt="" />
           </Col>
           <Col align="center">
-            <SignInSignUp />
+            Penis
           </Col>
         </Row>
       </Container>
@@ -25,15 +24,12 @@ function Home() {
   );
 }
 
-Home.propTypes = {
+Dashboard.propTypes = {
 };
 
-Home.defaultProps = {
-  scratchPad: {},
-  auth: {},
-  todos: {},
+Dashboard.defaultProps = {
 };
 
 const mapStateToProps = (state) => (state);
 
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps)(Dashboard);

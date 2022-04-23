@@ -1,195 +1,88 @@
 /* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/require-default-props */
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import {
-  TextField, Typography, Button,
-} from '@material-ui/core';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { makeRequest } from '../../helpers';
-import store from '../../redux/store';
-import { SET_AUTH_USER } from '../../redux/reducers/authReducers';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    display: 'flex',
-    padding: 20,
-    maxWidth: '20%',
-    minWidth: '20%',
-  },
-  fullWidth: {
-    width: '100%',
-  },
-  errorMessage: {
-    color: 'red',
-  },
-}));
-
-export default function SignUp(props) {
-  const { firebase } = props;
-
-  // eslint-disable-next-line no-unused-vars
-  const classes = useStyles();
-
-  const [state, setState] = React.useState({
-    email: null,
-    password: null,
-    confirmPassword: null,
-    userName: null,
-  });
-
-  const [errorMessageState, setErrorMessageState] = React.useState();
+// eslint-disable-next-line import/prefer-default-export
+export const SignUp = (props) => {
+  const { setErrorMsg } = props;
+  const [emailAddressState, setEmailAddressState] = useState('');
+  const [passwordState, setPasswordState] = useState('');
+  const [confirmPasswordState, setConfirmPasswordState] = useState('');
 
   const handlePasswordChange = (e) => {
-    const { value } = e.target;
-    setState({
-      ...state,
-      password: value,
-    });
+    setPasswordState(e.target.value);
   };
 
   const handleConfirmPasswordChange = (e) => {
-    const { value } = e.target;
-    setState({
-      ...state,
-      confirmPassword: value,
-    });
+    setConfirmPasswordState(e.target.value);
   };
 
   const handleEmailChange = (e) => {
-    const { value } = e.target;
-    setState({
-      ...state,
-      email: value,
-    });
+    setEmailAddressState(e.target.value);
   };
 
-  const handleUserNameChange = (e) => {
-    const { value } = e.target;
-    setState({
-      ...state,
-      userName: value,
-    });
-  };
+  const onSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleSubmit = async () => {
-    const { email, password, confirmPassword } = state;
-
-    if (password !== confirmPassword) {
-      console.log('Password not equal');
-
-      setErrorMessageState('Passwords do not match.');
+    if (passwordState !== confirmPasswordState) {
+      setErrorMsg('Passwords do not match.');
       return;
     }
 
-    try {
-      const existsRes = await makeRequest({
-        url: `/user-name/exists?userName=${state.userName}`,
-        method: 'get',
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, emailAddressState, passwordState)
+      .then((userCredential) => {
+        // Signed in
+        const { user } = userCredential;
+        console.log(user);
+        user.getIdToken(true).then((idToken) => {
+          document.cookie = `__session=${idToken};max-age=3600`;
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+        setErrorMsg(errorMessage);
+        // ..
       });
-
-      console.log(existsRes);
-
-      if (!existsRes && !existsRes.data && existsRes.data.exists) {
-        setErrorMessageState(`Username ${state.userName} already exists.`);
-      }
-    } catch (err) {
-      console.log(err);
-      setErrorMessageState(err.message);
-      return;
-    }
-
-    try {
-      const response = await firebase.auth().createUserWithEmailAndPassword(email, password);
-      const token = await response.user.getIdToken();
-
-      store.dispatch({
-        type: SET_AUTH_USER,
-        payload: {
-          email: state.email,
-          userName: state.userName,
-          isNewUser: true,
-          token,
-        },
-      });
-
-      localStorage.setItem('codeSnippetsToken', token);
-      localStorage.setItem('userId', state.userName);
-
-      await makeRequest({
-        url: '/user/initialize',
-        method: 'post',
-        data: {
-          userName: state.userName,
-          email: state.email,
-        },
-        token,
-      });
-    } catch (err) {
-      console.log(err);
-      setErrorMessageState(err.message);
-    }
   };
 
   return (
-    <>
-      <Typography variant="h6" align="center">Sign Up</Typography>
-      <br />
-      <Typography variant="body1" className={classes.errorMessage}>{errorMessageState}</Typography>
-      <br />
-      <TextField
-        type="email"
-        label="Email"
-        variant="outlined"
-        onChange={handleEmailChange}
-        className={classes.fullWidth}
-      />
-      <br />
-      <br />
-      <TextField
-        type="password"
-        variant="outlined"
-        label="Password"
-        onChange={handlePasswordChange}
-        className={classes.fullWidth}
-      />
-      <br />
-      <br />
-      <TextField
-        type="password"
-        variant="outlined"
-        label="Confirm Password"
-        onChange={handleConfirmPasswordChange}
-        className={classes.fullWidth}
-      />
-      <br />
-      <br />
-      {' '}
-      <TextField
-        type="text"
-        variant="outlined"
-        label="Username"
-        onChange={handleUserNameChange}
-        className={classes.fullWidth}
-      />
-      <br />
-      <br />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSubmit}
-        className={classes.fullWidth}
-      >
+    <Form>
+      <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form.Label>Email address</Form.Label>
+        <Form.Control type="email" placeholder="Enter email" onChange={handleEmailChange} />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Label>Password</Form.Label>
+        <Form.Control type="password" placeholder="Password" onChange={handlePasswordChange} />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Label>Confirm Password</Form.Label>
+        <Form.Control type="password" placeholder="Confirm Password" onChange={handleConfirmPasswordChange} />
+      </Form.Group>
+
+      <Button variant="primary" type="submit" onClick={onSubmit}>
         Sign Up
       </Button>
-    </>
+    </Form>
   );
-}
+};
 
 SignUp.propTypes = {
-  firebase: PropTypes.object,
+  setErrorMsg: PropTypes.func,
 };
 
 SignUp.defaultProps = {
-  firebase: {},
+  setErrorMsg: () => {},
 };
