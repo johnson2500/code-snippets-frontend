@@ -1,14 +1,11 @@
-import firebase from 'firebase/app';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import firebaseConfig from './config';
-// Firebase App (the core Firebase SDK) is always required and
-// must be listed before other Firebase SDKs
-// Firebase App (the core Firebase SDK) is always required and
-// must be listed before other Firebase SDKs
 
-// Add the Firebase services that you want to use
-import 'firebase/auth';
-import 'firebase/firestore';
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-export default firebase;
+// Initialize Firebase Authentication and get a reference to the service
+const auth = getAuth(app);
+
+export default { app, auth };

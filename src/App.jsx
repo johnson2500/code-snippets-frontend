@@ -1,181 +1,31 @@
-import React, { useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import React from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { SET_AUTH_USER } from './redux/reducers/authReducers';
+// import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import './firebase';
+import Navigation from './components/nav';
 import Home from './pages/home';
-import firebase from './firebase/index';
-import SignInUpModal from './components/signInModal/signInModal';
-import { makeRequest } from './helpers';
-import SettingsPage from './pages/settings/settings';
-import Loading from './pages/loading/loading';
-import Todos from './pages/tasks/tasks';
-import SideNavigation from './components/sideNavigation/sideNavigation';
+import Dashboard from './pages/dashboard';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
-const drawerWidth = 240;
-
-const theme = createTheme({
-});
-
-export const checkIsAuthenticated = (auth) => {
-  const { token } = auth;
-
-  return !!token;
-};
-
-function App(props) {
-  const { dispatch, auth } = props;
-  const [stateFound, setStateFound] = React.useState(false);
-
-  // component will mount
-  useEffect(async () => {
-    firebase.auth().onAuthStateChanged(async (fbUser) => {
-      if (fbUser) {
-        const { uid: userId } = fbUser;
-        const token = await firebase.auth().currentUser.getIdToken();
-
-        localStorage.setItem('codeSnippetsToken', token);
-        localStorage.setItem('userId', userId);
-
-        if (token && userId) {
-          try {
-            // const todosPromise = makeRequest({
-            //   method: 'get',
-            //   url: '/todos',
-            //   token,
-            // });
-
-            // const [
-            //   todosResponse,
-            // ] = await Promise.all([
-            //   todosPromise,
-            // ]);
-
-            // dispatch({ type: SET_TODOS, payload: todosResponse.data });
-            dispatch({ type: SET_AUTH_USER, payload: { token, userId } });
-          } catch (error) {
-            console.log(error.message);
-          }
-        }
-      } else {
-        localStorage.removeItem('codeSnippetsToken');
-        localStorage.removeItem('userId');
-
-        dispatch({
-          type: SET_AUTH_USER,
-          payload: { token: null, userId: null },
-        });
-      }
-
-      setStateFound(true);
-    });
-  }, []);
-
-  useEffect(async () => {
-    if (auth.isNewUser && auth.userId) {
-      try {
-        const appUser = await makeRequest({
-          url: '/user',
-          method: 'post',
-          data: {
-            userName: auth.userName,
-            email: auth.email,
-            ownerId: auth.userId,
-          },
-        });
-
-        dispatch({
-          type: SET_AUTH_USER,
-          payload: appUser.data,
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  }, [auth.isNewUser, auth.userId]);
-
-  const isAuthenticated = checkIsAuthenticated(auth);
-
-  if (!stateFound) {
-    return (
-      <Loading />
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <SignInUpModal
-        firebase={firebase}
-      />
-    );
-  }
-
+function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <Router>
-        <Box sx={{ display: 'flex' }}>
-          <CssBaseline />
-          <AppBar
-            position="fixed"
-            sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
-          >
-            <Toolbar>
-              <Typography variant="h6" noWrap component="div">
-                Permanent drawer
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <Drawer
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              '& .MuiDrawer-paper': {
-                width: drawerWidth,
-                boxSizing: 'border-box',
-              },
-            }}
-            variant="permanent"
-            anchor="left"
-          >
-            <Toolbar>Nav</Toolbar>
-            <Divider />
-            <SideNavigation />
-          </Drawer>
-          <Box
-            component="main"
-            sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
-          >
-            <Toolbar />
-            <Switch>
-              <Route exact path="/settings">
-                <SettingsPage />
-              </Route>
-              <Route exact path="/tasks">
-                <Todos />
-              </Route>
-              <Route exact path="/">
-                <Home />
-              </Route>
-            </Switch>
-          </Box>
-        </Box>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <Navigation />
+      <Switch>
+        <Route exact path="/dashboard">
+          <Dashboard />
+        </Route>
+        <Route exact path="/">
+          <Home />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
 App.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  auth: PropTypes.object,
-  dispatch: PropTypes.func,
 };
 
 App.defaultProps = {

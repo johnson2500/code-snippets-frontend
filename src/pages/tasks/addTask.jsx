@@ -14,19 +14,26 @@ import {
 import { makeRequest } from '../../helpers';
 
 export default function AddTask(props) {
-  const { auth } = props;
+  const { auth, addTaskHandler } = props;
 
   const [titleState, setTitleState] = React.useState('');
 
-  const addTask = () => {
-    makeRequest({
-      method: 'post',
-      url: '/task',
-      data: {
-        title: titleState,
-      },
-      token: auth.token,
-    });
+  const addTask = async () => {
+    try {
+      const postId = await makeRequest({
+        method: 'post',
+        url: '/task',
+        data: {
+          title: titleState,
+          taskGroupId: 2,
+        },
+        token: auth.token,
+      });
+
+      addTaskHandler(postId);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -55,8 +62,10 @@ export default function AddTask(props) {
 
 AddTask.propTypes = {
   auth: PropTypes.object,
+  addTaskHandler: PropTypes.func,
 };
 
 AddTask.defaultProps = {
   auth: {},
+  addTaskHandler: () => {},
 };
