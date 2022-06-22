@@ -1,18 +1,48 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-// import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+import {
+  Switch,
+  Route,
+  withRouter,
+  useHistory,
+} from 'react-router-dom';
 import './firebase';
 import Navigation from './components/nav';
 import Home from './pages/home';
 import Dashboard from './pages/dashboard';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+// import Side from './components/sideNavigation/sideNavigation';
 
 function App() {
+  const history = useHistory();
+  const auth = getAuth();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        const { uid } = user;
+        // ...
+        console.log('HERE');
+        console.log(uid);
+        history.push('/dashboard');
+      } else {
+        // User is signed out
+        // ...
+        history.push('/');
+        console.log('logged out');
+      }
+    });
+  }, []);
+
   return (
-    <Router>
+    <div>
       <Navigation />
+      {/* <Side /> */}
       <Switch>
         <Route exact path="/dashboard">
           <Dashboard />
@@ -21,7 +51,7 @@ function App() {
           <Home />
         </Route>
       </Switch>
-    </Router>
+    </div>
   );
 }
 
@@ -35,4 +65,4 @@ App.defaultProps = {
 
 const mapStateToProps = (state) => ({ auth: state.auth });
 
-export default connect(mapStateToProps)(App);
+export default withRouter(connect(mapStateToProps)(App));

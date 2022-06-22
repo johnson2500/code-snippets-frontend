@@ -55,9 +55,11 @@ export const SignIn = (props) => {
         <Form.Control type="password" placeholder="Password" onChange={handlePasswordChange} />
       </Form.Group>
 
-      <Button variant="primary" type="submit" onClick={onSubmit}>
-        Sign In
-      </Button>
+      <Form.Group>
+        <Button variant="primary" type="submit" onClick={onSubmit}>
+          Sign In
+        </Button>
+      </Form.Group>
     </Form>
   );
 };
