@@ -61,11 +61,10 @@ export default function SignInSignUp() {
       <Card style={{ width: '18rem', marginTop: '30%' }}>
         <Card.Body>
           <Card.Title>{showSignIn ? 'Sign In' : 'Sign Up'}</Card.Title>
-          <Card.Text>
+          <Card.Body>
             {AlertMessage}
             {signInSignUp}
-          </Card.Text>
-
+          </Card.Body>
           <Card.Footer className="col">
             <Stack direction="vertical" gap={3}>
               <Button variant="secondary" onClick={signUpWithGoogle}>
