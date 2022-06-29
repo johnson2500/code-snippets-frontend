@@ -1,19 +1,14 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-import {
-  Switch,
-  Route,
-  withRouter,
-  useHistory,
-} from 'react-router-dom';
-import './firebase';
-import Navigation from './components/nav';
-import Home from './pages/home';
-import Dashboard from './pages/dashboard';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import { Switch, Route, withRouter, useHistory } from "react-router-dom";
+import "./firebase";
+import Navigation from "./components/nav";
+import Home from "./pages/home";
+import Dashboard from "./pages/dashboard";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 // import Side from './components/sideNavigation/sideNavigation';
 
 function App() {
@@ -27,27 +22,25 @@ function App() {
         // https://firebase.google.com/docs/reference/js/firebase.User
         const { uid } = user;
         // ...
-        console.log('HERE');
         console.log(uid);
-        history.push('/dashboard');
+        history.push("/dashboard");
       } else {
         // User is signed out
         // ...
-        history.push('/');
-        console.log('logged out');
+        history.push("/");
+        console.log("logged out");
       }
     });
   }, []);
 
   return (
     <div>
-      <Navigation />
-      {/* <Side /> */}
       <Switch>
         <Route exact path="/dashboard">
           <Dashboard />
         </Route>
         <Route exact path="/">
+          <Navigation />
           <Home />
         </Route>
       </Switch>
@@ -55,11 +48,10 @@ function App() {
   );
 }
 
-App.propTypes = {
-};
+App.propTypes = {};
 
 App.defaultProps = {
-  dispatch: () => { },
+  dispatch: () => {},
   auth: {},
 };
 
