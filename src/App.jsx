@@ -9,6 +9,7 @@ import Home from "./pages/home";
 import Dashboard from "./pages/dashboard";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "./App.css";
 // import Side from './components/sideNavigation/sideNavigation';
 
 function App() {
@@ -20,10 +21,11 @@ function App() {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
-        const { uid } = user;
+        const { uid, accessToken } = user;
         // ...
         console.log(uid);
-        history.push("/dashboard");
+        document.cookie = accessToken;
+        history.push("/dashboard/main");
       } else {
         // User is signed out
         // ...
@@ -36,7 +38,7 @@ function App() {
   return (
     <div>
       <Switch>
-        <Route exact path="/dashboard">
+        <Route exact path="/dashboard/main">
           <Dashboard />
         </Route>
         <Route exact path="/">

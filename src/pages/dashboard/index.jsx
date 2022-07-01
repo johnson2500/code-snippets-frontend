@@ -1,6 +1,7 @@
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/require-default-props */
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 import Tab from "react-bootstrap/Tab";
 import Row from "react-bootstrap/Row";
@@ -10,6 +11,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import DashboardError from "./dashboardComponents/dashboardError";
 import Todos from "./todos/todos";
 import Notes from "./notes/notes";
+import Main from "./main/main";
 
 function Dashboard() {
   const [errorMsgState, setErrorMsgState] = React.useState(null);
@@ -18,10 +20,16 @@ function Dashboard() {
     setErrorMsgState(null);
   }, []);
 
+  const getTab = () => {
+    const location = useLocation();
+    console.log(location.pathname);
+    return location.pathname;
+  };
+
   return (
-    <Tab.Container id="left-tabs-example" defaultActiveKey="home">
+    <Tab.Container id="left-tabs-example" defaultActiveKey={getTab()}>
       <Row className="vh-100">
-        <Col sm={2} className="border border-right">
+        <Col sm={2}>
           <Dropdown>
             <Dropdown.Toggle className="w-100" variant="none">
               Project
@@ -34,17 +42,17 @@ function Dashboard() {
           </Dropdown>
           <Nav variant="pills" className="flex-column">
             <Nav.Item>
-              <Nav.Link className="rounded-0" eventKey="home">
+              <Nav.Link className="rounded-0" eventKey="/dashboard/main">
                 Home
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="rounded-0" eventKey="todos">
+              <Nav.Link className="rounded-0" eventKey="/dashboard/todos">
                 Todos
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link className="rounded-0" eventKey="notes">
+              <Nav.Link className="rounded-0" eventKey="/dashboard/notes">
                 Notes
               </Nav.Link>
             </Nav.Item>
@@ -53,11 +61,13 @@ function Dashboard() {
         <Col sm={10} className="p-0 m-0">
           <Tab.Content>
             <DashboardError errorMsg={errorMsgState} />
-            <Tab.Pane eventKey="home">Home</Tab.Pane>
-            <Tab.Pane eventKey="todos">
+            <Tab.Pane eventKey="/dashboard/main">
+              <Main />
+            </Tab.Pane>
+            <Tab.Pane eventKey="/dashboard/todos">
               <Todos />
             </Tab.Pane>
-            <Tab.Pane eventKey="notes">
+            <Tab.Pane eventKey="/dashboard/notes">
               <Notes />
             </Tab.Pane>
           </Tab.Content>
