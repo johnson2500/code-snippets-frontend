@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Card from "react-bootstrap/Card";
@@ -9,7 +10,13 @@ import { ADD_TODO } from "../../redux/reducers/todoReducers";
 import store from "../../redux/store";
 
 export default function Todo(props) {
-  const { todo: { todo = {} } = {} } = props;
+  const { todoList = {}, onItemClickHandler } = props;
+
+  const getTodoItems = (todos, onClickHandler) => todos.map((item) => (
+    <ListGroup.Item key={item.title} onClick={() => onClickHandler(item)}>
+      {item.title}
+    </ListGroup.Item>
+  ));
 
   const [todoItemState, setTodoItemState] = useState("");
 
@@ -38,7 +45,7 @@ export default function Todo(props) {
       <Card>
         <Card.Body>
           <Card.Title>
-            {todo.title || "Todo"}
+            {todoList.name || "Todo"}
             <InputGroup className="mb-3">
               <FormControl
                 placeholder="Recipient's username"
@@ -55,11 +62,7 @@ export default function Todo(props) {
             </InputGroup>
           </Card.Title>
           <ListGroup variant="flush">
-            <ListGroup.Item>Cras justo odio</ListGroup.Item>
-            <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
-            <ListGroup.Item>Morbi leo risus</ListGroup.Item>
-            <ListGroup.Item>Porta ac consectetur ac</ListGroup.Item>
-            <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
+            {getTodoItems(todoList.todoItems, onItemClickHandler)}
           </ListGroup>
         </Card.Body>
       </Card>
@@ -68,9 +71,11 @@ export default function Todo(props) {
 }
 
 Todo.propTypes = {
-  todo: PropTypes.shape({}),
+  todoList: PropTypes.shape({}),
+  onItemClickHandler: PropTypes.func,
 };
 
 Todo.defaultProps = {
-  todo: {},
+  todoList: {},
+  onItemClickHandler: () => {},
 };
