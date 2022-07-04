@@ -6,8 +6,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Todo from "../../../components/todo/todo";
 import TodoNavBar from "./todosNavBar";
-import PreviewTodo from "./previewTodo";
-import mockTodos from "./mockTodos";
+import PreviewTodo from "../../../components/previewTodo";
+import mockTodos from "../../../data/mockTodos";
 
 function Todos() {
   const [todoListsState, setTodoListState] = React.useState(mockTodos);
@@ -25,15 +25,22 @@ function Todos() {
 
   return (
     <>
-      <TodoNavBar todos={todoListsState} navClickHandler={handleNavClick} />
+      <TodoNavBar
+        todoLists={todoListsState}
+        navClickHandler={handleNavClick}
+      />
       <Container>
         <Row className="p-4">
           <Col sm={6}>
-            {" "}
-            <Todo todoList={inFocusTodoState} onItemClickHandler={setInFocusTodoItemState} />
+            <Todo
+              todoList={inFocusTodoState}
+              onItemClickHandler={setInFocusTodoItemState}
+            />
           </Col>
-          <Col sm={6}>
-            <PreviewTodo todoItemInFocus={inFocusTodoItemState} />
+          <Col sm={6} className="border-start">
+            <PreviewTodo
+              todoItemInFocus={inFocusTodoItemState}
+            />
           </Col>
         </Row>
       </Container>

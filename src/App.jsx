@@ -21,9 +21,9 @@ function App() {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
-        const { uid, accessToken } = user;
+        // const { uid, accessToken } = user;
+        const { accessToken } = user;
         // ...
-        console.log(uid);
         document.cookie = accessToken;
         history.push("/dashboard/main");
       } else {

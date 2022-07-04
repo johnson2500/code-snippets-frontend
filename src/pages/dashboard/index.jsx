@@ -1,7 +1,6 @@
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/require-default-props */
 import React from "react";
-import { useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 import Tab from "react-bootstrap/Tab";
 import Row from "react-bootstrap/Row";
@@ -9,7 +8,7 @@ import Nav from "react-bootstrap/Nav";
 import Col from "react-bootstrap/Col";
 import Dropdown from "react-bootstrap/Dropdown";
 import DashboardError from "./dashboardComponents/dashboardError";
-import Todos from "./todos/todos";
+import Todos from "./todos";
 import Notes from "./notes/notes";
 import Main from "./main/main";
 
@@ -20,14 +19,8 @@ function Dashboard() {
     setErrorMsgState(null);
   }, []);
 
-  const getTab = () => {
-    const location = useLocation();
-    console.log(location.pathname);
-    return location.pathname;
-  };
-
   return (
-    <Tab.Container id="left-tabs-example" defaultActiveKey={getTab()}>
+    <Tab.Container id="left-tabs-example" defaultActiveKey="/dashboard/todos">
       <Row className="vh-100">
         <Col sm={2}>
           <Dropdown>

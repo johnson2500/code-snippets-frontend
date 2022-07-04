@@ -4,28 +4,36 @@ import React from "react";
 import PropTypes from 'prop-types';
 import Nav from "react-bootstrap/Nav";
 
-function TodoNavBar(props) {
-  const { todos, navClickHandler } = props;
-  const getTabs = (todoLists = []) => todoLists.map((list) => (
+function TodoNavItems(props) {
+  const { todoLists, navClickHandler } = props;
+
+  return todoLists.map((list) => (
     <Nav.Item key={list.name}>
       <Nav.Link key={`link-${list.name}`} onClick={() => navClickHandler(list)}>{list.name}</Nav.Link>
     </Nav.Item>
   ));
+}
+
+function TodoNavBar(props) {
+  const { todoLists, navClickHandler } = props;
 
   return (
     <Nav variant="tabs" defaultActiveKey="/home" className="mw-100">
-      {getTabs(todos)}
+      <TodoNavItems
+        todoLists={todoLists}
+        navClickHandler={navClickHandler}
+      />
     </Nav>
   );
 }
 
 TodoNavBar.propTypes = {
-  todos: PropTypes.array,
+  todoLists: PropTypes.array,
   navClickHandler: PropTypes.func,
 };
 
 TodoNavBar.defaultProps = {
-  todos: [],
+  todoLists: [],
   navClickHandler: () => {},
 };
 

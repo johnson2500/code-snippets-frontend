@@ -3,8 +3,7 @@
 import React from "react";
 import Nav from "react-bootstrap/Nav";
 
-function MainNavBar(props) {
-  console.log(props);
+function MainNavBar() {
   return (
     <Nav variant="" defaultActiveKey="/home" className="mw-100">
       <Nav.Item>
