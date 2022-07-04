@@ -1,56 +1,33 @@
-/* eslint-disable react/require-default-props */
-/* eslint-disable react/forbid-prop-types */
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import AddIcon from '@material-ui/icons/Add';
-import PropTypes from 'prop-types';
-import IconButton from '@material-ui/core/IconButton';
-import { Typography, TextField, Divider } from '@material-ui/core';
-import { makeRequest } from '../../helpers';
-import ListItemLink from './todoItem';
-import { ADD_TODO } from '../../redux/reducers/todoReducers';
-import store from '../../redux/store';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: theme.palette.background.paper,
-    overflow: 'scroll',
-  },
-  fullWidth: {
-    width: '100% !important',
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    flex: 1,
-  },
-  iconButton: {
-    padding: 10,
-  },
-  divider: {
-    height: 28,
-    margin: 4,
-  },
-}));
+/* eslint-disable react/prop-types */
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import Card from "react-bootstrap/Card";
+import { InputGroup, FormControl, Button } from "react-bootstrap";
+import { PlusCircle } from "react-bootstrap-icons";
+import ListGroup from "react-bootstrap/ListGroup";
+import { makeRequest } from "../../helpers";
+import { ADD_TODO } from "../../redux/reducers/todoReducers";
+import store from "../../redux/store";
 
 export default function Todo(props) {
-  const classes = useStyles();
-  const { todos = [], auth } = props;
-  const { token } = auth;
+  const { todoList = {}, onItemClickHandler } = props;
 
-  const [todoItemState, setTodoItemState] = useState('');
+  const getTodoItems = (todos, onClickHandler) => todos.map((item) => (
+    <ListGroup.Item key={item.title} onClick={() => onClickHandler(item)}>
+      {item.title}
+    </ListGroup.Item>
+  ));
+
+  const [todoItemState, setTodoItemState] = useState("");
 
   const handleAdd = async () => {
     const todoResponse = await makeRequest({
-      url: '/todo',
-      method: 'post',
+      url: "/todo",
+      method: "post",
       data: {
         content: todoItemState,
       },
-      token,
+      token: "",
     });
 
     const todoItem = todoResponse.data;
@@ -60,53 +37,45 @@ export default function Todo(props) {
       payload: todoItem,
     });
 
-    setTodoItemState('');
+    setTodoItemState("");
   };
 
   return (
-    <div className={classes.root}>
-      <List component="nav" aria-label="main mailbox folders">
-        <ListItem button>
-          <Typography variant="h5">Test</Typography>
-        </ListItem>
-        <IconButton
-          onClick={handleAdd}
-          type="submit"
-          className={classes.iconButton}
-          aria-label="add"
-        >
-          <AddIcon />
-        </IconButton>
-        <TextField
-          className={classes.input}
-          placeholder="Add Todo"
-          style={{ width: '80%' }}
-          onChange={(e) => setTodoItemState(e.target.value)}
-          value={todoItemState}
-        />
-      </List>
-      <Divider />
-      <List component="nav" aria-label="secondary mailbox folders">
-        {
-              todos.map((todoItem) => (
-                <ListItemLink
-                  key={todoItem.id}
-                  todoItem={todoItem}
-                  auth={auth}
-                />
-              ))
-          }
-      </List>
-    </div>
+    <>
+      <Card>
+        <Card.Body>
+          <Card.Title>
+            {todoList.name || "Todo"}
+            <InputGroup className="mb-3">
+              <FormControl
+                placeholder="Recipient's username"
+                aria-label="Recipient's username"
+                aria-describedby="basic-addon2"
+              />
+              <Button
+                variant="outline-secondary"
+                id="button-addon2"
+                onClick={handleAdd}
+              >
+                <PlusCircle />
+              </Button>
+            </InputGroup>
+          </Card.Title>
+          <ListGroup variant="flush">
+            {getTodoItems(todoList.todoItems, onItemClickHandler)}
+          </ListGroup>
+        </Card.Body>
+      </Card>
+    </>
   );
 }
 
 Todo.propTypes = {
-  todos: PropTypes.array,
-  auth: PropTypes.object,
+  todoList: PropTypes.shape({}),
+  onItemClickHandler: PropTypes.func,
 };
 
 Todo.defaultProps = {
-  todos: [],
-  auth: {},
+  todoList: {},
+  onItemClickHandler: () => {},
 };
