@@ -2,17 +2,19 @@
 /* eslint-disable react/require-default-props */
 import React from "react";
 import Container from "react-bootstrap/Container";
+import PropTypes from 'prop-types';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Todo from "../../../components/todo/todo";
 import TodoNavBar from "./todosNavBar";
 import PreviewTodo from "../../../components/previewTodo";
-import mockTodos from "../../../data/mockTodos";
+import mockTodo from '../../../data/mockTodos';
 
-function Todos() {
-  const [todoListsState, setTodoListState] = React.useState(mockTodos);
-  const [inFocusTodoState, setInFocusTodoState] = React.useState(mockTodos[0]);
-  const [inFocusTodoItemState, setInFocusTodoItemState] = React.useState(mockTodos[0].todoItems[0]);
+function Todos(props) {
+  const { todoLists = [] } = props;
+  const [todoListsState, setTodoListState] = React.useState(todoLists);
+  const [inFocusTodoState, setInFocusTodoState] = React.useState(mockTodo[0]);
+  const [inFocusTodoItemState, setInFocusTodoItemState] = React.useState(mockTodo[0].todoItems[0]);
 
   const handleNavClick = (todoList) => {
     setInFocusTodoState(todoList);
@@ -48,8 +50,12 @@ function Todos() {
   );
 }
 
-Todos.propTypes = { };
+Todos.propTypes = {
+  todoLists: PropTypes.array,
+};
 
-Todos.defaultProps = { };
+Todos.defaultProps = {
+  todoLists: [],
+};
 
 export default Todos;

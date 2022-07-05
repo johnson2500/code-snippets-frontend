@@ -7,11 +7,15 @@ import Nav from "react-bootstrap/Nav";
 function TodoNavItems(props) {
   const { todoLists, navClickHandler } = props;
 
-  return todoLists.map((list) => (
-    <Nav.Item key={list.name}>
-      <Nav.Link key={`link-${list.name}`} onClick={() => navClickHandler(list)}>{list.name}</Nav.Link>
-    </Nav.Item>
-  ));
+  return todoLists.map((list) => {
+    const { todoList } = list;
+    console.log(todoList);
+    return (
+      <Nav.Item key={todoList.name}>
+        <Nav.Link key={`link-${todoList.name}`} onClick={() => navClickHandler(todoList)}>{todoList.name}</Nav.Link>
+      </Nav.Item>
+    );
+  });
 }
 
 function TodoNavBar(props) {

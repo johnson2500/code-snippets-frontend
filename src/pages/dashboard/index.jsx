@@ -6,13 +6,16 @@ import Tab from "react-bootstrap/Tab";
 import Row from "react-bootstrap/Row";
 import Nav from "react-bootstrap/Nav";
 import Col from "react-bootstrap/Col";
+import PropTypes from 'prop-types';
 import Dropdown from "react-bootstrap/Dropdown";
 import DashboardError from "./dashboardComponents/dashboardError";
 import Todos from "./todos";
 import Notes from "./notes/notes";
 import Main from "./main/main";
 
-function Dashboard() {
+function Dashboard(props) {
+  const { todoLists = [] } = props;
+  console.log(todoLists);
   const [errorMsgState, setErrorMsgState] = React.useState(null);
 
   React.useEffect(() => {
@@ -58,7 +61,7 @@ function Dashboard() {
               <Main />
             </Tab.Pane>
             <Tab.Pane eventKey="/dashboard/todos">
-              <Todos />
+              <Todos todoLists={todoLists} />
             </Tab.Pane>
             <Tab.Pane eventKey="/dashboard/notes">
               <Notes />
@@ -70,9 +73,13 @@ function Dashboard() {
   );
 }
 
-Dashboard.propTypes = {};
+Dashboard.propTypes = {
+  todoLists: PropTypes.array,
+};
 
-Dashboard.defaultProps = {};
+Dashboard.defaultProps = {
+  todoLists: [],
+};
 
 const mapStateToProps = (state) => state;
 
