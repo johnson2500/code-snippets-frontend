@@ -20,7 +20,7 @@ function TodoNavItems(props) {
 
 function TodoNavBar(props) {
   const { todoLists, navClickHandler } = props;
-
+  console.log("TodoListNavBar", props);
   return (
     <Nav variant="tabs" defaultActiveKey="/home" className="mw-100">
       <TodoNavItems

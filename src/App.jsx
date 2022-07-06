@@ -22,6 +22,7 @@ function App() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log(user);
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
         // const { uid, accessToken } = user;
@@ -33,7 +34,7 @@ function App() {
       } else {
         // User is signed out
         // ...
-        history.push("/");
+        // history.push("/");
         setAccessTokenState(null);
         console.log("logged out");
       }
