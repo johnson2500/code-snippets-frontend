@@ -27,7 +27,6 @@ export default function Todo(props) {
       data: {
         content: todoItemState,
       },
-      token: "",
     });
 
     const todoItem = todoResponse.data;
