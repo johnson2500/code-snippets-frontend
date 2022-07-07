@@ -50,7 +50,6 @@ export default function ListItemLink(props) {
     const deleteTodoResponse = await makeRequest({
       method: 'delete',
       url: `/todo/${id}`,
-      token,
     });
 
     const { id: deletedTodoId } = deleteTodoResponse.data;
