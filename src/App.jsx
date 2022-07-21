@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -12,7 +13,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./App.css";
 import SignUpNewUser from "./pages/signUpFlow/signUpFlow";
-import { setCookie } from "./helpers";
+import { makeRequest, setCookie } from "./helpers";
 // import Side from './components/sideNavigation/sideNavigation';
 
 function App() {
@@ -24,14 +25,19 @@ function App() {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
-        // const { uid, accessToken } = user;
-        const { stsTokenManager, metadata: { creationTime } } = user;
-        const { accessToken, expirationTime } = stsTokenManager;
-        setCookie('fbToken', accessToken, new Date(expirationTime));
+        const { accessToken } = user;
+        const {
+          stsTokenManager,
+          metadata: { creationTime },
+        } = user;
+        const { expirationTime } = stsTokenManager;
+        setCookie("fbToken", accessToken, new Date(expirationTime));
         console.log(stsTokenManager);
 
-        const creationDate = moment(new Date(creationTime), 'h:mm:ss');
-        const isNewUser = Math.abs(creationDate.diff(Date.now(), 'minutes')) < 30;
+        const creationDate = moment(new Date(creationTime), "h:mm:ss");
+        const isNewUser =
+          Math.abs(creationDate.diff(Date.now(), "minutes")) < 30;
+        makeRequest({ url: "/account", token: accessToken });
         if (isNewUser) {
           history.push("/sign-up-new-user");
         } else {
@@ -41,7 +47,7 @@ function App() {
         // User is signed out
         // ...
         history.push("/");
-        document.cookie = '';
+        document.cookie = "";
         console.log("logged out");
       }
     });

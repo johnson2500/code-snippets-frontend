@@ -1,16 +1,16 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/require-default-props */
 import React from "react";
 import Form from "react-bootstrap/Form";
 import moment from "moment";
-import PropsTypes from 'prop-types';
-import Badge from 'react-bootstrap/Badge';
+import PropsTypes from "prop-types";
+import Badge from "react-bootstrap/Badge";
 
 function EditTodo(props) {
   const { todoItemInFocus = {} } = props;
   const { title, description, dueDate } = todoItemInFocus;
 
-  const [dateState, setDateState] = React.useState(moment(dueDate).format("YYYY-MM-DD"));
+  const [dateState, setDateState] = React.useState(
+    moment(dueDate).format("YYYY-MM-DD")
+  );
   const [descriptionState, setDescriptionState] = React.useState(description);
 
   return (
@@ -39,7 +39,9 @@ function EditTodo(props) {
             as="textarea"
             value={descriptionState}
             rows={5}
-            onChange={(e) => { setDescriptionState(e.target.value); }}
+            onChange={(e) => {
+              setDescriptionState(e.target.value);
+            }}
           />
         </Form.Group>
       </div>
@@ -57,9 +59,9 @@ EditTodo.propTypes = {
 
 EditTodo.defaultProps = {
   todoItemInFocus: {
-    title: '',
+    title: "",
     dueDate: Date.now(),
-    description: '',
+    description: "",
   },
 };
 
