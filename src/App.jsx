@@ -14,7 +14,6 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "./App.css";
 import SignUpNewUser from "./pages/signUpFlow/signUpFlow";
 import { makeRequest, setCookie } from "./helpers";
-// import Side from './components/sideNavigation/sideNavigation';
 
 function App() {
   const history = useHistory();
@@ -41,7 +40,7 @@ function App() {
         if (isNewUser) {
           history.push("/sign-up-new-user");
         } else {
-          history.push("/dashboard/main");
+          // history.push("/dashboard/main");
         }
       } else {
         // User is signed out

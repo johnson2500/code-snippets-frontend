@@ -8,30 +8,36 @@ import Badge from 'react-bootstrap/Badge';
 import { Calendar } from "react-bootstrap-icons";
 
 function PreviewTodo(props) {
-  const { todoItemInFocus = {} } = props;
+  const { todoItemInFocus = { tags: [] }, className } = props;
   const { title, dueDate, description } = todoItemInFocus;
 
   const [dateState, setDateState] = React.useState(moment(dueDate).format("YYYY-MM-DD"));
 
   return (
     <>
-      <h1>{title}</h1>
-      <h6 className="p-1">
-        <Badge>{todoItemInFocus.tags[0]}</Badge>
-      </h6>
-      <div>
-        <Form.Group className="p-1">
-          <Calendar />
-          <Form.Control
-            type="date"
-            name="duedate"
-            disabled
-            placeholder="Due date"
-            value={dateState}
-            onChange={(e) => setDateState(e.target.value)}
-          />
-        </Form.Group>
-        <p className="p-1">{description}</p>
+      <div className={className}>
+        <h1>{title}</h1>
+        <b>Tags</b>
+        <h6 className="p-1">
+          {todoItemInFocus?.tags?.length && <Badge>{todoItemInFocus?.tags[0]}</Badge>}
+        </h6>
+        <div>
+          <b>Due Date</b>
+          <Form.Group className="p-1">
+            <Calendar />
+            <Form.Control
+              type="date"
+              name="duedate"
+              disabled
+              placeholder="Due date"
+              value={dateState}
+              label="Due Date"
+              onChange={(e) => setDateState(e.target.value)}
+            />
+          </Form.Group>
+          <b>Description</b>
+          <p className="p-1">{description}</p>
+        </div>
       </div>
     </>
   );
@@ -43,6 +49,7 @@ PreviewTodo.propTypes = {
     dueDate: PropsTypes.instanceOf(Date),
     description: PropsTypes.string,
   }),
+  className: PropsTypes.string,
 };
 
 PreviewTodo.defaultProps = {
@@ -51,6 +58,7 @@ PreviewTodo.defaultProps = {
     dueDate: Date.now(),
     description: '',
   },
+  className: '',
 };
 
 export default PreviewTodo;

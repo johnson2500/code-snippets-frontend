@@ -36,7 +36,7 @@ export const makeRequest = async ({
     .join("&");
 
   console.log(
-    `Querying ${method} ${process.env.REACT_APP_API_URL}${url}${queryString}`
+    `Querying ${method} ${process.env.REACT_APP_API_URL}${url}${queryString}`,
   );
   return axios({
     url: `${process.env.REACT_APP_API_URL}${url}${queryString}`,

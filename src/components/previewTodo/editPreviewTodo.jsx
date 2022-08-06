@@ -5,11 +5,11 @@ import PropsTypes from "prop-types";
 import Badge from "react-bootstrap/Badge";
 
 function EditTodo(props) {
-  const { todoItemInFocus = {} } = props;
-  const { title, description, dueDate } = todoItemInFocus;
+  const { todoItemInFocus = { tags: [] } } = props;
+  const { title = '', description = '', dueDate = Date.now() } = todoItemInFocus;
 
   const [dateState, setDateState] = React.useState(
-    moment(dueDate).format("YYYY-MM-DD")
+    moment(dueDate).format("YYYY-MM-DD"),
   );
   const [descriptionState, setDescriptionState] = React.useState(description);
 
@@ -22,7 +22,7 @@ function EditTodo(props) {
         />
       </Form.Group>
       <h6 className="p-1 border">
-        <Badge>{todoItemInFocus.tags[0]}</Badge>
+        <Badge>{todoItemInFocus?.tags[0]}</Badge>
       </h6>
       <div>
         <Form.Group className="p-1">

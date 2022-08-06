@@ -5,7 +5,7 @@ import Nav from "react-bootstrap/Nav";
 
 function MainNavBar() {
   return (
-    <Nav variant="" defaultActiveKey="/home" className="mw-100">
+    <Nav variant="" defaultActiveKey="/home" className="navbar navbar-dark bg-warning">
       <Nav.Item>
         <Nav.Link eventKey="">Active</Nav.Link>
       </Nav.Item>

@@ -6,15 +6,14 @@ import Tab from "react-bootstrap/Tab";
 import Row from "react-bootstrap/Row";
 import Nav from "react-bootstrap/Nav";
 import Col from "react-bootstrap/Col";
-import {
-  Calendar2CheckFill,
-  CardChecklist,
-  JournalText,
-  PersonFill,
-} from "react-bootstrap-icons";
+// import {
+//   Calendar2CheckFill,
+//   CardChecklist,
+//   JournalText,
+//   PersonFill,
+// } from "react-bootstrap-icons";
 import Dropdown from "react-bootstrap/Dropdown";
 import DashboardError from "./dashboardComponents/dashboardError";
-import Todos from "./todos";
 import Notes from "./notes/notes";
 import Main from "./main/main";
 
@@ -26,37 +25,8 @@ function Dashboard() {
   }, []);
 
   return (
-    <Tab.Container id="left-tabs-example" defaultActiveKey="/dashboard/todos">
+    <Tab.Container id="left-tabs-example" defaultActiveKey="/dashboard/main">
       <Row className="vh-100">
-        <Col
-          sm={1}
-          style={{ maxWidth: 80 }}
-          className="m-0 p-0 vh-100 bg-light"
-        >
-          <Nav
-            variant="pills"
-            className="flex-column nav-fill navbar navbar-light bg-light"
-          >
-            <Nav.Item className="rounded-0 w-100">
-              <PersonFill color="black" size={30} />
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link className="rounded-0 w-100">
-                <CardChecklist color="black" size={30} />
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link className="rounded-0">
-                <JournalText color="black" size={30} />
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link className="rounded-0">
-                <Calendar2CheckFill color="black" size={30} />
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
-        </Col>
         <Col sm={1} className="bg-dark p-0">
           <Nav
             variant="pills"
@@ -67,11 +37,6 @@ function Dashboard() {
                 <Dropdown.Toggle className="w-100 text-white" variant="none">
                   Project
                 </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-1">Project 1</Dropdown.Item>
-                  <Dropdown.Item href="#/action-2">Project 2</Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">Project 3</Dropdown.Item>
-                </Dropdown.Menu>
               </Dropdown>
             </Nav.Item>
             <Nav.Item className="w-100">
@@ -91,15 +56,15 @@ function Dashboard() {
             </Nav.Item>
           </Nav>
         </Col>
-        <Col sm={10} className="p-0 m-0">
+        <Col sm={11} className="p-0 m-0">
           <Tab.Content>
             <DashboardError errorMsg={errorMsgState} />
             <Tab.Pane eventKey="/dashboard/main">
               <Main />
             </Tab.Pane>
-            <Tab.Pane eventKey="/dashboard/todos">
+            {/* <Tab.Pane eventKey="/dashboard/todos">
               <Todos />
-            </Tab.Pane>
+            </Tab.Pane> */}
             <Tab.Pane eventKey="/dashboard/notes">
               <Notes />
             </Tab.Pane>

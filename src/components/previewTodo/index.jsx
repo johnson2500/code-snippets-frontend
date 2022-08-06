@@ -2,24 +2,28 @@
 /* eslint-disable react/require-default-props */
 import React from "react";
 import PropsTypes from 'prop-types';
-import Button from "react-bootstrap/Button";
-import EditPreiveiw from './editPreviewTodo';
+import EditPreview from './editPreviewTodo';
 import ViewPreview from './viewPreviewTodo';
 
 function PreviewTodo(props) {
   const { todoItemInFocus = {} } = props;
   const [editingState, setEditingState] = React.useState(false);
 
+  const onEditButtonClick = () => {
+    setEditingState(!editingState);
+  };
+
   return (
     <>
-      <Button onClick={() => setEditingState(!editingState)}>Edit</Button>
       {editingState ? (
-        <EditPreiveiw
+        <EditPreview
           todoItemInFocus={todoItemInFocus}
+          onEditButtonClick={onEditButtonClick}
         />
       ) : (
         <ViewPreview
           todoItemInFocus={todoItemInFocus}
+          onEditButtonClick={onEditButtonClick}
         />
       )}
     </>
