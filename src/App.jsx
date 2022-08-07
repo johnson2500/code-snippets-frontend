@@ -2,8 +2,9 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import PropTypes from 'prop-types';
 
-import { Switch, Route, withRouter, useHistory } from "react-router-dom";
+import { Switch, Route, withRouter } from "react-router-dom";
 import "./firebase";
 import moment from "moment";
 import Navigation from "./components/nav";
@@ -15,13 +16,16 @@ import "./App.css";
 import SignUpNewUser from "./pages/signUpFlow/signUpFlow";
 import { makeRequest, setCookie } from "./helpers";
 
-function App() {
-  const history = useHistory();
+function App(props) {
+  const { dispatch } = props;
+  // const history = useHistory();
   const auth = getAuth();
+  let counter = 0;
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
+      if (user && counter === 0) {
+        counter = 1;
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
         const { accessToken } = user;
@@ -36,16 +40,20 @@ function App() {
         const creationDate = moment(new Date(creationTime), "h:mm:ss");
         const isNewUser =
           Math.abs(creationDate.diff(Date.now(), "minutes")) < 30;
-        makeRequest({ url: "/account", token: accessToken });
+        makeRequest({ url: "/projects", token: accessToken })
+          .then((repsonse) => repsonse.data)
+          .then((data) => {
+            dispatch({ type: "SET_PROJECTS", payload: data.data });
+          });
         if (isNewUser) {
-          history.push("/sign-up-new-user");
+          // history.push("/sign-up-new-user");
         } else {
           // history.push("/dashboard/main");
         }
       } else {
         // User is signed out
         // ...
-        history.push("/");
+        // history.push("/");
         document.cookie = "";
         console.log("logged out");
       }
@@ -70,11 +78,12 @@ function App() {
   );
 }
 
-App.propTypes = {};
+App.propTypes = {
+  dispatch: PropTypes.func,
+};
 
 App.defaultProps = {
   dispatch: () => {},
-  auth: {},
 };
 
 const mapStateToProps = (state) => ({ auth: state.auth });

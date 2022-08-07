@@ -1,25 +1,28 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import PropTypes from 'prop-types';
 import { AccordionTodoList } from './dragAndDrop/AccordianTodoList';
-import mockTodos from '../../../data/mockTodos';
 
-export default function TodoList({
-  // eslint-disable-next-line react/prop-types
-  todoList = mockTodos,
-}) {
-  const [tasksState, setTasksState] = React.useState(todoList.todoItems || []);
+export default function TodoList(props) {
+  const { taskList = {} } = props;
+  const { taskItems = [] } = taskList;
+
+  const [taskItemsState, setTaskItems] = React.useState(taskItems);
   const [newTaskState, setNewTaskState] = React.useState('');
 
   const addTask = () => {
-    // add task to list of tasks
-    setTasksState([...tasksState, { title: newTaskState, id: Date.now() }]);
-    // clear state on button click
+    setTaskItems([...taskItems, { title: newTaskState, id: Date.now() }]);
     setNewTaskState('');
   };
+
+  React.useEffect(() => {
+    setTaskItems(taskItems);
+  }, [taskItems]);
 
   return (
     <>
@@ -44,10 +47,20 @@ export default function TodoList({
       </InputGroup>
       <DndProvider debugMode backend={HTML5Backend}>
         <AccordionTodoList
-          tasks={tasksState}
-          setTasks={setTasksState}
+          tasks={taskItemsState}
+          setTasks={setTaskItems}
         />
       </DndProvider>
     </>
   );
 }
+
+TodoList.propTypes = {
+  taskList: PropTypes.shape({
+    taskItems: PropTypes.shape([]),
+  }),
+};
+
+TodoList.defaultProps = {
+  taskList: {},
+};

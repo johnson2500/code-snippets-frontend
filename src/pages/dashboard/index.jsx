@@ -1,24 +1,21 @@
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/require-default-props */
 import React from "react";
+import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import Tab from "react-bootstrap/Tab";
 import Row from "react-bootstrap/Row";
 import Nav from "react-bootstrap/Nav";
 import Col from "react-bootstrap/Col";
-// import {
-//   Calendar2CheckFill,
-//   CardChecklist,
-//   JournalText,
-//   PersonFill,
-// } from "react-bootstrap-icons";
 import Dropdown from "react-bootstrap/Dropdown";
 import DashboardError from "./dashboardComponents/dashboardError";
 import Notes from "./notes/notes";
 import Main from "./main/main";
 
-function Dashboard() {
+function Dashboard(props) {
+  const { projects = [] } = props;
   const [errorMsgState, setErrorMsgState] = React.useState(null);
+  const projectInFocus = projects[0] || {};
 
   React.useEffect(() => {
     setErrorMsgState(null);
@@ -60,7 +57,9 @@ function Dashboard() {
           <Tab.Content>
             <DashboardError errorMsg={errorMsgState} />
             <Tab.Pane eventKey="/dashboard/main">
-              <Main />
+              <Main
+                project={projectInFocus}
+              />
             </Tab.Pane>
             {/* <Tab.Pane eventKey="/dashboard/todos">
               <Todos />
@@ -75,10 +74,14 @@ function Dashboard() {
   );
 }
 
-Dashboard.propTypes = {};
+Dashboard.propTypes = {
+  projects: PropTypes.array,
+};
 
-Dashboard.defaultProps = {};
+Dashboard.defaultProps = {
+  projects: [],
+};
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = (state) => state.projectsReducers;
 
 export default connect(mapStateToProps)(Dashboard);

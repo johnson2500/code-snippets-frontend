@@ -13,7 +13,6 @@ export default class FirebaseTokenManager {
       };
 
       this.request.onsuccess = (event) => {
-        console.log(event);
         const db = event.target.result;
         resolve(this.getData(db, this.keyPath));
       };
@@ -30,11 +29,7 @@ export default class FirebaseTokenManager {
         // return the result object on success
         query.onsuccess = () => {
           const { result } = query;
-
-          console.log(result.value);
           const key = result.value.stsTokenManager.accessToken;
-
-          console.log(key);
           resolve(key);
         };
 
@@ -53,7 +48,6 @@ export default class FirebaseTokenManager {
 
   async getData(db, keyPath) {
     console.log(this.keyPath);
-    console.log(keyPath);
 
     return new Promise((resolve, reject) => {
       const txn = db.transaction('firebaseLocalStorage', 'readonly');

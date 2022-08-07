@@ -11,9 +11,9 @@ export const style = {
   width: 400,
 };
 
-export const AccordionTodoList = ({ tasks, setTasks }) => {
-  const findTask = (id) => {
-    const task = tasks.filter((c) => `${c.id}` === id)[0];
+export const AccordionTodoList = ({ tasks = [], setTasks }) => {
+  const findTask = (taskId) => {
+    const task = tasks.filter((t) => t.id === taskId)[0];
     return {
       task,
       index: tasks.indexOf(task),
@@ -33,16 +33,18 @@ export const AccordionTodoList = ({ tasks, setTasks }) => {
   const [, drop] = useDrop({ accept: ItemTypes.TASK });
   return (
     <Accordion ref={drop}>
-      {tasks.map((task) => (
-        <AccordionTodoItem
-          key={task.id}
-          eventKey={task.id}
-          id={`${task.id}`}
-          moveTask={moveTask}
-          findTask={findTask}
-          item={task}
-        />
-      ))}
+      {tasks.map((task) => {
+        const id = task.id || Date.now();
+        return (
+          <AccordionTodoItem
+            key={id}
+            id={id}
+            moveTask={moveTask}
+            findTask={findTask}
+            item={task}
+          />
+        );
+      })}
     </Accordion>
   );
 };

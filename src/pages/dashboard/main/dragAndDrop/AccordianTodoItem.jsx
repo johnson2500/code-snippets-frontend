@@ -14,7 +14,6 @@ export const style = {
 
 export const AccordionTodoItem = ({
   id,
-  eventKey,
   moveTask,
   findTask,
   item = {},
@@ -54,7 +53,7 @@ export const AccordionTodoItem = ({
 
   return (
     <Accordion.Item
-      eventKey={eventKey}
+      eventKey={id}
       ref={(node) => drag(drop(node))}
       style={{ opacity }}
     >
