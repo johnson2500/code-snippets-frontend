@@ -11,9 +11,10 @@ import Notes from "./notes/notes";
 import Main from "./main/main";
 
 function Dashboard(props) {
-  const { projects = [], auth = {} } = props;
+  const { projects = [{}], auth = {} } = props;
+  console.log(projects);
   const [errorMsgState, setErrorMsgState] = React.useState(null);
-  const projectInFocus = projects[0] || {};
+  const projectInFocus = projects[0];
 
   React.useEffect(() => {
     setErrorMsgState(null);
@@ -71,7 +72,8 @@ function Dashboard(props) {
 }
 
 Dashboard.propTypes = {
-  projects: PropTypes.shape([]),
+  // eslint-disable-next-line react/forbid-prop-types
+  projects: PropTypes.array,
   auth: PropTypes.shape({}),
 };
 

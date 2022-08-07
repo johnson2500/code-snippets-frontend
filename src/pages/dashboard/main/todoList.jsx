@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/prop-types */
 import React from 'react';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -17,7 +18,6 @@ export default function TodoList(props) {
   const [newTaskState, setNewTaskState] = React.useState('');
 
   const addTask = () => {
-    setTaskItems([...taskItemsState, { title: newTaskState, id: Date.now() }]);
     makeRequest({
       url: "/task-item",
       token: auth.accessToken,
@@ -29,14 +29,33 @@ export default function TodoList(props) {
     })
       .then((repsonse) => repsonse.data)
       .then((data) => {
-        console.log(data);
+        const { id } = data;
+        setTaskItems([...taskItemsState, { title: newTaskState, id }]);
+        setNewTaskState('');
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    setNewTaskState('');
+  };
+
+  const onCompleteHandler = ({ completed, taskId }) => {
+    makeRequest({
+      method: "POST",
+      url: '/task-item/update-complete',
+      token: auth.accessToken,
+      data: {
+        taskId,
+        projectId,
+        completed,
+      },
+    }).then((data) => {
+      console.log(data);
+    });
   };
 
   React.useEffect(() => {
     setTaskItems(taskItems);
-  }, [taskItems]);
+  }, [taskList]);
 
   return (
     <>
@@ -63,6 +82,7 @@ export default function TodoList(props) {
         <AccordionTodoList
           tasks={taskItemsState}
           setTasks={setTaskItems}
+          onCompleteHandler={onCompleteHandler}
         />
       </DndProvider>
     </>
@@ -71,7 +91,7 @@ export default function TodoList(props) {
 
 TodoList.propTypes = {
   taskList: PropTypes.shape({
-    taskItems: PropTypes.shape([]),
+    taskItems: PropTypes.array,
   }),
   projectId: PropTypes.string,
   auth: PropTypes.shape({}),

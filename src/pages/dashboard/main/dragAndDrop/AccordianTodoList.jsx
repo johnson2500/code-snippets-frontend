@@ -11,7 +11,8 @@ export const style = {
   width: 400,
 };
 
-export const AccordionTodoList = ({ tasks = [], setTasks }) => {
+export const AccordionTodoList = ({ tasks = [], setTasks, onCompleteHandler }) => {
+  const [activeKey, setActiveKey] = React.useState('');
   const findTask = (taskId) => {
     const task = tasks.filter((t) => t.id === taskId)[0];
     return {
@@ -30,21 +31,27 @@ export const AccordionTodoList = ({ tasks = [], setTasks }) => {
     }));
   };
 
+  const setActiveKeyHandler = (id) => {
+    if (activeKey === id) {
+      setActiveKey('');
+    } else {
+      setActiveKey(id);
+    }
+  };
+
   const [, drop] = useDrop({ accept: ItemTypes.TASK });
   return (
-    <Accordion ref={drop}>
-      {tasks.map((task) => {
-        const id = task.id || Date.now();
-        return (
-          <AccordionTodoItem
-            key={id}
-            id={id}
-            moveTask={moveTask}
-            findTask={findTask}
-            item={task}
-          />
-        );
-      })}
+    <Accordion ref={drop} alwaysOpen activeKey={activeKey}>
+      {tasks.map((task) => (
+        <AccordionTodoItem
+          onCompleteHandler={onCompleteHandler}
+          setActiveKey={setActiveKeyHandler}
+          key={task?.id}
+          moveTask={moveTask}
+          findTask={findTask}
+          item={task}
+        />
+      ))}
     </Accordion>
   );
 };
@@ -52,9 +59,11 @@ export const AccordionTodoList = ({ tasks = [], setTasks }) => {
 AccordionTodoList.propTypes = {
   tasks: PropTypes.array,
   setTasks: PropTypes.func,
+  onCompleteHandler: PropTypes.func,
 };
 
 AccordionTodoList.defaultProps = {
   tasks: [],
   setTasks: () => {},
+  onCompleteHandler: () => {},
 };

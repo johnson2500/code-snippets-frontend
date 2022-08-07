@@ -1,8 +1,6 @@
 export const SET_PROJECTS = 'SET_PROJECTS';
 
-const notesInitialState = {
-  projects: [{}],
-};
+const notesInitialState = [{}];
 
 export const projectsReducer = (state = notesInitialState, action) => {
   const { payload, type } = action;

@@ -6,8 +6,10 @@ import TodoList from "./todoList";
 import MainNavBar from "./mainNavBar";
 
 function Main(props) {
-  const { project, auth } = props;
-  const { taskList } = project;
+  const { project = {}, auth } = props;
+  console.log('project', project);
+  const { taskList = {} } = project;
+  console.log("taskList", taskList);
   return (
     <>
       <MainNavBar />
