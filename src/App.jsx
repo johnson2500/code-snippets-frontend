@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import PropTypes from 'prop-types';
 
-import { Switch, Route, withRouter } from "react-router-dom";
+import { Switch, Route, withRouter, useHistory } from "react-router-dom";
 import "./firebase";
 import moment from "moment";
 import Navigation from "./components/nav";
@@ -18,7 +18,7 @@ import { makeRequest, setCookie } from "./helpers";
 
 function App(props) {
   const { dispatch } = props;
-  // const history = useHistory();
+  const history = useHistory();
   const auth = getAuth();
   let counter = 0;
 
@@ -35,7 +35,8 @@ function App(props) {
         } = user;
         const { expirationTime } = stsTokenManager;
         setCookie("fbToken", accessToken, new Date(expirationTime));
-        console.log(stsTokenManager);
+
+        dispatch({ type: "SET_AUTH", payload: { ...stsTokenManager } });
 
         const creationDate = moment(new Date(creationTime), "h:mm:ss");
         const isNewUser =
@@ -46,13 +47,11 @@ function App(props) {
             dispatch({ type: "SET_PROJECTS", payload: data.data });
           });
         if (isNewUser) {
-          // history.push("/sign-up-new-user");
+          history.push("/sign-up-new-user");
         } else {
-          // history.push("/dashboard/main");
+          history.push("/dashboard/main");
         }
       } else {
-        // User is signed out
-        // ...
         // history.push("/");
         document.cookie = "";
         console.log("logged out");

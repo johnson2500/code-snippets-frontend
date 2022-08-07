@@ -6,7 +6,7 @@ import TodoList from "./todoList";
 import MainNavBar from "./mainNavBar";
 
 function Main(props) {
-  const { project } = props;
+  const { project, auth } = props;
   const { taskList } = project;
   return (
     <>
@@ -18,6 +18,8 @@ function Main(props) {
           style={{ maxHeight: 'calc(100vh - 42px)' }}
         >
           <TodoList
+            auth={auth}
+            projectId={project.id}
             taskList={taskList}
           />
         </Col>
@@ -28,12 +30,14 @@ function Main(props) {
 
 Main.propTypes = {
   project: PropTypes.shape({
-    // eslint-disable-next-line react/forbid-prop-types
+    id: PropTypes.string,
     taskList: PropTypes.shape({}),
   }),
+  auth: PropTypes.shape({}),
 };
 
 Main.defaultProps = {
   project: {},
+  auth: {},
 };
 export default Main;

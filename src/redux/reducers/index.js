@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
-import { projectsReducers } from './projectsReducers';
+import { projectsReducer } from './projectsReducers';
+import { authReducer } from './authReducers';
 
 export default combineReducers({
-  projectsReducers,
+  projectsReducer,
+  authReducer,
 });

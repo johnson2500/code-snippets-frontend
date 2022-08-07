@@ -1,5 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
-/* eslint-disable react/require-default-props */
 import React from "react";
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
@@ -13,7 +11,7 @@ import Notes from "./notes/notes";
 import Main from "./main/main";
 
 function Dashboard(props) {
-  const { projects = [] } = props;
+  const { projects = [], auth = {} } = props;
   const [errorMsgState, setErrorMsgState] = React.useState(null);
   const projectInFocus = projects[0] || {};
 
@@ -58,12 +56,10 @@ function Dashboard(props) {
             <DashboardError errorMsg={errorMsgState} />
             <Tab.Pane eventKey="/dashboard/main">
               <Main
+                auth={auth}
                 project={projectInFocus}
               />
             </Tab.Pane>
-            {/* <Tab.Pane eventKey="/dashboard/todos">
-              <Todos />
-            </Tab.Pane> */}
             <Tab.Pane eventKey="/dashboard/notes">
               <Notes />
             </Tab.Pane>
@@ -75,13 +71,15 @@ function Dashboard(props) {
 }
 
 Dashboard.propTypes = {
-  projects: PropTypes.array,
+  projects: PropTypes.shape([]),
+  auth: PropTypes.shape({}),
 };
 
 Dashboard.defaultProps = {
   projects: [],
+  auth: {},
 };
 
-const mapStateToProps = (state) => state.projectsReducers;
+const mapStateToProps = (state) => ({ projects: state.projectsReducer, auth: state.authReducer });
 
 export default connect(mapStateToProps)(Dashboard);

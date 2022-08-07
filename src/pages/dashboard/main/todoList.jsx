@@ -7,16 +7,30 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import PropTypes from 'prop-types';
 import { AccordionTodoList } from './dragAndDrop/AccordianTodoList';
+import { makeRequest } from '../../../helpers';
 
 export default function TodoList(props) {
-  const { taskList = {} } = props;
+  const { taskList = {}, projectId = '', auth = {} } = props;
   const { taskItems = [] } = taskList;
 
   const [taskItemsState, setTaskItems] = React.useState(taskItems);
   const [newTaskState, setNewTaskState] = React.useState('');
 
   const addTask = () => {
-    setTaskItems([...taskItems, { title: newTaskState, id: Date.now() }]);
+    setTaskItems([...taskItemsState, { title: newTaskState, id: Date.now() }]);
+    makeRequest({
+      url: "/task-item",
+      token: auth.accessToken,
+      method: "POST",
+      data: {
+        projectId,
+        title: newTaskState,
+      },
+    })
+      .then((repsonse) => repsonse.data)
+      .then((data) => {
+        console.log(data);
+      });
     setNewTaskState('');
   };
 
@@ -59,8 +73,12 @@ TodoList.propTypes = {
   taskList: PropTypes.shape({
     taskItems: PropTypes.shape([]),
   }),
+  projectId: PropTypes.string,
+  auth: PropTypes.shape({}),
 };
 
 TodoList.defaultProps = {
   taskList: {},
+  auth: {},
+  projectId: '',
 };
