@@ -5,7 +5,6 @@
 import React from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import Accordion from 'react-bootstrap/Accordion';
-import { Button } from 'react-bootstrap';
 import ItemTypes from './ItemTypes';
 
 export const style = {
@@ -28,15 +27,12 @@ export const AccordionTodoItem = ({
 
   const [completedState, setCompletedState] = React.useState(completed);
 
-  const [{ isDragging }, drag] = useDrag({
+  const [, drag] = useDrag({
     item: {
       type: ItemTypes.TASK,
       id,
       originalIndex,
     },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
     end: (_dropResult, monitor) => {
       const { id: droppedId, originalIndex: _originalIndex } = monitor.getItem();
       const didDrop = monitor.didDrop();
@@ -57,22 +53,26 @@ export const AccordionTodoItem = ({
     },
   });
 
-  const opacity = isDragging ? 0 : 1;
-
   const handleOnComplete = () => {
     onCompleteHandler({ taskId: id, completed: !completedState });
     setCompletedState(!completedState);
+  };
+
+  const overRide = (e) => {
+    // only expand if that header is clicked
+    if (`input-${id}` === e.target.id) {
+      return;
+    }
+    setActiveKey(id);
   };
 
   return (
     <Accordion.Item
       eventKey={id}
       ref={(node) => drag(drop(node))}
-      style={{ opacity }}
     >
-      <Accordion.Header>
-
-        <input onClick={handleOnComplete} checked={completedState} type="checkbox" className="me-2 ms-2" />
+      <Accordion.Header onClick={overRide}>
+        <input id={`input-${id}`} onClick={handleOnComplete} checked={completedState} type="checkbox" className="me-2 ms-2" />
         {
           completedState ? (
             <del className="me-2 ms-2">{title}</del>
@@ -80,8 +80,6 @@ export const AccordionTodoItem = ({
             <b className="me-2 ms-2">{title}</b>
           )
         }
-        <Button onClick={() => setActiveKey(id)}>View</Button>
-
       </Accordion.Header>
       <Accordion.Body>
         <b>Due Date</b>

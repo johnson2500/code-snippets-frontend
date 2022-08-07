@@ -63,7 +63,7 @@ function App(props) {
     <div>
       <Switch>
         <Route exact path="/dashboard/main">
-          <Dashboard />
+          <Dashboard dispatch={dispatch} />
         </Route>
         <Route exact path="/">
           <Navigation />

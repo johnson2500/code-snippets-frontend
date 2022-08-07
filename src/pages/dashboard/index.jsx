@@ -11,8 +11,7 @@ import Notes from "./notes/notes";
 import Main from "./main/main";
 
 function Dashboard(props) {
-  const { projects = [{}], auth = {} } = props;
-  console.log(projects);
+  const { projects = [{}], auth = {}, dispatch } = props;
   const [errorMsgState, setErrorMsgState] = React.useState(null);
   const projectInFocus = projects[0];
 
@@ -23,7 +22,7 @@ function Dashboard(props) {
   return (
     <Tab.Container id="left-tabs-example" defaultActiveKey="/dashboard/main">
       <Row className="vh-100">
-        <Col sm={1} className="bg-dark p-0">
+        <Col sm={2} className="bg-dark p-0">
           <Nav
             variant="pills"
             className="nav-fill flex-column navbar navbar-dark bg-dark"
@@ -52,11 +51,12 @@ function Dashboard(props) {
             </Nav.Item>
           </Nav>
         </Col>
-        <Col sm={11} className="p-0 m-0">
+        <Col sm={10} className="p-0 m-0">
           <Tab.Content>
             <DashboardError errorMsg={errorMsgState} />
             <Tab.Pane eventKey="/dashboard/main">
               <Main
+                dispatch={dispatch}
                 auth={auth}
                 project={projectInFocus}
               />
@@ -75,11 +75,13 @@ Dashboard.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   projects: PropTypes.array,
   auth: PropTypes.shape({}),
+  dispatch: PropTypes.func,
 };
 
 Dashboard.defaultProps = {
   projects: [],
   auth: {},
+  dispatch: () => {},
 };
 
 const mapStateToProps = (state) => ({ projects: state.projectsReducer, auth: state.authReducer });

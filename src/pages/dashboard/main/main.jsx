@@ -6,10 +6,8 @@ import TodoList from "./todoList";
 import MainNavBar from "./mainNavBar";
 
 function Main(props) {
-  const { project = {}, auth } = props;
-  console.log('project', project);
+  const { project = {}, auth, dispatch } = props;
   const { taskList = {} } = project;
-  console.log("taskList", taskList);
   return (
     <>
       <MainNavBar />
@@ -20,6 +18,7 @@ function Main(props) {
           style={{ maxHeight: 'calc(100vh - 42px)' }}
         >
           <TodoList
+            dispatch={dispatch}
             auth={auth}
             projectId={project.id}
             taskList={taskList}
@@ -36,10 +35,12 @@ Main.propTypes = {
     taskList: PropTypes.shape({}),
   }),
   auth: PropTypes.shape({}),
+  dispatch: PropTypes.func,
 };
 
 Main.defaultProps = {
   project: {},
   auth: {},
+  dispatch: () => {},
 };
 export default Main;
