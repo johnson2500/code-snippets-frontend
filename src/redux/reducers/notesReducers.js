@@ -12,10 +12,8 @@ export const notesReducer = (state = notesInitialState, action) => {
 
   switch (type) {
     case SET_NOTES:
-      console.log(action);
       return payload;
     case DELETE_NOTE:
-      console.log(action);
       return state.filter((snip) => snip.id !== payload);
     case ADD_NOTE:
       return [
@@ -23,7 +21,6 @@ export const notesReducer = (state = notesInitialState, action) => {
         payload,
       ];
     case UPDATE_NOTE:
-      console.log(action);
       return state.map((snip) => {
         // if the id matches then update the list with
         if (snip.id === payload.id) {

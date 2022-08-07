@@ -29,7 +29,6 @@ export const SignIn = (props) => {
     signInWithEmailAndPassword(auth, emailAddressState, passwordState)
       .then((userCredential) => {
         const { user } = userCredential;
-        console.log(user);
 
         user.getIdToken(true).then((idToken) => {
           document.cookie = `__session=${idToken};max-age=3600`;

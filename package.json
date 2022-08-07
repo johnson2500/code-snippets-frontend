@@ -17,6 +17,7 @@
     "prop-types": "^15.7.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.4.0",
+    "react-bootstrap-accordion": "^1.0.0",
     "react-bootstrap-icons": "^1.8.4",
     "react-dnd": "14.0.0",
     "react-dnd-html5-backend": "14.0.0",
@@ -28,7 +29,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "PORT=3001 react-scripts start",
+    "start": "PORT=8080 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
